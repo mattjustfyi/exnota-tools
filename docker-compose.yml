@@ -1,4 +1,6 @@
 services:
+
+    # Uses Sails for local development
     laravel.test:
         build:
             context: ./vendor/laravel/sail/runtimes/8.3
@@ -23,7 +25,30 @@ services:
             - sail
         depends_on:
             - pgsql
+
+    # Uses ./Dockerfile to mimic prod environment
+#     laravel.prod:
+#         image: app-name:latest
+#         build:
+#             target: prod
+#             context: .
+#         env_file:
+#             - .env
+#         ports:
+#             - "8000:80"
+# #         - '${APP_PORT:-80}:80'
+#         volumes:
+#             - .:/var/www/html
+#         depends_on:
+#             - pgsql
+#         networks:
+#             - sail
+#         extra_hosts:
+#             - 'host.docker.internal:host-gateway'
+
+    # Database
     pgsql:
+        # TODO: Update to 16.1 to match prod
         image: 'postgres:15'
         ports:
             - '${FORWARD_DB_PORT:-5432}:5432'
