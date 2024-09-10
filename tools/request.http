@@ -1,0 +1,6 @@
+### Save auth data
+# Note the content-type seems to be needed.
+curl -X POST \
+    -H "Content-Type: application/json" \
+    -d '{"authData": {"key": "value"}}' \
+    http://localhost/workspaces/auth-data
