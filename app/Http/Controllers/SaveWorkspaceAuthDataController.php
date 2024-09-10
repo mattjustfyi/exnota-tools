@@ -13,11 +13,13 @@ class SaveWorkspaceAuthDataController extends Controller
      */
     public function __invoke(SaveWorkspaceAuthDataRequest $request): JsonResponse
     {
-        $validatedData = $request->validated();
+        $workspace = Workspace::create();
 
         return response()->json([
-            'message' => 'Request received successfully',
-            'data' => $validatedData
-        ]);
+            'message' => 'Workspace created successfully',
+            'data' => [
+                'id' => $workspace->id,
+            ]
+        ], 201);
     }
 }
