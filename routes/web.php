@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DuplicatesController;
 use App\Http\Controllers\SaveWorkspaceAuthDataController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -15,6 +16,8 @@ Route::get('/', function () {
 });
 
 Route::post('/workspaces/auth-data', SaveWorkspaceAuthDataController::class)->middleware('api');
+
+Route::get('/duplicates', [DuplicatesController::class, 'show']);
 
 Route::middleware([
     'auth:sanctum',
