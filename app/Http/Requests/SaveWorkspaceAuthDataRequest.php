@@ -22,7 +22,7 @@ class SaveWorkspaceAuthDataRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'authData' => ['required', 'array'],
+            // 'authData' => ['required', 'array'],
         ];
     }
 }
