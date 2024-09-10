@@ -4,6 +4,8 @@
   - [Cheatsheet](#cheatsheet)
   - [Deploy to prod](#deploy-to-prod)
     - [Steps](#steps)
+  - [Local development](#local-development)
+    - [Database UI](#database-ui)
   - [Initial prod setup](#initial-prod-setup)
     - [SSH](#ssh)
     - [Dokku](#dokku)
@@ -63,6 +65,18 @@ Don't run inside dev container!
     # Or: Deploy branch <branch-name>
     git push dokku <branch-name>:main
     ```
+
+## Local development
+
+### Database UI
+
+1. Install DBeaver
+2. Create a connection with:
+    > host: localhost
+    > database: laravel
+    > username: sail
+    > password: <see .env>
+    Double check `.env` values if there's an issue
 
 ## Initial prod setup
 
