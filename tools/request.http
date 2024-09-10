@@ -1,6 +1,13 @@
-### Save auth data
+### Save auth data (local)
 # Note the content-type seems to be needed.
 curl -X POST \
     -H "Content-Type: application/json" \
     -d '{"authData": {"key": "value"}}' \
     http://localhost/workspaces/auth-data
+
+### Save auth data (prod)
+# Note the content-type seems to be needed.
+curl -X POST \
+    -H "Content-Type: application/json" \
+    -d '{"authData": {"key": "value"}}' \
+    https://tools.exnota.com/workspaces/auth-data
