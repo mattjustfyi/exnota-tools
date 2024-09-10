@@ -1,66 +1,317 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Exnota Tools
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+- [Exnota Tools](#exnota-tools)
+  - [Cheatsheet](#cheatsheet)
+  - [Deploy to prod](#deploy-to-prod)
+    - [Steps](#steps)
+  - [Initial prod setup](#initial-prod-setup)
+    - [SSH](#ssh)
+    - [Dokku](#dokku)
+    - [Troubleshooting initial setup](#troubleshooting-initial-setup)
+  - [Old documentation copied from `exnota` repo](#old-documentation-copied-from-exnota-repo)
+    - [Troubleshooting assorted](#troubleshooting-assorted)
+      - [Error: At least one invalid signature was encountered, or "no space left on device"](#error-at-least-one-invalid-signature-was-encountered-or-no-space-left-on-device)
+  - [Maintenance](#maintenance)
+    - [Environment variables](#environment-variables)
+    - [Checking logs](#checking-logs)
+    - [How to execute Dokku commands](#how-to-execute-dokku-commands)
+  - [Hetzner SSH](#hetzner-ssh)
+    - [Terminal](#terminal)
+    - [CLI](#cli)
+  - [Archive](#archive)
+    - [Manual Hetzner deploy](#manual-hetzner-deploy)
 
-## About Laravel
+## Cheatsheet
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Local artisan commands, outside Docker:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+    ```bash
+    ./vendor/bin/sail artisan list
+    ```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Migrate
 
-## Learning Laravel
+    ```bash
+    # Inside docker
+    php artisan migrate
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+    # Outside Docker
+    docker exec -it exnota-tools-laravel.web-1 php artisan migrate
+    ```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Deploy to prod
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Steps
 
-## Laravel Sponsors
+Don't run inside dev container!
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+1. FIRST TIME ONLY deploying from a specific device.
+   - Ensure you have configured [SSH](#ssh)
+   - Add Dokku remote to git repo
 
-### Premium Partners
+        ```bash
+        # `exnota-tools` is the remote branch name, matching the app name
+        git remote add dokku dokku@<domain>:exnota-tools
+        ```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+2. Deploy
 
-## Contributing
+    ```bash
+    # Deploy master branch
+    git push dokku main
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+    # Or: Deploy branch <branch-name>
+    git push dokku <branch-name>:main
+    ```
 
-## Code of Conduct
+## Initial prod setup
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### SSH
 
-## Security Vulnerabilities
+1. Create an SSH key locally (not dev container) and add to Hetzner via UI.
+   - This will be used for deploys and can be used to configure Dokku remotely.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Dokku
 
-## License
+1. Create app and database
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+    ```bash
+    dokku apps:create exnota-tools
+
+    # Might give 'already exists' error if alreay downloaded
+    sudo dokku plugin:install https://github.com/dokku/dokku-postgres.git
+
+    # Might need to set DB version
+    dokku postgres:create exnota-tools-db
+
+    dokku postgres:link exnota-tools-db exnota-tools
+
+    # Setup database and user
+    #
+    # In Hetzner, which opens db container
+    dokku postgres:enter exnota-tools-db
+
+    # In db container
+    psql -U postgres
+
+    # Postgres commands
+    #
+    # Note: Choose a user password without $ or ! characters as they might
+    # cause issues when entering them as environment variables via the command
+    # line. I tried escaping them: One worked, the other didn't. Easier to avoid.
+    #
+    CREATE DATABASE exnotatools;
+    \c exnotatools
+    CREATE USER app WITH PASSWORD 'your_password';
+    GRANT CREATE, CONNECT ON DATABASE exnotatools TO app;
+    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO app;
+    GRANT USAGE, CREATE ON SCHEMA public TO app;
+    ```
+
+2. Add Dokku as git remote
+
+    ```bash
+    # `exnota-tools` is the remote branch name, matching the app name
+    git remote add dokku dokku@195.201.33.178:exnota-tools
+    ```
+    <!-- Probably don't need this: -->
+    <!-- 3. Set build directory
+
+    ```bash
+    dokku builder:set exnota-tools build-dir app/backend
+    ``` -->
+
+3. Set builder type to Docker
+
+    ```bash
+    dokku builder:set exnota-tools selected dockerfile
+
+    ```
+    <!-- Don't think this is needed -->
+    <!-- # Set multi-stage build target
+    dokku docker-options:add exnota-tools build "--target prod" -->
+
+4. Add domain (assuming its DNS config already points to VPS IP)
+
+   ```bash
+   dokku domains:add exnota-tools tools.exnota.com
+   ```
+
+    <!-- 6. Remove default 'Welcome to nginx' page -->
+
+    <!-- Not sure this is needed -->
+    <!-- ```bash
+    rm /etc/nginx/sites-enabled/default
+    ``` -->
+
+    <!-- Not sure this is needed -->
+    <!-- 7. Make app accessible without `8080` port:
+
+    ```bash
+    dokku ports:add exnota-tools http:80:8080
+    ``` -->
+
+5. Setup lets encrypt
+
+    ```bash
+    dokku letsencrypt:set exnota-tools email email@mattschultz.info
+    dokku letsencrypt:enable exnota-tools
+
+    # Have not tested this. Unsure how to.
+    dokku letsencrypt:cron-job --add
+    ```
+
+    `letsencrypt:enable` will give a warning like:
+
+    > Your account credentials have been saved in your Let's Encrypt configuration directory at "/certs/accounts".
+
+    However the folder is actually empty. I found one folder by doing this:
+
+    ```bash
+    find / -type f -name "docker.env"
+    ```
+
+    Technically you're supposed to regularly backup, I suppose because it will be regenerated. But I'll leave that to another day.
+
+    You can get a local copy by running this from your host:
+
+    ```bash
+    scp -r root@195.201.33.178:/home/dokku/exnota-tools/letsencrypt/certs exnota-tools-letsencrypt-backup
+    ```
+
+6. Setup environment variables from .env
+
+   - Get `DB_HOST` from `dokku postgres:info exnota-tools-db` under `Dsn` between `@` and `:`
+   - Get `APP_KEY` by:
+     - Creating a dummy `.env` file.
+     - Running `php artisan key:generate`.
+   - For the remaining, adapt from local `.env`.
+
+   ```bash
+   ssh -t dokku@195.201.33.178 config:set exnota-tools --no-restart VAR_1=VALUE VAR_2="VALUE WITH SPACE"
+   ```
+
+    <!-- Maybbe I don' need perisstence? -->
+    <!-- 9. Setup volume for persistence
+
+    ```bash
+    # In the future should probably follow these steps INSTEAD of separate mkdir
+    # and chown commands: https://dokku.com/docs/advanced-usage/persistent-storage/#creating-storage-directories
+
+    mkdir -p /var/lib/dokku/data/storage/exnota-tools/pb_data
+
+    chown dokku:dokku /var/lib/dokku/data/storage/exnota-tools/pb_data
+
+    dokku docker-options:add exnota-tools deploy "-v /var/lib/dokku/data/storage/exnota-tools/pb_data:/pb/pb_data"
+    ``` -->
+
+<!-- 10. Increase file upload limit
+
+    ```bash
+    ssh -t dokku@195.201.33.178 nginx:set exnota-tools client-max-body-size 5M
+    ssh -t dokku@195.201.33.178 ps:restart exnota-tools
+    ``` -->
+
+### Troubleshooting initial setup
+
+- Check if app can connect to database:
+
+    ```bash
+    # Hetzner
+    dokku enter exnota-tools
+
+    # Docker
+    php artisan db:show
+    ```
+
+## Old documentation copied from `exnota` repo
+
+### Troubleshooting assorted
+
+#### Error: At least one invalid signature was encountered, or "no space left on device"
+
+Former is apparently caused by insufficient space according to this [SO post](https://stackoverflow.com/questions/62473932/at-least-one-invalid-signature-was-encountered) (which has more options for freeing space in addition to below).
+
+Fix:
+
+1. SSH to Hetzner server.
+2. Run
+
+    ```bash
+    docker builder prune
+    ```
+
+Use `df -h` before/after to check how much space this is freeing up.
+
+## Maintenance
+
+### Environment variables
+
+Required variables in `/app/backend/cmd/config/config.go`.
+
+```bash
+ssh -t dokku@195.201.33.178 config:get exnota-tools VARIABLE_NAME
+ssh -t dokku@195.201.33.178 config:set exnota-tools VARIABLE_NAME=VALUE --no-restart
+```
+
+See <https://dokku.com/docs/configuration/environment-variables/>
+
+### Checking logs
+
+<https://app.exnota.com/_/#/logs>
+
+or
+
+```bash
+ssh -t dokku@195.201.33.178 logs exnota-tools -n 10000 -t
+```
+
+### How to execute Dokku commands
+
+There is an [official client](https://dokku.com/docs/deployment/remote-commands/#official-client) but commands can be executed simply via SSH:
+
+1. Ensure SSH is setup as below.
+
+2. Omit `dokku` root command and send sub-command. On local machine, not dev container.
+
+    ```bash
+        ssh -t dokku@195.201.33.178 <sub-command>
+
+        # E.g. Send `dokku version`
+        ssh -t dokku@195.201.33.178 version
+    ```
+
+## Hetzner SSH
+
+### Terminal
+
+```bash
+% ssh root@195.201.33.178
+Enter passphrase for key '/Users/matt/.ssh/id_ed25519_hetzner2':
+```
+
+### CLI
+
+Have not logged in using CLI successfully yet. Maybe because of this ([link](https://docs.hetzner.com/cloud/servers/getting-started/vnc-console/)):
+
+> If your server was created with an SSH key, or if you no longer have the password, you can request a new root password:
+
+## Archive
+
+Notes that may be useful in the future.
+
+### Manual Hetzner deploy
+
+1. Login as root (no other option for now)
+2. mkdir deploy
+3. Create ssh key to use as Github Deploy Key ([link](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/managing-deploy-keys#deploy-keys))
+   - Ensure to also follow the Linux steps for 'Adding your SSH key to the ssh-agent'
+4. Might need to manually add `~/.ssh/config` file
+5. Clone. Which must be done via SSH not HTTPS (latter will ask for user/pass rather than use SSH Key)
+
+    ```bash
+    git clone -b pocketbase-poc git@github.com:mttschltz/exnota.git
+    ```
+
+6. cd exnota/app/backend
+7. docker compose up
