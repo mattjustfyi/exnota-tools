@@ -6,12 +6,16 @@
     - [Steps](#steps)
   - [Local development](#local-development)
     - [Database UI](#database-ui)
+      - [Local](#local)
+      - [Prod](#prod)
+    - [Troubleshooting](#troubleshooting)
+      - [Error: `SQLSTATE[08006] [7] could not translate host name "pgsql" to address: nodename nor servname provided`](#error-sqlstate08006-7-could-not-translate-host-name-pgsql-to-address-nodename-nor-servname-provided)
   - [Initial prod setup](#initial-prod-setup)
     - [SSH](#ssh)
     - [Dokku](#dokku)
     - [Troubleshooting initial setup](#troubleshooting-initial-setup)
   - [Old documentation copied from `exnota` repo](#old-documentation-copied-from-exnota-repo)
-    - [Troubleshooting assorted](#troubleshooting-assorted)
+    - [Troubleshooting assorted old](#troubleshooting-assorted-old)
       - [Error: At least one invalid signature was encountered, or "no space left on device"](#error-at-least-one-invalid-signature-was-encountered-or-no-space-left-on-device)
   - [Maintenance](#maintenance)
     - [Environment variables](#environment-variables)
@@ -38,7 +42,7 @@
     php artisan migrate
 
     # Outside Docker
-    docker exec -it exnota-tools-laravel.web-1 php artisan migrate
+    docker exec -it exnota-tools.web.1 php artisan migrate
     ```
 
 ## Deploy to prod
@@ -70,6 +74,8 @@ Don't run inside dev container!
 
 ### Database UI
 
+#### Local
+
 1. Install DBeaver
 2. Create a connection with:
     > host: localhost
@@ -77,6 +83,38 @@ Don't run inside dev container!
     > username: sail
     > password: <see .env>
     Double check `.env` values if there's an issue
+
+#### Prod
+
+1. Expose port outside docker so local services can connect
+
+  ```bash
+  # Hetzner
+  dokku postgres:expose exnota-tools-db 127.0.0.1:5432
+  ```
+
+2. In DBeaver create the connection:
+   > SSH tab:
+   > - ✅ Use SSH tunnel
+   > - User/pass: [Hetzner SSH credentials]
+   > - Auth method: [Public Key]
+   > - Private key/passphrase: Same as SSH
+   > Then test tunnel connection
+   >
+   > Main tab:
+   > - Host: 127.0.0.1
+   > - Database: exnotatools
+   > - User/Pass: [look up]
+
+### Troubleshooting
+
+#### Error: `SQLSTATE[08006] [7] could not translate host name "pgsql" to address: nodename nor servname provided`
+
+When local, use `sail` to run migrations in the Docker container from the host (your machine).
+
+```bash
+./vendor/bin/sail artisan migrate
+```
 
 ## Initial prod setup
 
@@ -240,7 +278,7 @@ Don't run inside dev container!
 
 ## Old documentation copied from `exnota` repo
 
-### Troubleshooting assorted
+### Troubleshooting assorted old
 
 #### Error: At least one invalid signature was encountered, or "no space left on device"
 
