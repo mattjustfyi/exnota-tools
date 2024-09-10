@@ -2,16 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-class SaveWorkspaceAuthDataController extends Controller
-{
-    //
-}
-<?php
-
-namespace App\Http\Controllers;
-
 use App\Http\Requests\SaveWorkspaceAuthDataRequest;
 use App\Models\Workspace;
 use Illuminate\Http\JsonResponse;
