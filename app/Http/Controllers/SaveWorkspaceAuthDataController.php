@@ -15,15 +15,12 @@ class SaveWorkspaceAuthDataController extends Controller
     {
         $validatedData = $request->validated();
 
-        // Logic to create or consolidate workspace based on authData
-        // This is a placeholder and should be replaced with actual implementation
-        $workspace = Workspace::updateOrCreate(
-            ['some_unique_identifier' => $validatedData['authData']['unique_id'] ?? null],
-            ['auth_data' => $validatedData['authData']]
-        );
+        $workspace = Workspace::create([
+            'auth_data' => $validatedData['authData']
+        ]);
 
         return response()->json([
-            'message' => 'Workspace auth data saved successfully',
+            'message' => 'New workspace created successfully',
             'workspace_id' => $workspace->id
         ]);
     }
