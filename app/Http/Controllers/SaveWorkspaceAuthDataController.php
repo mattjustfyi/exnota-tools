@@ -15,12 +15,10 @@ class SaveWorkspaceAuthDataController extends Controller
     {
         $validatedData = $request->validated();
 
-        $workspace = Workspace::create([
-            'auth_data' => $validatedData['authData']
-        ]);
+        $workspace = Workspace::updateOrCreateFromAuthData($validatedData['authData']);
 
         return response()->json([
-            'message' => 'New workspace created successfully',
+            'message' => 'Workspace created or updated successfully',
             'workspace_id' => $workspace->id
         ]);
     }
