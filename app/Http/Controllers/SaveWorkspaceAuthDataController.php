@@ -15,9 +15,6 @@ class SaveWorkspaceAuthDataController extends Controller
     {
         $validatedData = $request->validated();
 
-        // Uncomment the following line when you're ready to create/update workspaces
-        // $workspace = Workspace::updateOrCreateFromAuthData($validatedData['authData']);
-
         return response()->json([
             'message' => 'Request received successfully',
             'data' => $validatedData
