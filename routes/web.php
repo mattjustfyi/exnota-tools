@@ -7,4 +7,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::post('/workspaces/auth-data', SaveWorkspaceAuthDataController::class);
+Route::post('/workspaces/auth-data', SaveWorkspaceAuthDataController::class)->middleware('web');
