@@ -9,6 +9,13 @@ class Workspace extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['userId', 'authData'];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'userId');
+    }
+
     /**
      * The attributes that should be cast.
      *
