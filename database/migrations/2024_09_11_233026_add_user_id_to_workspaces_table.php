@@ -12,7 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('workspaces', function (Blueprint $table) {
-            $table->foreignId('user_id')->constrained();
+            // Had some issues getting the foreign key constraint to work. It
+            // probably worked fine within Laravel but might be useful to keep
+            // the constraint at the database level. This seems to work:
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 
