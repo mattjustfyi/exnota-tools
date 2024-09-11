@@ -5,11 +5,13 @@
   - [Deploy to prod](#deploy-to-prod)
     - [Steps](#steps)
   - [Local development](#local-development)
+    - [Running](#running)
     - [Database UI](#database-ui)
       - [Local](#local)
       - [Prod](#prod)
     - [Troubleshooting](#troubleshooting)
       - [Error: `SQLSTATE[08006] [7] could not translate host name "pgsql" to address: nodename nor servname provided`](#error-sqlstate08006-7-could-not-translate-host-name-pgsql-to-address-nodename-nor-servname-provided)
+    - [Testing prod build locally](#testing-prod-build-locally)
   - [Initial prod setup](#initial-prod-setup)
     - [SSH](#ssh)
     - [Dokku](#dokku)
@@ -19,7 +21,10 @@
       - [Error: At least one invalid signature was encountered, or "no space left on device"](#error-at-least-one-invalid-signature-was-encountered-or-no-space-left-on-device)
   - [Maintenance](#maintenance)
     - [Environment variables](#environment-variables)
-    - [Checking logs](#checking-logs)
+    - [Checking prod logs](#checking-prod-logs)
+      - [Laravel (try first)](#laravel-try-first)
+      - [Dokku](#dokku-1)
+      - [Laravel Pail](#laravel-pail)
     - [How to execute Dokku commands](#how-to-execute-dokku-commands)
   - [Hetzner SSH](#hetzner-ssh)
     - [Terminal](#terminal)
@@ -36,13 +41,21 @@
     ```
 
 - Migrate
+  - Prod
+
+      ```bash
+      # Local machine
+      ssh root@195.201.33.178
+
+      # Hetzner
+      docker exec -it exnota-tools.web.1 php artisan migrate
+      ```
+
+  - Local
 
     ```bash
-    # Inside docker
-    php artisan migrate
-
     # Outside Docker
-    docker exec -it exnota-tools.web.1 php artisan migrate
+    ./vendor/bin/sail artisan list
     ```
 
 ## Deploy to prod
@@ -71,6 +84,13 @@ Don't run inside dev container!
     ```
 
 ## Local development
+
+### Running
+
+```bash
+./vendor/bin/sail up
+./vendor/bin/sail down
+```
 
 ### Database UI
 
@@ -115,6 +135,19 @@ When local, use `sail` to run migrations in the Docker container from the host (
 ```bash
 ./vendor/bin/sail artisan migrate
 ```
+
+### Testing prod build locally
+
+1. In `docker-compose-yml`, comment out `laravel.test` and uncomment `laravel.prod`
+2. Run
+
+  ```bash
+  # "--force-recreate" fixes network issues that may arise, probably due to
+  # using docker-compose directly here and via Sail other times.
+  docker-compose up --build --force-recreate
+  ```  
+  
+3. Access via <http://localhost:8000/duplicates>
 
 ## Initial prod setup
 
@@ -308,14 +341,29 @@ ssh -t dokku@195.201.33.178 config:set exnota-tools VARIABLE_NAME=VALUE --no-res
 
 See <https://dokku.com/docs/configuration/environment-variables/>
 
-### Checking logs
+### Checking prod logs
 
-<https://app.exnota.com/_/#/logs>
-
-or
+#### Laravel (try first)
 
 ```bash
+# Local machine
+ssh -t dokku@195.201.33.178 enter exnota-tools web tail -f /var/www/html/storage/logs/laravel.log
+```
+
+#### Dokku
+
+```bash
+# Local machine
 ssh -t dokku@195.201.33.178 logs exnota-tools -n 10000 -t
+```
+
+#### Laravel Pail
+
+So far I haven't found these useful. Maybe because prod logs by default are minimal.
+
+```bash
+# "web" is the default app process when no Dokku Procfile is provided
+dokku enter exnota-tools web php artisan pail -vv
 ```
 
 ### How to execute Dokku commands
