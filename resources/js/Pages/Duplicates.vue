@@ -1,6 +1,6 @@
 <script setup>
 import AppLayoutNoUser from '@/Layouts/AppLayoutNoUser.vue';
-import { Head } from "@inertiajs/vue3";
+import { Head, Link } from "@inertiajs/vue3";
 
 defineProps({
     user: {
@@ -12,8 +12,8 @@ defineProps({
 
 <template>
     <AppLayoutNoUser>
-        <Head title="Welcome" />
-        <h1>Welcome</h1>
-        <p>Hello {{ user?.name ?? 'Guest' }}, welcome to your first Inertia app!</p>
+        <Head title="Duplicates - Exnota Tools - Find/delete duplicate Notion database rows" />
+        <h1>Find/Delete duplicate Rows</h1>
+        <Link href="/duplicates/connect">Start</Link>
     </AppLayoutNoUser>
 </template>
