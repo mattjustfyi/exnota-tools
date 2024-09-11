@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\DuplicatesController;
-use App\Http\Controllers\SaveWorkspaceAuthDataController;
+use App\Http\Controllers\NotionAuthSaveController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -38,4 +38,4 @@ Route::get('/api/notion/auth/redirect', function () {
     return Inertia::render('API/Notion/Auth/Redirect');
 });
 
-Route::post('/workspaces/auth-data', SaveWorkspaceAuthDataController::class)->middleware('api');
+Route::post('/api/notion/auth/save', NotionAuthSaveController::class)->middleware('api');

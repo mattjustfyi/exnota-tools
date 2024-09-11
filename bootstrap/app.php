@@ -25,7 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->validateCsrfTokens(except: [
-            '/workspaces/auth-data',
+            '/api/notion/auth/save',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

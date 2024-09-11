@@ -17,15 +17,35 @@ const code = urlParams.get('code');
 // Print the code
 console.log(code);
 
-// TODO: Send code to server, which will
-// - Get auth credentials
-// - Create a user and workspace with them
-// - Log in the user
-// - Reload the parent window, close itself
-// - Parent view controller passes the user with workspaces to the view
-// - Parent window detects user is logged in and redirects to the first workspace
-//   at /duplicates/workspace/{id}
-
+// Send code to server
+fetch('/api/notion/auth/save', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ code })
+})
+    .then(async (response) => {
+        console.log(response);
+        // const data = await response.text();
+        const json = await response.json();
+        return json;
+    })
+    .then(data => {
+        console.log(data)
+        // Handle the response from the server
+        // - Get auth credentials
+        // - Create a user and workspace with them
+        // - Log in the user
+        // - Reload the parent window, close itself
+        // - Parent view controller passes the user with workspaces to the view
+        // - Parent window detects user is logged in and redirects to the first workspace
+        //   at /duplicates/workspace/{id}
+    })
+    .catch(error => {
+        // Handle any errors
+        console.error('Error:', error);
+    });
 
 </script>
 

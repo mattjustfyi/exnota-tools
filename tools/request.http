@@ -2,12 +2,12 @@
 # Note the content-type seems to be needed.
 curl -X POST \
     -H "Content-Type: application/json" \
-    -d '{"authData": {"key": "value"}}' \
-    http://localhost/workspaces/auth-data
+    -d '{"code": "hihi"}' \
+    http://localhost/api/notion/auth/save
 
 ### Save auth data (prod)
 # Note the content-type seems to be needed.
 curl -X POST \
     -H "Content-Type: application/json" \
     -d '{"authData": {"key": "value"}}' \
-    https://tools.exnota.com/workspaces/auth-data
+    https://tools.exnota.com/api/notion/auth/save
