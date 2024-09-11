@@ -52,8 +52,12 @@ COPY . /var/www/html
 WORKDIR /var/www/html
 
 # Install Node.js and npm
-RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
-RUN apt-get install -y nodejs
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g npm@latest
+
+# Verify Node.js and npm installation
+RUN node --version && npm --version
 
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
