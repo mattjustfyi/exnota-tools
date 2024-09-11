@@ -51,11 +51,19 @@ COPY . /var/www/html
 # Set the working directory
 WORKDIR /var/www/html
 
+# Install Node.js and npm
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
+RUN apt-get install -y nodejs
+
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Install project dependencies
 RUN composer install
+
+# Install npm dependencies and build frontend assets
+RUN npm install
+RUN npm run build
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
