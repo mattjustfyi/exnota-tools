@@ -1,5 +1,6 @@
 {
     "LaravelExtraIntellisense.basePathForCode": "/var/www/html",
     "LaravelExtraIntellisense.phpCommand": "./vendor/bin/sail php -r \"{code}\"",
-    "LaravelExtraIntellisense.modelsPaths": ["app", "app/Models"]
+    "LaravelExtraIntellisense.modelsPaths": ["app", "app/Models"],
+    "debug.allowBreakpointsEverywhere": true
 }

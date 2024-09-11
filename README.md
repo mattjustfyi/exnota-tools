@@ -12,6 +12,7 @@
       - [Prod](#prod)
     - [Troubleshooting](#troubleshooting)
       - [Error: `SQLSTATE[08006] [7] could not translate host name "pgsql" to address: nodename nor servname provided`](#error-sqlstate08006-7-could-not-translate-host-name-pgsql-to-address-nodename-nor-servname-provided)
+      - [Error: `Page Expired` on public URL](#error-page-expired-on-public-url)
     - [Testing prod build locally](#testing-prod-build-locally)
   - [Initial prod setup](#initial-prod-setup)
     - [SSH](#ssh)
@@ -98,6 +99,14 @@ Don't run inside dev container!
 - Extension: Laravel Extra Intellisense
   - Set `Laravel Extra Intellisense: PHP Command` to `./vendor/bin/sail php -r "{code}"`
   - Set `Laravel Extra Intellisense: Base Path For Code` to `/var/www/html`
+- Debugging
+  - XDebug should already be added to the Sail Dockerfile in `vendor/laravel/sail/runtimes/8.3/Dockerfile`
+  - Confirm XDebug is running with `./vendor/bin/sail php -v`
+  - Add to .env `SAIL_XDEBUG_MODE=develop,debug,coverage` ([link](https://laravel.com/docs/11.x/sail#debugging-with-xdebug))
+  - Enable VSCode setting `Debug: Allow Breakpoints Everywhere` ([link](https://stackoverflow.com/a/65459011))
+  - I also rebuilt via Sail with `./vendor/bin/sail up --build -d` but I doubt that's necessary. Remove this step if you succeeded without it.
+  - Then start the relevant `launch.json` config in VSCode and run `./vendor/bin/sail up` like normal.
+  - According to the docs it's also possible to debug artisan commands somehow ([link](https://laravel.com/docs/11.x/sail#xdebug-cli-usage))
 
 ### Database UI
 
@@ -142,6 +151,20 @@ When local, use `sail` to run migrations in the Docker container from the host (
 ```bash
 ./vendor/bin/sail artisan migrate
 ```
+
+#### Error: `Page Expired` on public URL
+
+Add the path to `app.php` at:
+
+```php
+        $middleware->validateCsrfTokens(except: [
+            '/api/notion/auth/save',
+        ]);
+```
+
+There may be a more secure way to do this.
+
+Reference: <https://laravel.com/docs/11.x/csrf#csrf-excluding-uris>
 
 ### Testing prod build locally
 
@@ -355,6 +378,10 @@ See <https://dokku.com/docs/configuration/environment-variables/>
 ```bash
 # Local machine
 ssh -t dokku@195.201.33.178 enter exnota-tools web tail -f /var/www/html/storage/logs/laravel.log
+
+ssh -t dokku@195.201.33.178 enter exnota-tools web tail -f /var/www/html/storage/logs/laravel.log
+
+./vendor/bin/sail tail -f /var/www/html/storage/logs/laravel.log
 ```
 
 #### Dokku
