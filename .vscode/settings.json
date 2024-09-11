@@ -1,0 +1,5 @@
+{
+    "LaravelExtraIntellisense.basePathForCode": "/var/www/html",
+    "LaravelExtraIntellisense.phpCommand": "./vendor/bin/sail php -r \"{code}\"",
+    "LaravelExtraIntellisense.modelsPaths": ["app", "app/Models"]
+}

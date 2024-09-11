@@ -6,6 +6,7 @@
     - [Steps](#steps)
   - [Local development](#local-development)
     - [Running](#running)
+    - [Setup](#setup)
     - [Database UI](#database-ui)
       - [Local](#local)
       - [Prod](#prod)
@@ -91,6 +92,12 @@ Don't run inside dev container!
 ./vendor/bin/sail up
 ./vendor/bin/sail down
 ```
+
+### Setup
+
+- Extension: Laravel Extra Intellisense
+  - Set `Laravel Extra Intellisense: PHP Command` to `./vendor/bin/sail php -r "{code}"`
+  - Set `Laravel Extra Intellisense: Base Path For Code` to `/var/www/html`
 
 ### Database UI
 
