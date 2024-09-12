@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('workspaces', function (Blueprint $table) {
-            //
+            $table->string('user_avatar')->nullable();
+            $table->string('workspace_name');
+            $table->string('workspace_icon')->nullable();
         });
     }
 
@@ -22,7 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('workspaces', function (Blueprint $table) {
-            //
+            $table->dropColumn(['user_avatar', 'workspace_name', 'workspace_icon']);
         });
     }
 };
