@@ -12,8 +12,10 @@ defineProps({
 
 <template>
     <AppLayoutNoUser>
+
         <Head title="Duplicates - Exnota Tools - Find/delete duplicate Notion database rows" />
         <h1>Find/Delete duplicate Rows</h1>
+        <p>User: {{ user }}</p>
         <Link href="/duplicates/connect">Start</Link>
     </AppLayoutNoUser>
 </template>

@@ -3,6 +3,7 @@
 use App\Http\Controllers\DuplicatesController;
 use App\Http\Controllers\NotionAuthSaveController;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -29,6 +30,7 @@ Route::get('/duplicates', [DuplicatesController::class, 'show']);
 
 Route::get('/duplicates/connect', function () {
     return Inertia::render('Duplicates/Connect', [
+        'user' => Auth::user(),
         'notionClientId' => env('NOTION_CLIENT_ID'),
         'notionRedirectUri' => app('url')->to('/api/notion/auth/redirect'),
     ]);

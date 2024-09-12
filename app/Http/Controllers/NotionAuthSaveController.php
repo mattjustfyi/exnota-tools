@@ -9,6 +9,7 @@ use App\Models\Workspace;
 use Illuminate\Http\JsonResponse;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use Illuminate\Support\Facades\Auth;
 
 class NotionAuthSaveController extends Controller
 {
@@ -77,12 +78,15 @@ class NotionAuthSaveController extends Controller
                 'user_id' => $user->id,
             ]);
 
+            // TODO: Test this!!
+            Auth::login($user, true);
+
             // TODO: Create job
 
             return response()->json([
                 'message' => 'Workspace created successfully',
                 'data' => [
-                    'workspaceId' => $workspace->id,
+                    'workspace_id' => $workspace->id,
                 ]
             ], 201);
         } catch (RequestException $e) {

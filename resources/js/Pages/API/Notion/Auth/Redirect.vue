@@ -31,19 +31,28 @@ fetch('/api/notion/auth/save', {
         const json = await response.json();
         return json;
     })
-    .then(data => {
-        console.log(data);
-        if (data && data.workspace_id) {
-            // Redirect to the workspace page
-            window.location.href = `/duplicates/workspace/${data.workspace_id}`;
-        } else {
-            console.error('Workspace ID not found in the response');
-        }
+    .finally(() => {
+        // console.log(data);
+        // window.location.href = `/duplicates/workspace/${data.workspace_id}`;
+        window.opener.location.reload(); // Reload parent window
+        window.close(); // Close current window
     })
-    .catch(error => {
-        // Handle any errors
-        console.error('Error:', error);
-    });
+// .then(data => {
+//     console.log(data);
+//     // window.location.href = `/duplicates/workspace/${data.workspace_id}`;
+//     window.opener.location.reload(); // Reload parent window
+//     window.close(); // Close current window
+
+//     // if (data && data.workspace_id) {
+//     //     // Redirect to the workspace page
+//     //     window.location.href = `/duplicates/workspace/${data.workspace_id}`;
+//     // } else {
+//     //     console.error('Workspace ID not found in the response');
+// })
+// .catch(error => {
+//     // Handle any errors
+//     console.error('Error:', error);
+// });
 
 </script>
 
@@ -52,4 +61,3 @@ fetch('/api/notion/auth/save', {
     <br />
     code = {{ code }}
 </template>
-
