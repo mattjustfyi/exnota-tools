@@ -73,6 +73,8 @@ class NotionAuthSaveController extends Controller
             ]);
 
             // Save the auth data to the workspace
+
+
             $workspace = Workspace::create([
                 'authData' => $responseData,
                 'user_id' => $user->id,
