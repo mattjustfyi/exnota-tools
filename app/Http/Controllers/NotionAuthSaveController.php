@@ -78,6 +78,9 @@ class NotionAuthSaveController extends Controller
             $workspace = Workspace::create([
                 'authData' => $responseData,
                 'user_id' => $user->id,
+                'user_avatar' => $responseData['owner']['user']['avatar_url'] ?? null,
+                'workspace_name' => $responseData['workspace_name'] ?? null,
+                'workspace_icon' => $responseData['workspace_icon'] ?? null,
             ]);
 
             // TODO: Test this!!
