@@ -20,6 +20,10 @@ class WorkspaceRefresh implements ShouldQueue
      */
     public function __construct(Workspace $workspace)
     {
+        // TODO: Is the workspace passed here?
+        // TODO: Can users only access their own workspaces?
+
+        logger('Workspace refresh job created for workspace: ' . $workspace->id);
         $this->workspace = $workspace;
     }
 
@@ -32,6 +36,6 @@ class WorkspaceRefresh implements ShouldQueue
         // For example:
         // $this->workspace->refresh();
         // $this->workspace->save();
-        log('Workspace refresh job executed for workspace: ' . $this->workspace->id);
+        logger('Workspace refresh job executed for workspace: ' . $this->workspace->id);
     }
 }

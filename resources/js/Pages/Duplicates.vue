@@ -8,6 +8,20 @@ defineProps({
         default: null,
     },
 });
+
+const fetchUserData = () => {
+    fetch('/api/test/workspace/36/refresh')
+        .then(response => {
+            console.log(response);
+            // response.json()
+        })
+        .then(data => {
+            console.log(data);
+        })
+        .catch(error => {
+            console.error('Error fetching user data:', error);
+        });
+};
 </script>
 
 <template>
@@ -17,5 +31,7 @@ defineProps({
         <h1>Find/Delete duplicate Rows</h1>
         <p>User: {{ user }}</p>
         <Link href="/duplicates/connect">Start</Link>
+        <br><br>
+        <button @click="fetchUserData">Fetch User Data</button>
     </AppLayoutNoUser>
 </template>
