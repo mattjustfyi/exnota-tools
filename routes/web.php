@@ -29,6 +29,8 @@ Route::middleware([
 Route::get('/duplicates', [DuplicatesController::class, 'show']);
 
 Route::get('/duplicates/connect', function () {
+
+
     return Inertia::render('Duplicates/Connect', [
         'user' => Auth::user(),
         'notionClientId' => env('NOTION_CLIENT_ID'),
