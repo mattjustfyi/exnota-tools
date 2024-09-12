@@ -45,3 +45,7 @@ Route::get('/api/notion/auth/redirect', function () {
 });
 
 Route::post('/api/notion/auth/save', NotionAuthSaveController::class)->middleware('api');
+
+Route::get('/duplicates/workspace/{workspace_id}', function ($workspace_id) {
+    return 'Hello World from workspace ' . $workspace_id;
+});
