@@ -23,6 +23,7 @@
       - [Error: At least one invalid signature was encountered, or "no space left on device"](#error-at-least-one-invalid-signature-was-encountered-or-no-space-left-on-device)
   - [Maintenance](#maintenance)
     - [Environment variables](#environment-variables)
+    - [Checking local logs](#checking-local-logs)
     - [Checking prod logs](#checking-prod-logs)
       - [Laravel (try first)](#laravel-try-first)
       - [Dokku](#dokku-1)
@@ -370,6 +371,16 @@ ssh -t dokku@195.201.33.178 config:set exnota-tools VARIABLE_NAME=VALUE --no-res
 ```
 
 See <https://dokku.com/docs/configuration/environment-variables/>
+
+### Checking local logs
+
+```bash
+# Local
+./vendor/bin/sail shell
+
+# Docker in local
+tail -f /var/www/html/storage/logs/laravel.log
+```
 
 ### Checking prod logs
 
