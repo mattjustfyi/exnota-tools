@@ -11,3 +11,11 @@ curl -X POST \
     -H "Content-Type: application/json" \
     -d '{"authData": {"key": "value"}}' \
     https://tools.exnota.com/api/notion/auth/save
+
+### Refresh workspace (local)
+curl -X GET \
+    http://localhost/api/test/workspace/1/refresh
+
+### Refresh workspace (prod)
+curl -X GET \
+    https://tools.exnota.com/api/test/workspace/1/refresh
