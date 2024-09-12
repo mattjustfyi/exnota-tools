@@ -11,6 +11,7 @@
       - [Local](#local)
       - [Prod](#prod)
     - [Troubleshooting](#troubleshooting)
+      - [Web: Inertia route opens in iframe](#web-inertia-route-opens-in-iframe)
       - [DBeaver: Column has dot and on hover says `read-only no corresponding table column`](#dbeaver-column-has-dot-and-on-hover-says-read-only-no-corresponding-table-column)
       - [Error: `SQLSTATE[08006] [7] could not translate host name "pgsql" to address: nodename nor servname provided`](#error-sqlstate08006-7-could-not-translate-host-name-pgsql-to-address-nodename-nor-servname-provided)
       - [Error: `Page Expired` on public URL](#error-page-expired-on-public-url)
@@ -151,6 +152,10 @@ Don't run inside dev container!
    > - User/Pass: [look up]
 
 ### Troubleshooting
+
+#### Web: Inertia route opens in iframe
+
+Make sure the endpoint returns a proper Intertia response, e.g. `Inertia::render` ([link](https://github.com/inertiajs/inertia/issues/586#issuecomment-810270558)).
 
 #### DBeaver: Column has dot and on hover says `read-only no corresponding table column`
 
