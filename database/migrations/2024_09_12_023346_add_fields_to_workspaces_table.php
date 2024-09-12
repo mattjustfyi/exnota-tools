@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('workspaces', function (Blueprint $table) {
             $table->string('user_avatar')->nullable();
-            $table->string('workspace_name');
+            $table->string('workspace_name')->nullable();
             $table->string('workspace_icon')->nullable();
         });
     }
