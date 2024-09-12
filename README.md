@@ -121,6 +121,12 @@ Don't run inside dev container!
     > username: sail
     > password: <see .env>
     Double check `.env` values if there's an issue
+3. Setup scripts
+   - In the bottom left section: Right click > Create > Link folder > Select exnota-tools/tools
+   - To use:
+     - Open a script.
+     - Right click > Execute > Set Active Connection
+     - Execute a command
 
 #### Prod
 
