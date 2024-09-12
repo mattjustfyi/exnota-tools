@@ -30,7 +30,7 @@ Route::get('/duplicates', [DuplicatesController::class, 'show']);
 
 Route::get('/duplicates/connect', function () {
     $user = Auth::user();
-    $workspaces = $user ? $user->workspaces()->get() : null;
+    $workspaces = $user ? $user->workspaces : null;
 
     return Inertia::render('Duplicates/Connect', [
         'user' => $user,
