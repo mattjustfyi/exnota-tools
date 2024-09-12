@@ -9,11 +9,11 @@ class Workspace extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['userId', 'authData'];
+    protected $fillable = ['user_id', 'authData'];
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'userId');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**

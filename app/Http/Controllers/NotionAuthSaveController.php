@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\NotionAuthSaveRequest;
+use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Http\JsonResponse;
@@ -41,27 +42,56 @@ class NotionAuthSaveController extends Controller
             $responseData = json_decode($response->getBody(), true);
             logger('Response: ' . print_r($responseData, true));
 
-            // // Create a new user
-            // $user = User::create([
-            //     'name' => $responseData['name'],
-            //     'email' => $responseData['email'],
-            // ]);
+            // Create a new user
+            if (isset($responseData['owner']['user']['name'])) {
+                $name = $responseData['owner']['user']['name'];
+            } else {
+                logger('Error: Name not found in response data');
+                return response()->json([
+                    'message' => 'An error occurred',
+                ], 500);
+            }
 
-            // // Save the auth data to the workspace
-            // $workspace = Workspace::create([
-            //     'authData' => $responseData,
-            // ]);
+            if (isset($responseData['owner']['user']['person']['email'])) {
+                $email = $responseData['owner']['user']['person']['email'];
+            } else {
+                logger('Error: Email not found in response data');
+                return response()->json([
+                    'message' => 'An error occurred',
+                ], 500);
+            }
 
+            // TODO: Check if user/workspace exists
+
+            // Create a new user
+            $user = User::create([
+                'email' => $email,
+                'name' => $name,
+                // Password is required
+                'password' => bcrypt(Str::random(32)),
+            ]);
+
+            // Save the auth data to the workspace
+            $workspace = Workspace::create([
+                'authData' => $responseData,
+                'user_id' => $user->id,
+            ]);
+
+            // TODO: Create job
+
+            return response()->json([
+                'message' => 'Workspace created successfully',
+                'data' => [
+                    'workspaceId' => $workspace->id,
+                ]
+            ], 201);
         } catch (RequestException $e) {
             // Handle the request exception here
             logger('Error: ' . $e->getMessage());
-        }
 
-        return response()->json([
-            'message' => 'Workspace created successfully',
-            'data' => [
-                // 'id' => $workspace->id,
-            ]
-        ], 201);
+            return response()->json([
+                'message' => 'An error occurred',
+            ], 500);
+        }
     }
 }
