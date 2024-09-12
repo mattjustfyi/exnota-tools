@@ -32,15 +32,13 @@ fetch('/api/notion/auth/save', {
         return json;
     })
     .then(data => {
-        console.log(data)
-        // Handle the response from the server
-        // - Get auth credentials
-        // - Create a user and workspace with them
-        // - Log in the user
-        // - Reload the parent window, close itself
-        // - Parent view controller passes the user with workspaces to the view
-        // - Parent window detects user is logged in and redirects to the first workspace
-        //   at /duplicates/workspace/{id}
+        console.log(data);
+        if (data && data.workspace_id) {
+            // Redirect to the workspace page
+            window.location.href = `/duplicates/workspace/${data.workspace_id}`;
+        } else {
+            console.error('Workspace ID not found in the response');
+        }
     })
     .catch(error => {
         // Handle any errors
