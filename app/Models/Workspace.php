@@ -9,7 +9,13 @@ class Workspace extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'authData'];
+    protected $fillable = [
+        'user_id',
+        'authData',
+        'user_avatar',
+        'workspace_name',
+        'workspace_icon'
+    ];
 
     public function user()
     {
@@ -23,5 +29,16 @@ class Workspace extends Model
      */
     protected $casts = [
         'authData' => 'json',
+    ];
+
+    /**
+     * The attributes that should have default values.
+     *
+     * @var array
+     */
+    protected $attributes = [
+        'user_avatar' => null,
+        'workspace_name' => null,
+        'workspace_icon' => null,
     ];
 }
