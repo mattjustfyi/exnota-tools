@@ -29,10 +29,12 @@ Route::middleware([
 Route::get('/duplicates', [DuplicatesController::class, 'show']);
 
 Route::get('/duplicates/connect', function () {
-
+    $user = Auth::user();
+    $workspaces = $user->workspaces;
 
     return Inertia::render('Duplicates/Connect', [
-        'user' => Auth::user(),
+        'user' => $user,
+        'workspaces' => $workspaces,
         'notionClientId' => env('NOTION_CLIENT_ID'),
         'notionRedirectUri' => app('url')->to('/api/notion/auth/redirect'),
     ]);
