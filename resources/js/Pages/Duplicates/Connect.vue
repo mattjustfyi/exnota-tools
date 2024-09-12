@@ -41,12 +41,13 @@ const openNewWindow = () => {
         <div v-if="user">
             <p>Welcome, {{ user.name }}</p>
             <h3>Your Workspaces:</h3>
-            <ul v-if="workspaces.length > 0">
+            <ul v-if="workspaces && workspaces.length > 0">
                 <li v-for="workspace in workspaces" :key="workspace.id">
                     {{ workspace.name }}
                 </li>
             </ul>
-            <p v-else>You don't have any workspaces yet.</p>
+            <p v-else-if="workspaces && workspaces.length === 0">You don't have any workspaces yet.</p>
+            <p v-else>Loading workspaces...</p>
             <br>
             <button @click="openNewWindow">Connect to Notion</button>
         </div>
