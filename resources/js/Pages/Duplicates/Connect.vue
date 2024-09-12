@@ -1,6 +1,7 @@
 <script setup>
 import AppLayoutNoUser from '@/Layouts/AppLayoutNoUser.vue';
-import { Head, Link } from "@inertiajs/vue3";
+import { Head, Link, router } from "@inertiajs/vue3";
+import { onMounted } from 'vue';
 
 const props = defineProps({
     user: {
@@ -29,6 +30,17 @@ const url = "https://api.notion.com/v1/oauth/authorize?client_id=" +
 const openNewWindow = () => {
     window.open(url, '_blank', 'width=500,height=600');
 };
+
+const navigateToWorkspace = () => {
+    if (props.workspaces && props.workspaces.length > 0) {
+        const firstWorkspaceId = props.workspaces[0].id;
+        router.visit(`/duplicates/workspace/${firstWorkspaceId}`);
+    }
+};
+
+onMounted(() => {
+    navigateToWorkspace();
+});
 </script>
 
 <template>
