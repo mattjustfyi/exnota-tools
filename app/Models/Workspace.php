@@ -17,6 +17,15 @@ class Workspace extends Model
         'workspace_icon'
     ];
 
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'authData',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');

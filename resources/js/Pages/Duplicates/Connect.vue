@@ -43,7 +43,7 @@ const openNewWindow = () => {
             <h3>Your Workspaces:</h3>
             <ul v-if="workspaces && workspaces.length > 0">
                 <li v-for="workspace in workspaces" :key="workspace.id">
-                    {{ workspace.name }}
+                    {{ JSON.stringify(workspace) }}
                 </li>
             </ul>
             <p v-else-if="workspaces && workspaces.length === 0">You don't have any workspaces yet.</p>
