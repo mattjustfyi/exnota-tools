@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DuplicatesController;
 use App\Http\Controllers\NotionAuthSaveController;
+use App\Models\Workspace;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -16,6 +17,7 @@ Route::get('/', function () {
     ]);
 });
 
+// Group of routes protected by auth:sanctum
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
@@ -46,8 +48,8 @@ Route::get('/api/notion/auth/redirect', function () {
 
 Route::post('/api/notion/auth/save', NotionAuthSaveController::class)->middleware('api');
 
-Route::get('/duplicates/workspace/{workspace_id}', function ($workspace_id) {
+Route::get('/duplicates/workspace/{workspace}', function (Workspace $workspace) {
     return Inertia::render('Duplicates/Workspace', [
-        'workspaceId' => $workspace_id
+        'workspaceId' => $workspace->id,
     ]);
-})->name('duplicates.workspace');
+})->name('duplicates.workspace')->middleware('can:view,workspace');
