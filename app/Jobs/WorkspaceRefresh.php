@@ -10,7 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Notion\Notion;
-use Notion\Search\SearchRequest;
+use Notion\Search\Query;
 
 class WorkspaceRefresh implements ShouldQueue
 {
@@ -39,18 +39,18 @@ class WorkspaceRefresh implements ShouldQueue
             $notion = Notion::create($this->workspace->authData['access_token']);
 
             // Search Notion without a query
-            $request = new SearchRequest();
-            $results = $notion->search($request);
+            $query = Query::create();
+            $results = $notion->search()->query($query);
 
-            if (count($results) > 0) {
+            if ($results->hasResults()) {
                 // Select a random result
-                $randomResult = $results[array_rand($results)];
+                $randomResult = $results->results()[array_rand($results->results())];
 
                 // Persist to NotionObject
                 NotionObject::create([
                     'workspace_id' => $this->workspace->id,
-                    'notion_id' => $randomResult->id(),
-                    'type' => $randomResult->type(),
+                    'notion_id' => $randomResult->id,
+                    'type' => $randomResult->object,
                     'data' => json_encode($randomResult->toArray()),
                 ]);
 
