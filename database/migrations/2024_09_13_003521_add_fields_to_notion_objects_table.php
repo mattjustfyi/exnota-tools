@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('notion_objects', function (Blueprint $table) {
-            //
+            $table->enum('type', ['page', 'database'])->after('id');
+            $table->string('name')->after('type');
+            $table->json('data')->after('name');
         });
     }
 
@@ -22,7 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('notion_objects', function (Blueprint $table) {
-            //
+            $table->dropColumn(['type', 'name', 'data']);
         });
     }
 };
