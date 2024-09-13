@@ -67,6 +67,12 @@
 
 ### Steps
 
+TODO:
+TODO: "So, during your deployment process, be sure to restart your queue workers."
+TODO:
+TODO: <https://laravel.com/docs/11.x/queues#the-queue-work-command>
+TODO:
+
 Don't run inside dev container!
 
 1. FIRST TIME ONLY deploying from a specific device.
