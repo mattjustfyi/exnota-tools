@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('notion_objects', function (Blueprint $table) {
-            //
+            $table->foreignId('workspace_id')->after('id')->constrained()->onDelete('cascade');
         });
     }
 
@@ -22,7 +22,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('notion_objects', function (Blueprint $table) {
-            //
+            $table->dropForeign(['workspace_id']);
+            $table->dropColumn('workspace_id');
         });
     }
 };
