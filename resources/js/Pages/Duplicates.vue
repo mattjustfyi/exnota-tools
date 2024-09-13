@@ -10,7 +10,9 @@ defineProps({
 });
 
 const fetchUserData = () => {
-    fetch('/test/workspace/36/refresh')
+    fetch('/test/workspace/36/refresh', {
+        method: 'POST'
+    })
         .then(response => {
             console.log(response);
             // response.json()

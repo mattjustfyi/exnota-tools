@@ -18,17 +18,7 @@ Route::get('/', function () {
     ]);
 });
 
-// Group of routes protected by auth:sanctum
-Route::middleware([
-    'auth:sanctum',
-    config('jetstream.auth_session'),
-    'verified',
-])->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
-});
-
+// Public routes
 Route::get('/duplicates', [DuplicatesController::class, 'show']);
 
 Route::get('/duplicates/connect', function () {
@@ -50,14 +40,24 @@ Route::get('/api/notion/auth/redirect', function () {
 // TODO: This probably shouldn't be "api"
 Route::post('/api/notion/auth/save', NotionAuthSaveController::class)->middleware('api');
 
-Route::get('/duplicates/workspace/{workspace}', function (Workspace $workspace) {
-    return Inertia::render('Duplicates/Workspace', [
-        'workspaceId' => $workspace->id,
-    ]);
-})->name('duplicates.workspace')->middleware('can:view,workspace');
+// Routes protected by auth:sanctum
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+])->group(function () {
+    Route::get('/dashboard', function () {
+        return Inertia::render('Dashboard');
+    })->name('dashboard');
 
-// TODO: Test policy
-Route::get('/test/workspace/{workspace}/refresh', [WorkspaceController::class, 'refresh'])
-    ->name('api.test.workspace.refresh')
-    ->middleware('auth:sanctum')
-    ->middleware('can:view,workspace');
+    Route::get('/duplicates/workspace/{workspace}', function (Workspace $workspace) {
+        return Inertia::render('Duplicates/Workspace', [
+            'workspaceId' => $workspace->id,
+        ]);
+    })->name('duplicates.workspace')->middleware('can:view,workspace');
+
+    Route::post('/test/workspace/{workspace}/refresh', [WorkspaceController::class, 'refresh'])
+        ->name('api.test.workspace.refresh')
+        // ->middleware('auth:sanctum')
+        ->middleware('can:update,workspace');
+});

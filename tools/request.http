@@ -13,11 +13,11 @@ curl -X POST \
     https://tools.exnota.com/api/notion/auth/save
 
 ### Refresh workspace (local)
-curl -X GET \
+curl -X POST \
     -H "Content-Type: application/json" \
     http://localhost/test/workspace/36/refresh
 
 ### Refresh workspace (prod)
-curl -X GET \
+curl -X POST \
     -H "Content-Type: application/json" \
     https://tools.exnota.com/test/workspace/1/refresh

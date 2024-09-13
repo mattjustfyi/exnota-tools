@@ -10,13 +10,10 @@ const props = defineProps({
 });
 
 const fetchUserData = () => {
-    fetch(`/test/workspace/${props.workspaceId}/refresh`)
+    axios.post(`/test/workspace/${props.workspaceId}/refresh`)
         .then(response => {
             console.log(response);
-            // response.json()
-        })
-        .then(data => {
-            console.log(data);
+            // response.data
         })
         .catch(error => {
             console.error('Error fetching user data:', error);
