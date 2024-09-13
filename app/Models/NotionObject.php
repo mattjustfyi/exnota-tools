@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\NotionObjectType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -16,7 +17,7 @@ class NotionObject extends Model
     ];
 
     protected $casts = [
-        'type' => 'string',
+        'type' => NotionObjectType::class,
         'data' => 'json',
     ];
 }
