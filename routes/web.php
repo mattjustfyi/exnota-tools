@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DuplicatesController;
 use App\Http\Controllers\NotionAuthSaveController;
+use App\Http\Controllers\WorkspaceController;
 use App\Models\Workspace;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
@@ -46,6 +47,7 @@ Route::get('/api/notion/auth/redirect', function () {
     return Inertia::render('API/Notion/Auth/Redirect');
 });
 
+// TODO: This probably shouldn't be "api"
 Route::post('/api/notion/auth/save', NotionAuthSaveController::class)->middleware('api');
 
 Route::get('/duplicates/workspace/{workspace}', function (Workspace $workspace) {
@@ -53,3 +55,9 @@ Route::get('/duplicates/workspace/{workspace}', function (Workspace $workspace) 
         'workspaceId' => $workspace->id,
     ]);
 })->name('duplicates.workspace')->middleware('can:view,workspace');
+
+// TODO: Test policy
+Route::get('/test/workspace/{workspace}/refresh', [WorkspaceController::class, 'refresh'])
+    ->name('api.test.workspace.refresh')
+    ->middleware('auth:sanctum')
+    ->middleware('can:view,workspace');

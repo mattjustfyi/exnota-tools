@@ -15,9 +15,9 @@ curl -X POST \
 ### Refresh workspace (local)
 curl -X GET \
     -H "Content-Type: application/json" \
-    http://localhost/api/test/workspace/36/refresh
+    http://localhost/test/workspace/36/refresh
 
 ### Refresh workspace (prod)
 curl -X GET \
     -H "Content-Type: application/json" \
-    https://tools.exnota.com/api/test/workspace/1/refresh
+    https://tools.exnota.com/test/workspace/1/refresh

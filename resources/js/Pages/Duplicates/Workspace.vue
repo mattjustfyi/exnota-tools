@@ -2,15 +2,15 @@
 import { Head } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 
-defineProps({
+const props = defineProps({
     workspaceId: {
-        type: String,
+        type: Number,
         required: true
     }
 });
 
 const fetchUserData = () => {
-    fetch('/api/test/workspace/36/refresh')
+    fetch(`/test/workspace/${props.workspaceId}/refresh`)
         .then(response => {
             console.log(response);
             // response.json()
@@ -51,7 +51,8 @@ const fetchUserData = () => {
                     <p class="mt-4 text-gray-600">This is the workspace page. You can add more content and functionality
                         here.
                     </p>
-                    <button @click="fetchUserData" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                    <button @click="fetchUserData"
+                        class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
                         Fetch User Data
                     </button>
                 </div>
