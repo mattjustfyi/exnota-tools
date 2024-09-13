@@ -8,4 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class NotionObject extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'type',
+        'name',
+        'data',
+    ];
+
+    protected $casts = [
+        'type' => 'string',
+        'data' => 'json',
+    ];
 }
