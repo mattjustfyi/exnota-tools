@@ -51,8 +51,9 @@ Route::middleware([
     })->name('dashboard');
 
     Route::get('/duplicates/workspace/{workspace}', function (Workspace $workspace) {
+        $workspace->load('notionObjects');
         return Inertia::render('Duplicates/Workspace', [
-            'workspaceId' => $workspace->id,
+            'workspace' => $workspace,
         ]);
     })->name('duplicates.workspace')->middleware('can:view,workspace');
 
