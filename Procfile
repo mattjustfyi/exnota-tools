@@ -11,9 +11,8 @@
 # web: vendor/bin/heroku-php-apache2 public/
 # web: vendor/bin/heroku-php-apache2 public/
 web: apache2-foreground
+worker: php artisan queue:work -v
 # TODO: Try: web: vendor/bin/heroku-php-nginx -C nginx.conf -i php.ini php/
-
-# worker: php artisan queue:work -v
 
 # This one didn't work:
 # web: vendor/bin/heroku-php-apache2 public/
