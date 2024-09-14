@@ -10,7 +10,7 @@
 
 # web: vendor/bin/heroku-php-apache2 public/
 # web: vendor/bin/heroku-php-apache2 public/
-web: vendor/bin/heroku-php-nginx
+web: vendor/bin/heroku-php-nginx public/
 # worker: php artisan queue:work -v
 
 # This one didn't work:
