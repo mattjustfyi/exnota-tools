@@ -8,6 +8,7 @@ use App\Models\Workspace;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -54,14 +55,13 @@ Route::middleware([
 
     Route::get('/duplicates/workspace/{workspace}', function (Workspace $workspace) {
         $workspace->load('notionObjects');
-        $refreshInProgress = DB::table('jobs')
-            ->where('queue', 'default')
-            ->whereRaw("JSON_EXTRACT(payload, '$.data.commandName') = ?", ['App\\Jobs\\WorkspaceRefresh'])
-            ->whereRaw("JSON_EXTRACT(payload, '$.data.command') LIKE ?", ['%"id";i:' . $workspace->id . ';%'])
-            ->count() > 0;
+        // Couldn't get back slashes escaping properly, so subtituted with wildcards.
+        $incompleteJobs = DB::table('jobs')
+            ->whereRaw('payload ~ ?', 'App.{2}Models.{2}Workspace.{1}";s:[0-9]+:.{1}"id.{1}";i:' . strval($workspace->id))
+            ->count();
         return Inertia::render('Duplicates/Workspace', [
             'workspace' => $workspace,
-            'refreshInProgress' => $refreshInProgress,
+            'refreshInProgress' => $incompleteJobs > 0,
         ]);
     })->name('duplicates.workspace')->middleware('can:view,workspace');
 
