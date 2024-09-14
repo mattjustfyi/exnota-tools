@@ -67,15 +67,9 @@
 
 ### Steps
 
-TODO:
-TODO: "So, during your deployment process, be sure to restart your queue workers."
-TODO:
-TODO: <https://laravel.com/docs/11.x/queues#the-queue-work-command>
-TODO:
-
 Don't run inside dev container!
 
-1. FIRST TIME ONLY deploying from a specific device.
+1. !FIRST TIME ONLY! deploying from a specific device.
    - Ensure you have configured [SSH](#ssh)
    - Add Dokku remote to git repo
 
@@ -84,15 +78,63 @@ Don't run inside dev container!
         git remote add dokku dokku@<domain>:exnota-tools
         ```
 
-2. Deploy
+2. Deploy app
+
+      ```bash
+      # Deploy master branch
+      git push dokku main
+
+      # OR: Deploy branch <branch-name>
+      git push dokku <branch-name>:main
+      ```
+
+3. Run migrations
+
+      ```bash
+      # TODO: Untested. Remove this comment after first success.
+      ssh -t dokku@195.201.33.178 enter exnota-tools web php artisan migrate
+
+      # OR
+      ssh root@195.201.33.178
+      docker exec -it exnota-tools.web.1 php artisan migrate
+      ```
+
+4. Manually restart worker
+
+    Laravel workers need to be restarted to get code changes: <https://laravel.com/docs/11.x/queues#the-queue-work-command>.
+
+    I would have thought `git push` deploy would cause this to happen anyway,
+    but I'm not sure. The first time getting jobs working, the worker threw an
+    error due to a missing dependency. I re-deployed a fix with `git push` and
+    it still threw the same error until I restarted the worker manually.
+
+    TODO: Test if manual restart is necessary (i.e. if the worker runs old code
+    even after a deploy with git) and update this message with results.
 
     ```bash
-    # Deploy master branch
-    git push dokku main
+    ssh -t dokku@195.201.33.178 ps:restart exnota-tools
 
-    # Or: Deploy branch <branch-name>
-    git push dokku <branch-name>:main
+    # OR
+    dokku ps:restart exnota-tools
     ```
+
+5. Check statuses with `dokku ps:report exnota-tools`
+
+    ```bash
+    ssh -t dokku@195.201.33.178 ps:report exnota-tools
+
+    # OR
+    dokku ps:report exnota-tools
+    ```
+
+Deploy improvement ideas:
+
+- Create a plugin that has a post-deploy hook that runs migrations and restarts:
+  - <https://dokku.com/docs/development/plugin-creation/>
+- Don't deploy directly from `git push`
+  - Maybe skip deploy when pushing (not sure if possible): <https://dokku.com/docs/deployment/application-deployment/#skipping-deployment>
+  - Or manually fetch changes from repo and build image: <https://dokku.com/docs/deployment/methods/git/>
+- Then, if successful, create and run a script that does all steps above.
 
 ## Local development
 
