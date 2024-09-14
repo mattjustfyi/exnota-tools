@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\NotionAuthSaveRequest;
+use App\Jobs\WorkspaceRefresh;
 use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\Workspace;
@@ -83,10 +84,9 @@ class NotionAuthSaveController extends Controller
                 'workspace_icon' => $responseData['workspace_icon'] ?? null,
             ]);
 
-            // TODO: Test this!!
             Auth::login($user, true);
 
-            // TODO: Create job
+            WorkspaceRefresh::dispatch($workspace);
 
             return response()->json([
                 'message' => 'Workspace created successfully',
