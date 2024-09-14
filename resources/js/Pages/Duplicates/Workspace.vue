@@ -6,6 +6,10 @@ const props = defineProps({
     workspace: {
         type: Object,
         required: true
+    },
+    notionObjects: {
+        type: Array,
+        required: true
     }
 });
 
@@ -21,18 +25,8 @@ const fetchUserData = () => {
 };
 </script>
 
-<!-- TODO:
- 
-- Backend returns any active workspace loading jobs.
-- If one is in progress, show a spinner
-- If there isn't one, or it errored, show an error
-- If there is one and it is done, show the workspace notion_objects
-
--->
-
 <template>
     <AppLayout>
-
         <Head title="Workspace" />
 
         <template #header>
@@ -52,6 +46,16 @@ const fetchUserData = () => {
                         class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
                         Fetch User Data
                     </button>
+
+                    <div class="mt-8">
+                        <h4 class="text-lg font-medium text-gray-900">Notion Objects:</h4>
+                        <ul class="mt-4 space-y-2">
+                            <li v-for="object in notionObjects" :key="object.id" class="p-4 bg-gray-100 rounded">
+                                <strong>{{ object.name }}</strong> ({{ object.type }})
+                                <pre class="mt-2 text-sm">{{ JSON.stringify(object.data, null, 2) }}</pre>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
