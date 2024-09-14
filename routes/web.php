@@ -7,6 +7,7 @@ use App\Jobs\WorkspaceRefresh;
 use App\Models\Workspace;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -53,9 +54,10 @@ Route::middleware([
 
     Route::get('/duplicates/workspace/{workspace}', function (Workspace $workspace) {
         $workspace->load('notionObjects');
-        $refreshInProgress = $workspace->jobs()
+        $refreshInProgress = DB::table('jobs')
             ->where('queue', 'default')
             ->whereRaw("JSON_EXTRACT(payload, '$.data.commandName') = ?", ['App\\Jobs\\WorkspaceRefresh'])
+            ->whereRaw("JSON_EXTRACT(payload, '$.data.command') LIKE ?", ['%"workspace_id":' . $workspace->id . '%'])
             ->count() > 0;
         return Inertia::render('Duplicates/Workspace', [
             'workspace' => $workspace,
