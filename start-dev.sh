@@ -33,9 +33,10 @@ if ! ./vendor/bin/sail ps | grep -q "laravel.test"; then
     exit 1
 fi
 
-# Start the queue worker
+# Start the queue worker. Use `queue:listen` for development as it listens for
+# code changes. It's much slower, so not recommended for production.
 echo "Starting queue worker..."
-./vendor/bin/sail artisan queue:work
+./vendor/bin/sail artisan queue:listen
 
 # Keep the script running
 while true; do
