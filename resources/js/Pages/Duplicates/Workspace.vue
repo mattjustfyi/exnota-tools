@@ -87,12 +87,13 @@ onUnmounted(() => {
                     </button>
 
                     <div class="mt-8">
-                        <h4 class="text-lg font-medium text-gray-900">Notion Objects:</h4>
+                        <h4 class="text-lg font-medium text-gray-900">Databases:</h4>
                         <div v-if="refreshInProgress" class="mt-4 flex justify-center items-center">
                             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
                         </div>
                         <template v-if="showResults">
-                            <p v-if="workspace.notion_objects && workspace.notion_objects.length" class="mt-4 font-semibold">
+                            <p v-if="workspace.notion_objects && workspace.notion_objects.length"
+                                class="mt-4 font-semibold">
                                 Databases found: {{ workspace.notion_objects.length }}
                             </p>
                             <ul v-if="workspace.notion_objects && workspace.notion_objects.length"
