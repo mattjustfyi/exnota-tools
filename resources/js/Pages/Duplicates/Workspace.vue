@@ -1,6 +1,7 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import { ref, watch, onMounted, onUnmounted } from 'vue';
 
 const props = defineProps({
     workspace: {
@@ -13,6 +14,8 @@ const props = defineProps({
     }
 });
 
+const refreshInterval = ref(null);
+
 const fetchUserData = () => {
     axios.post(`/test/workspace/${props.workspace.id}/refresh`)
         .then(response => {
@@ -23,6 +26,37 @@ const fetchUserData = () => {
             console.error('Error fetching user data:', error);
         });
 };
+
+const startPeriodicRefresh = () => {
+    refreshInterval.value = setInterval(() => {
+        router.get(window.location.pathname);
+    }, 2000);
+};
+
+const stopPeriodicRefresh = () => {
+    if (refreshInterval.value) {
+        clearInterval(refreshInterval.value);
+        refreshInterval.value = null;
+    }
+};
+
+watch(() => props.refreshInProgress, (newValue) => {
+    if (newValue) {
+        startPeriodicRefresh();
+    } else {
+        stopPeriodicRefresh();
+    }
+});
+
+onMounted(() => {
+    if (props.refreshInProgress) {
+        startPeriodicRefresh();
+    }
+});
+
+onUnmounted(() => {
+    stopPeriodicRefresh();
+});
 </script>
 
 <template>
