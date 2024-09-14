@@ -55,7 +55,7 @@ Route::middleware([
         $workspace->load('notionObjects');
         $refreshInProgress = $workspace->jobs()
             ->where('queue', 'default')
-            ->where('payload', 'like', '%WorkspaceRefresh%')
+            ->whereRaw("JSON_EXTRACT(payload, '$.data.commandName') = ?", ['App\\Jobs\\WorkspaceRefresh'])
             ->count() > 0;
         return Inertia::render('Duplicates/Workspace', [
             'workspace' => $workspace,
