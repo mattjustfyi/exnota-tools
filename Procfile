@@ -9,8 +9,8 @@
 # sure to restart your queue workers."
 
 # web: vendor/bin/heroku-php-apache2 public/
-web: vendor/bin/heroku-php-apache2 public/
-# web: vendor/bin/heroku-php-nginx -C nginx.conf -i php.ini php/
+# web: vendor/bin/heroku-php-apache2 public/
+web: vendor/bin/heroku-php-nginx
 # worker: php artisan queue:work -v
 
 # This one didn't work:
