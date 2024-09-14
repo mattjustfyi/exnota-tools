@@ -57,9 +57,9 @@ class WorkspaceRefresh implements ShouldQueue
             $query = Query::all();
             $query = $query->filterByDatabases();
             $query = $query->sortByLastEditedTime(SortDirection::Descending);
-
             $result = $notion->search()->search($query);
 
+            // Get existing Notion object IDs
             $notionObjects = NotionObject::where('workspace_id', $this->workspace->id)->get();
             $notionObjectIds = $notionObjects->map(function ($notionObject) {
                 return $notionObject->data['id'];
@@ -67,13 +67,19 @@ class WorkspaceRefresh implements ShouldQueue
 
             if (!empty($result->results)) {
                 foreach ($result->results as $notionResult) {
-                    // Check if the object already exists in the database
+                    // Skip if already exists
+                    //
+                    // TODO: Future: Update existing if it was created more than
+                    // some number of minutes ago. Maybe the user changed the
+                    // name.
+                    //
+                    // TODO: Handled archived/trashed.
                     if ($notionObjectIds->contains($notionResult->id)) {
                         Log::debug('NotionObject already exists for workspace: ' . $this->workspace->id . ' with id: ' . $notionResult->id);
                         continue;
                     }
 
-                    // Create a variable $objectType of type NotionObjectType (enum)
+                    // Get type and title
                     $objectType = null;
                     $title = '';
                     if ($notionResult instanceof Page) {
@@ -90,6 +96,7 @@ class WorkspaceRefresh implements ShouldQueue
                         continue;
                     }
 
+                    // Persist
                     NotionObject::create([
                         'workspace_id' => $this->workspace->id,
                         'type' => $objectType,
