@@ -55,13 +55,19 @@ Route::middleware([
 
     Route::get('/duplicates/workspace/{workspace}', function (Workspace $workspace) {
         $workspace->load('notionObjects');
+
         // Couldn't get back slashes escaping properly, so subtituted with wildcards.
         $incompleteJobs = DB::table('jobs')
             ->whereRaw('payload ~ ?', 'App.{2}Models.{2}Workspace.{1}";s:[0-9]+:.{1}"id.{1}";i:' . strval($workspace->id))
             ->count();
+
+        // Start showing results if <= 4 jobs remaining AND > 1 result
+        $showResults = $incompleteJobs <= 4;
+
         return Inertia::render('Duplicates/Workspace', [
             'workspace' => $workspace,
             'refreshInProgress' => $incompleteJobs > 0,
+            'showResults' => $showResults,
         ]);
     })->name('duplicates.workspace')->middleware('can:view,workspace');
 

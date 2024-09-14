@@ -86,7 +86,20 @@ class NotionAuthSaveController extends Controller
 
             Auth::login($user, true);
 
+            // Create multiple jobs as search results appear gradually over
+            // 30 seconds or so.
             WorkspaceRefresh::dispatch($workspace);
+            WorkspaceRefresh::dispatch($workspace)
+                ->delay(now()->addSeconds(5));
+            WorkspaceRefresh::dispatch($workspace)
+                ->delay(now()->addSeconds(10));
+            WorkspaceRefresh::dispatch($workspace)
+                ->delay(now()->addSeconds(15));
+            WorkspaceRefresh::dispatch($workspace)
+                ->delay(now()->addSeconds(20));
+            WorkspaceRefresh::dispatch($workspace)
+                ->delay(now()->addSeconds(30));
+
 
             return response()->json([
                 'message' => 'Workspace created successfully',
