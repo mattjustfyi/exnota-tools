@@ -58,6 +58,5 @@ Route::middleware([
 
     Route::post('/test/workspace/{workspace}/refresh', [WorkspaceController::class, 'refresh'])
         ->name('api.test.workspace.refresh')
-        // ->middleware('auth:sanctum')
         ->middleware('can:update,workspace');
 });
