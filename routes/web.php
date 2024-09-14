@@ -57,7 +57,7 @@ Route::middleware([
         $refreshInProgress = DB::table('jobs')
             ->where('queue', 'default')
             ->whereRaw("JSON_EXTRACT(payload, '$.data.commandName') = ?", ['App\\Jobs\\WorkspaceRefresh'])
-            ->whereRaw("JSON_EXTRACT(payload, '$.data.command') LIKE ?", ['%"workspace_id":' . $workspace->id . '%'])
+            ->whereRaw("JSON_EXTRACT(payload, '$.data.command') LIKE ?", ['%"id";i:' . $workspace->id . ';%'])
             ->count() > 0;
         return Inertia::render('Duplicates/Workspace', [
             'workspace' => $workspace,
