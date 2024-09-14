@@ -3,6 +3,7 @@
 use App\Http\Controllers\DuplicatesController;
 use App\Http\Controllers\NotionAuthSaveController;
 use App\Http\Controllers\WorkspaceController;
+use App\Jobs\WorkspaceRefresh;
 use App\Models\Workspace;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
@@ -52,7 +53,10 @@ Route::middleware([
 
     Route::get('/duplicates/workspace/{workspace}', function (Workspace $workspace) {
         $workspace->load('notionObjects');
-        $refreshInProgress = $workspace->jobs()->count() > 0;
+        $refreshInProgress = $workspace->jobs()
+            ->where('queue', 'default')
+            ->where('payload', 'like', '%WorkspaceRefresh%')
+            ->count() > 0;
         return Inertia::render('Duplicates/Workspace', [
             'workspace' => $workspace,
             'refreshInProgress' => $refreshInProgress,
