@@ -52,8 +52,10 @@ Route::middleware([
 
     Route::get('/duplicates/workspace/{workspace}', function (Workspace $workspace) {
         $workspace->load('notionObjects');
+        $refreshInProgress = $workspace->jobs()->count() > 0;
         return Inertia::render('Duplicates/Workspace', [
             'workspace' => $workspace,
+            'refreshInProgress' => $refreshInProgress,
         ]);
     })->name('duplicates.workspace')->middleware('can:view,workspace');
 
