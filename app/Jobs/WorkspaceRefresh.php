@@ -18,6 +18,7 @@ use Notion\Pages\Page;
 use Notion\Pages\Properties\PropertyType;
 use Notion\Pages\Properties\Title;
 use Notion\Search\Query;
+use Notion\Search\SortDirection;
 
 class WorkspaceRefresh implements ShouldQueue
 {
@@ -54,6 +55,8 @@ class WorkspaceRefresh implements ShouldQueue
 
             // Search Notion without a query
             $query = Query::all();
+            $query = $query->filterByDatabases();
+            $query = $query->sortByLastEditedTime(SortDirection::Descending);
 
             $result = $notion->search()->search($query);
 
@@ -80,7 +83,6 @@ class WorkspaceRefresh implements ShouldQueue
                 }
 
                 NotionObject::create([
-                    // TODO: Update these
                     'workspace_id' => $this->workspace->id,
                     'type' => $objectType,
                     'name' => $title,
