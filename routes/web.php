@@ -29,7 +29,7 @@ Route::get('/duplicates/connect', function () {
         'user' => $user,
         'workspaces' => $workspaces,
         'notionClientId' => env('NOTION_CLIENT_ID'),
-        'notionRedirectUri' => app('url')->to('/api/notion/auth/redirect'),
+        'notionRedirectUri' => url('/api/notion/auth/redirect'),
     ]);
 });
 

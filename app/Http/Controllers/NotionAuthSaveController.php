@@ -23,7 +23,7 @@ class NotionAuthSaveController extends Controller
         // ...
 
         try {
-            $redirectUrl = app('url')->to('/api/notion/auth/redirect');
+            $redirectUrl = url('/api/notion/auth/redirect');
             $token = env('NOTION_CLIENT_ID') . ':' . env('NOTION_SECRET');
             $token = base64_encode($token);
             $client = new Client();
