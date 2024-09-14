@@ -67,9 +67,8 @@
 
 ### Steps
 
-Don't run inside dev container!
-
 1. !FIRST TIME ONLY! deploying from a specific device.
+   - Don't run inside dev container!
    - Ensure you have configured [SSH](#ssh)
    - Add Dokku remote to git repo
 
