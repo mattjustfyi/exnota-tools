@@ -6,10 +6,6 @@ const props = defineProps({
     workspace: {
         type: Object,
         required: true
-    },
-    notionObjects: {
-        type: Array,
-        required: true
     }
 });
 
@@ -49,12 +45,13 @@ const fetchUserData = () => {
 
                     <div class="mt-8">
                         <h4 class="text-lg font-medium text-gray-900">Notion Objects:</h4>
-                        <ul class="mt-4 space-y-2">
-                            <li v-for="object in notionObjects" :key="object.id" class="p-4 bg-gray-100 rounded">
+                        <ul v-if="workspace.notionObjects && workspace.notionObjects.length" class="mt-4 space-y-2">
+                            <li v-for="object in workspace.notionObjects" :key="object.id" class="p-4 bg-gray-100 rounded">
                                 <strong>{{ object.name }}</strong> ({{ object.type }})
                                 <pre class="mt-2 text-sm">{{ JSON.stringify(object.data, null, 2) }}</pre>
                             </li>
                         </ul>
+                        <p v-else class="mt-4 text-gray-600">No Notion Objects available for this workspace.</p>
                     </div>
                 </div>
             </div>
