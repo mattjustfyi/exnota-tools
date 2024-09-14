@@ -11,6 +11,10 @@ const props = defineProps({
     refreshInProgress: {
         type: Boolean,
         required: true
+    },
+    showResults: {
+        type: Boolean,
+        required: true
     }
 });
 
