@@ -6,6 +6,10 @@ const props = defineProps({
     workspace: {
         type: Object,
         required: true
+    },
+    refreshInProgress: {
+        type: Boolean,
+        required: true
     }
 });
 
