@@ -61,39 +61,34 @@ class WorkspaceRefresh implements ShouldQueue
             $result = $notion->search()->search($query);
 
             if (!empty($result->results)) {
-                // Select a random result
-                $randomResult = $result->results[array_rand($result->results)];
-
-
-                // Create a variable $objectType of type NotionObjectType (enum)
-                $objectType = null;
-                $title = '';
-                if ($randomResult instanceof Page) {
-                    $objectType = NotionObjectType::PAGE;
-                    $title = $randomResult->title()->toString();
-                } elseif ($randomResult instanceof Database) {
-                    $objectType = NotionObjectType::DATABASE;
-                    foreach ($randomResult->title as $richText) {
-                        $title .= $richText->toString();
+                foreach ($result->results as $notionResult) {
+                    // Create a variable $objectType of type NotionObjectType (enum)
+                    $objectType = null;
+                    $title = '';
+                    if ($notionResult instanceof Page) {
+                        $objectType = NotionObjectType::PAGE;
+                        $title = $notionResult->title()->toString();
+                    } elseif ($notionResult instanceof Database) {
+                        $objectType = NotionObjectType::DATABASE;
+                        foreach ($notionResult->title as $richText) {
+                            $title .= $richText->toString();
+                        }
+                    } else {
+                        // Log unknown object type and continue to next result
+                        Log::warning('Unknown object type: ' . $notionResult->object . ' for workspace: ' . $this->workspace->id);
+                        continue;
                     }
-                } else {
-                    // Persist to NotionObject
-                    Log::error('Unknown object type: ' . $randomResult->object);
-                    throw new \Exception('Unknown object type: ' . $randomResult->object);
-                }
 
-                NotionObject::create([
-                    'workspace_id' => $this->workspace->id,
-                    'type' => $objectType,
-                    'name' => $title,
-                    'data' => $randomResult,
-                ]);
-                Log::debug('NotionObject created for workspace: ' . $this->workspace->id);
+                    NotionObject::create([
+                        'workspace_id' => $this->workspace->id,
+                        'type' => $objectType,
+                        'name' => $title,
+                        'data' => $notionResult,
+                    ]);
+                }
+                Log::debug('All NotionObjects created for workspace: ' . $this->workspace->id);
             } else {
                 Log::warning('No results found for workspace: ' . $this->workspace->id);
-
-                // Throw so job is retried, in case results were not cached yet.
-                throw new \Exception('No results found for workspace: ' . $this->workspace->id);
             }
         } catch (\Exception $e) {
             Log::error('Error in workspace refresh job for workspace ' . $this->workspace->id . ': ' . $e->getMessage());
