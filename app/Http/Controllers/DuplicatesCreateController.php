@@ -39,7 +39,7 @@ class DuplicatesCreateController extends Controller
         DuplicateSearch::dispatch($toolDuplicateRequest);
 
 
-
+        // TODO: If user has already confirmed, instead redirect to /search
         return to_route('duplicates.request.confirm', ['id' => $toolDuplicateRequest->id]);
     }
 }
