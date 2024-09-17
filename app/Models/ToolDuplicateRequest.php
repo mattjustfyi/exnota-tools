@@ -23,6 +23,6 @@ class ToolDuplicateRequest extends Model
 
     public function notionObject(): BelongsTo
     {
-        return $this->belongsTo(NotionObject::class, 'notion_object_id', 'notion_id');
+        return $this->belongsTo(NotionObject::class);
     }
 }
