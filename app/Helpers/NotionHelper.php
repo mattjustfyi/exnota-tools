@@ -4,7 +4,7 @@ namespace App\Helpers;
 
 use App\Enums\NotionObjectType;
 use App\Models\RemoteNotionObject;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Notion\Common\RichText;
 use Notion\Databases\Database;
 use Notion\Pages\Page;
@@ -39,8 +39,8 @@ class NotionHelper
             self::getTitleFromNotionResult($notionResult),
             $type,
             $notionResult->properties,
-            Carbon::parse($notionResult->createdTime),
-            Carbon::parse($notionResult->lastEditedTime)
+            Carbon::createFromImmutable($notionResult->createdTime),
+            Carbon::createFromImmutable($notionResult->lastEditedTime)
         );
     }
 }
