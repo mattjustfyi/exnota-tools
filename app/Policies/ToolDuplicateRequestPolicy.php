@@ -6,7 +6,7 @@ use App\Models\User;
 use App\Models\ToolDuplicateRequest;
 use App\Models\Workspace;
 
-class ToolDuplicateRequest
+class ToolDuplicateRequestPolicy
 {
     /**
      * Determine whether the user can view the tool duplicate request.
