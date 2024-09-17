@@ -2,22 +2,38 @@
 
 namespace App\Jobs;
 
+use App\Enums\NotionObjectType;
+use App\Models\RemoteNotionObject;
+use App\Models\ToolDuplicateRequest;
+use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Notion\Databases\Query;
+use Notion\Notion;
 
 class DuplicateSearch implements ShouldQueue
 {
     use Queueable;
 
+    protected $toolDuplicateRequest;
+
+    /**
+     * The number of times the job may be attempted.
+     *
+     * @var int
+     */
+    public $tries = 3;
+
     /**
      * Create a new job instance.
      */
-    public function __construct()
+    public function __construct(ToolDuplicateRequest $toolDuplicateRequest)
     {
-        //
+        $this->toolDuplicateRequest = $toolDuplicateRequest;
+        logger('Duplicate search job created for request: ' . $toolDuplicateRequest->id);
     }
 
     /**
@@ -25,6 +41,37 @@ class DuplicateSearch implements ShouldQueue
      */
     public function handle(): void
     {
-        //
+        $notionObject = $this->toolDuplicateRequest->notionObject;
+        $workspace = $notionObject->workspace;
+
+        $notion = Notion::create($workspace->authData['access_token']);
+        $database = $notion->databases()->find($notionObject->data['id']);
+
+        $pages = [];
+
+        $query = Query::create();
+        do {
+            $result = $notion->databases()->query($database, $query);
+            $pages = array_merge($pages, $result->pages);
+            if ($result->hasMore) {
+                $query = $query->changeStartCursor($result->nextCursor);
+            }
+        } while ($result->hasMore);
+
+        $remoteNotionObjects = collect($pages)->map(function ($page) {
+            return new RemoteNotionObject(
+                $page->id,
+                $page->title,
+                NotionObjectType::from($page->type),
+                $page->properties,
+                Carbon::parse($page->created_time),
+                Carbon::parse($page->last_edited_time)
+            );
+        });
+
+        $this->toolDuplicateRequest->update([
+            'search_results' => $remoteNotionObjects->toArray(),
+            'searched_at' => Carbon::now()
+        ]);
     }
 }

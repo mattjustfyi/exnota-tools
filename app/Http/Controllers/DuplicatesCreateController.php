@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\DuplicateSearch;
 use App\Models\ToolDuplicateRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -29,9 +30,14 @@ class DuplicatesCreateController extends Controller
             ], 409);
         }
 
+        // TODO: Check that notion_object_id is a database
+
         $toolDuplicateRequest = ToolDuplicateRequest::create([
             'notion_object_id' => $request->notion_object_id,
         ]);
+
+        DuplicateSearch::dispatch($toolDuplicateRequest);
+
 
         return response()->json([
             'message' => 'Tool duplicate request created successfully',
