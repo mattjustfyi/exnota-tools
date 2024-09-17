@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Enums\NotionObjectType;
+use App\Helpers\NotionHelper;
 use App\Models\Workspace;
 use App\Models\NotionObject;
 use Illuminate\Bus\Queueable;
@@ -11,12 +12,9 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use Notion\Common\RichText;
 use Notion\Databases\Database;
 use Notion\Notion;
 use Notion\Pages\Page;
-use Notion\Pages\Properties\PropertyType;
-use Notion\Pages\Properties\Title;
 use Notion\Search\Query;
 use Notion\Search\SortDirection;
 
@@ -81,20 +79,17 @@ class WorkspaceRefresh implements ShouldQueue
 
                     // Get type and title
                     $objectType = null;
-                    $title = '';
                     if ($notionResult instanceof Page) {
                         $objectType = NotionObjectType::PAGE;
-                        $title = $notionResult->title()->toString();
                     } elseif ($notionResult instanceof Database) {
                         $objectType = NotionObjectType::DATABASE;
-                        foreach ($notionResult->title as $richText) {
-                            $title .= $richText->toString();
-                        }
                     } else {
                         // Log unknown object type and continue to next result
                         Log::warning('Unknown object type: ' . $notionResult->object . ' for workspace: ' . $this->workspace->id);
                         continue;
                     }
+
+                    $title = NotionHelper::getTitleFromNotionResult($notionResult);
 
                     // Persist
                     NotionObject::create([
