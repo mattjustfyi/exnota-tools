@@ -6,6 +6,7 @@ use App\Http\Controllers\NotionAuthSaveController;
 use App\Http\Controllers\WorkspaceController;
 use App\Http\Middleware\CreateDuplicateRequestPolicyMiddleware;
 use App\Jobs\WorkspaceRefresh;
+use App\Models\ToolDuplicateRequest;
 use App\Models\Workspace;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
@@ -81,7 +82,7 @@ Route::middleware([
         ->name('duplicates.create-request')
         ->middleware(['can:create,App\Models\ToolDuplicateRequest', CreateDuplicateRequestPolicyMiddleware::class]);
 
-    Route::get('/duplicates/request/{toolDuplicateRequest}/confirm', function ($toolDuplicateRequest) {
+    Route::get('/duplicates/request/{toolDuplicateRequest}/confirm', function (ToolDuplicateRequest $toolDuplicateRequest) {
         return Inertia::render('Duplicates/Request/Confirm', [
             'toolDuplicateRequest' => $toolDuplicateRequest,
         ]);
