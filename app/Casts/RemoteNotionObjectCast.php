@@ -24,12 +24,12 @@ class RemoteNotionObjectCast implements CastsAttributes
         $data = json_decode($value, true);
 
         return new RemoteNotionObject(
-            $data['notionID'],
+            $data['notion_id'],
             $data['title'],
             NotionObjectType::from($data['type']),
-            $data['propertyValues'],
-            Carbon::parse($data['createdDate']),
-            Carbon::parse($data['updatedDate'])
+            $data['property_values'],
+            Carbon::parse($data['created_date']),
+            Carbon::parse($data['updated_date'])
         );
     }
 
@@ -49,12 +49,12 @@ class RemoteNotionObjectCast implements CastsAttributes
         }
 
         return json_encode([
-            'notionID' => $value->getNotionID(),
+            'notion_id' => $value->getNotionId(),
             'title' => $value->getTitle(),
             'type' => $value->getType()->value,
-            'propertyValues' => $value->getPropertyValues(),
-            'createdDate' => $value->getCreatedDate()->toIso8601String(),
-            'updatedDate' => $value->getUpdatedDate()->toIso8601String(),
+            'property_values' => $value->getPropertyValues(),
+            'created_date' => $value->getCreatedDate()->toIso8601String(),
+            'updated_date' => $value->getUpdatedDate()->toIso8601String(),
         ]);
     }
 }
