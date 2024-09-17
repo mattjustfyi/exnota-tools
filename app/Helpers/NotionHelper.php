@@ -43,4 +43,16 @@ class NotionHelper
             Carbon::createFromImmutable($notionResult->lastEditedTime)
         );
     }
+
+    public static function getNotionObjectType(string $type): NotionObjectType
+    {
+        switch ($type) {
+            case 'page':
+                return NotionObjectType::PAGE;
+            case 'database':
+                return NotionObjectType::DATABASE;
+            default:
+                throw new \InvalidArgumentException('Invalid Notion object type');
+        }
+    }
 }
