@@ -12,6 +12,11 @@ class ToolDuplicateRequest extends Model
 
     protected $fillable = [
         'notion_object_id',
+        'search_results',
+    ];
+
+    protected $casts = [
+        'search_results' => 'array',
     ];
 
     public function notionObject(): BelongsTo
