@@ -78,5 +78,5 @@ Route::middleware([
 
     Route::post('/duplicates/request', [DuplicatesCreateController::class, 'createRequest'])
         ->name('duplicates.create-request')
-        ->middleware('can:create,App\Models\ToolDuplicateRequest');
+        ->middleware(['can:create,App\Models\ToolDuplicateRequest', 'create.duplicate.request.policy']);
 });
