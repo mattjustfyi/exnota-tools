@@ -15,11 +15,13 @@ class ToolDuplicateRequest extends Model
         'notion_object_id',
         'search_results',
         'searched_at',
+        'duplicates',
     ];
 
     protected $casts = [
         'search_results' => RemoteNotionObjectArrayCast::class,
         'searched_at' => 'datetime',
+        'duplicates' => 'json',
     ];
 
     public function notionObject(): BelongsTo
