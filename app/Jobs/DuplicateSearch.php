@@ -60,14 +60,7 @@ class DuplicateSearch implements ShouldQueue
         } while ($result->hasMore);
 
         $remoteNotionObjects = collect($pages)->map(function ($page) {
-            return new RemoteNotionObject(
-                $page->id,
-                NotionHelper::getTitleFromNotionResult($page),
-                NotionObjectType::from($page->object),
-                $page->properties,
-                Carbon::parse($page->createdTime),
-                Carbon::parse($page->lastEditedTime)
-            );
+            return NotionHelper::createRemoteNotionObject($page);
         });
 
         $this->toolDuplicateRequest->update([
