@@ -23,11 +23,15 @@ class CreateDuplicateRequestPolicyMiddleware
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
-        $notionObjectBelongsToUser = $user->workspaces()
-            ->whereHas('notionObjects', function ($query) use ($notionObjectId) {
-                $query->where('id', $notionObjectId);
-            })
-            ->exists();
+        $ws = $user->workspaces;
+        $notionObjectBelongsToUser = false;
+
+        foreach ($ws as $workspace) {
+            if ($workspace->notionObjects->contains('id', $notionObjectId)) {
+                $notionObjectBelongsToUser = true;
+                break;
+            }
+        }
 
         if (!$notionObjectBelongsToUser) {
             return response()->json(['error' => 'Unauthorized'], 403);
