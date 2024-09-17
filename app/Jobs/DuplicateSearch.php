@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Enums\NotionObjectType;
+use App\Helpers\NotionHelper;
 use App\Models\RemoteNotionObject;
 use App\Models\ToolDuplicateRequest;
 use Carbon\Carbon;
@@ -61,11 +62,11 @@ class DuplicateSearch implements ShouldQueue
         $remoteNotionObjects = collect($pages)->map(function ($page) {
             return new RemoteNotionObject(
                 $page->id,
-                $page->title,
-                NotionObjectType::from($page->type),
+                NotionHelper::getTitleFromNotionResult($page),
+                NotionObjectType::from($page->object),
                 $page->properties,
-                Carbon::parse($page->created_time),
-                Carbon::parse($page->last_edited_time)
+                Carbon::parse($page->createdTime),
+                Carbon::parse($page->lastEditedTime)
             );
         });
 
