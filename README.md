@@ -59,8 +59,8 @@
   - Local
 
     ```bash
-    # Outside Docker
-    ./vendor/bin/sail artisan list
+    # Outside Docker. Use 'listen' so 
+    ./vendor/bin/sail debug queue:listen
     ```
 
 ## Deploy to prod
