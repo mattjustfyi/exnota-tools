@@ -75,8 +75,8 @@ class DuplicateSearch implements ShouldQueue
 
         // Create the list of duplicate pairs
         $duplicatePairs = $duplicates->map(function ($group) {
-            return $group->values()->toArray();
-        })->values()->toArray();
+            return $group->values()->all();
+        })->values()->all();
 
         $this->toolDuplicateRequest->update([
             'search_results' => $remoteNotionObjects,
