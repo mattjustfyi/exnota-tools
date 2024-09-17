@@ -28,7 +28,7 @@ const selectDatabase = (database) => {
 };
 
 const callDuplicatesCreateController = (notionObjectId) => {
-    axios.post('/duplicates/create', { notion_object_id: notionObjectId })
+    axios.post('/duplicates/request', { notion_object_id: notionObjectId })
         .then(response => {
             console.log('DuplicatesCreateController response:', response.data);
             // Handle the response, e.g., show a success message or redirect
