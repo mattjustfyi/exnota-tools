@@ -80,4 +80,10 @@ Route::middleware([
     Route::post('/duplicates/request', [DuplicatesCreateController::class, 'create'])
         ->name('duplicates.create-request')
         ->middleware(['can:create,App\Models\ToolDuplicateRequest', CreateDuplicateRequestPolicyMiddleware::class]);
+
+    Route::get('/duplicates/request/{toolDuplicateRequest}/confirm', function ($toolDuplicateRequest) {
+        return Inertia::render('Duplicates/Request/Confirm', [
+            'toolDuplicateRequest' => $toolDuplicateRequest,
+        ]);
+    })->name('duplicates.request.confirm')->middleware('can:view,toolDuplicateRequest');
 });

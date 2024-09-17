@@ -39,9 +39,7 @@ class DuplicatesCreateController extends Controller
         DuplicateSearch::dispatch($toolDuplicateRequest);
 
 
-        return response()->json([
-            'message' => 'Tool duplicate request created successfully',
-            'data' => $toolDuplicateRequest
-        ], 201);
+
+        return to_route('duplicates.request.confirm', ['id' => $toolDuplicateRequest->id]);
     }
 }
