@@ -4,7 +4,7 @@ namespace App\Helpers;
 
 use App\Enums\NotionObjectType;
 use App\Models\RemoteNotionObject;
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
 use Notion\Common\RichText;
 use Notion\Databases\Database;
 use Notion\Pages\Page;
