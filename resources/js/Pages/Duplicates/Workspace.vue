@@ -109,7 +109,7 @@ onUnmounted(() => {
                                 <li v-for="object in workspace.notion_objects" :key="object.id"
                                     class="p-4 bg-gray-100 rounded flex justify-between items-center">
                                     <div>
-                                        <strong>{{ object.name }}</strong> ({{ object.type }})
+                                        <strong>{{ object.name }}</strong>
                                     </div>
                                     <button @click="selectDatabase(object)"
                                         class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
