@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tool_duplicate_requests', function (Blueprint $table) {
-            //
+            $table->unsignedBigInteger('notion_object_id')->nullable();
+            $table->foreign('notion_object_id')->references('id')->on('notion_objects')->onDelete('set null');
         });
     }
 
@@ -22,7 +23,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('tool_duplicate_requests', function (Blueprint $table) {
-            //
+            $table->dropForeign(['notion_object_id']);
+            $table->dropColumn('notion_object_id');
         });
     }
 };
