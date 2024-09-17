@@ -3,6 +3,7 @@
 namespace App\Casts;
 
 use App\Models\RemoteNotionObject;
+use App\Enums\NotionObjectType;
 use Carbon\Carbon;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
@@ -25,7 +26,7 @@ class RemoteNotionObjectCast implements CastsAttributes
         return new RemoteNotionObject(
             $data['notion_id'],
             $data['title'],
-            $data['type'],
+            NotionObjectType::from($data['type']),
             $data['property_values'],
             Carbon::parse($data['created_date']),
             Carbon::parse($data['updated_date'])
@@ -50,7 +51,7 @@ class RemoteNotionObjectCast implements CastsAttributes
         return json_encode([
             'notion_id' => $value->getNotionID(),
             'title' => $value->getTitle(),
-            'type' => $value->getType(),
+            'type' => $value->getType()->value,
             'property_values' => $value->getPropertyValues(),
             'created_date' => $value->getCreatedDate()->toIso8601String(),
             'updated_date' => $value->getUpdatedDate()->toIso8601String(),
