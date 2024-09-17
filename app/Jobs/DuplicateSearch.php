@@ -63,8 +63,24 @@ class DuplicateSearch implements ShouldQueue
             return NotionHelper::createRemoteNotionObject($page);
         });
 
+        // Group objects by title
+        $groupedByTitle = $remoteNotionObjects->groupBy(function ($object) {
+            return $object->getTitle();
+        });
+
+        // Filter out groups with only one item (no duplicates)
+        $duplicates = $groupedByTitle->filter(function ($group) {
+            return $group->count() > 1;
+        });
+
+        // Create the list of duplicate pairs
+        $duplicatePairs = $duplicates->map(function ($group) {
+            return $group->values()->toArray();
+        })->values()->toArray();
+
         $this->toolDuplicateRequest->update([
             'search_results' => $remoteNotionObjects,
+            'duplicates' => $duplicatePairs,
             'searched_at' => Carbon::now()
         ]);
     }
