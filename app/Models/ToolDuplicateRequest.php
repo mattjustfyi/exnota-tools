@@ -13,10 +13,12 @@ class ToolDuplicateRequest extends Model
     protected $fillable = [
         'notion_object_id',
         'search_results',
+        'searched_at',
     ];
 
     protected $casts = [
         'search_results' => 'array',
+        'searched_at' => 'datetime',
     ];
 
     public function notionObject(): BelongsTo
