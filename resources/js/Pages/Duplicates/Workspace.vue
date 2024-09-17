@@ -19,6 +19,14 @@ const props = defineProps({
 });
 
 const refreshInterval = ref(null);
+const selectedDatabase = ref(null);
+
+const selectDatabase = (database) => {
+    selectedDatabase.value = database;
+    console.log('Selected database:', database);
+    // Here you can add logic to handle the database selection,
+    // such as navigating to a search page or opening a modal
+};
 
 const fetchUserData = () => {
     axios.post(`/test/workspace/${props.workspace.id}/refresh`)
@@ -99,9 +107,14 @@ onUnmounted(() => {
                             <ul v-if="workspace.notion_objects && workspace.notion_objects.length"
                                 class="mt-4 space-y-2">
                                 <li v-for="object in workspace.notion_objects" :key="object.id"
-                                    class="p-4 bg-gray-100 rounded">
-                                    <strong>{{ object.name }}</strong> ({{ object.type }})
-                                    <!-- <pre class="mt-2 text-sm">{{ JSON.stringify(object.data, null, 2) }}</pre> -->
+                                    class="p-4 bg-gray-100 rounded flex justify-between items-center">
+                                    <div>
+                                        <strong>{{ object.name }}</strong> ({{ object.type }})
+                                    </div>
+                                    <button @click="selectDatabase(object)"
+                                        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                                        Search
+                                    </button>
                                 </li>
                             </ul>
                             <p v-else-if="!refreshInProgress" class="mt-4 text-gray-600">No Notion Objects available for
