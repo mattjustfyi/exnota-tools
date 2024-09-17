@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\NotionObjectType;
 use Illuminate\Support\Carbon;
 
 class RemoteNotionObject
