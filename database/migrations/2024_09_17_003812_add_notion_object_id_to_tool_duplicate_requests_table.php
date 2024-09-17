@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tool_duplicate_requests', function (Blueprint $table) {
-            $table->unsignedBigInteger('notion_object_id')->nullable();
+            $table->unsignedBigInteger('notion_object_id');
             $table->foreign('notion_object_id')->references('id')->on('notion_objects')->onDelete('set null');
         });
     }
