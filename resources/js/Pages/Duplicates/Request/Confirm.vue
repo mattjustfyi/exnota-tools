@@ -8,10 +8,19 @@ const props = defineProps({
         required: true
     },
 });
+
+console.log('toolDuplicateRequest', props.toolDuplicateRequest);
+console.log('toolDuplicateRequest.search_results', props.toolDuplicateRequest.search_results);
+if (props.toolDuplicateRequest.search_results instanceof Array) {
+    console.log('toolDuplicateRequest.search_results[0]', props.toolDuplicateRequest.search_results[0]);
+    console.log('Object.entries(toolDuplicateRequest.search_results[0])', Object.entries(props.toolDuplicateRequest.search_results[0]));
+}
+console.log('typeof toolDuplicateRequest.search_results', typeof props.toolDuplicateRequest.search_results);
 </script>
 
 <template>
     <AppLayout>
+
         <Head title="Confirm Duplicate Request" />
 
         <template #header>
@@ -33,17 +42,13 @@ const props = defineProps({
 
                     <div class="mt-8">
                         <h4 class="text-lg font-medium text-gray-900">Search Results:</h4>
-                        <ul v-if="toolDuplicateRequest.search_results && toolDuplicateRequest.search_results.length" class="mt-4 space-y-4">
-                            <li v-for="result in toolDuplicateRequest.search_results" :key="result.id" class="p-4 bg-gray-100 rounded">
-                                <div><strong>ID:</strong> {{ result.id }}</div>
-                                <div><strong>Name:</strong> {{ result.name }}</div>
-                                <div v-if="result.properties">
-                                    <strong>Properties:</strong>
-                                    <ul class="ml-4 list-disc">
-                                        <li v-for="(value, key) in result.properties" :key="key">
-                                            {{ key }}: {{ JSON.stringify(value) }}
-                                        </li>
-                                    </ul>
+                        <ul v-if="toolDuplicateRequest.search_results && toolDuplicateRequest.search_results.length"
+                            class="mt-4 space-y-4">
+                            <li v-for="result in toolDuplicateRequest.search_results" :key="result.id"
+                                class="p-4 bg-gray-100 rounded">
+                                <div><strong>Notion ID:</strong> {{ result.notion_id }}</div>
+                                <div><strong>Name:</strong> {{ result.title }}</div>
+                                <div><strong>Created Date:</strong> {{ new Date(result.created_date).toLocaleString() }}
                                 </div>
                             </li>
                         </ul>
