@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('tool_duplicate_requests', function (Blueprint $table) {
             $table->unsignedBigInteger('notion_object_id');
-            $table->foreign('notion_object_id')->references('id')->on('notion_objects')->onDelete('set null');
+            $table->foreign('notion_object_id')->references('id')->on('notion_objects');
         });
     }
 
