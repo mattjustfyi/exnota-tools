@@ -26,10 +26,14 @@ class NotionHelper
 
     public static function createRemoteNotionObject($notionResult): RemoteNotionObject
     {
+        $type = $notionResult instanceof Page ? NotionObjectType::PAGE : 
+                ($notionResult instanceof Database ? NotionObjectType::DATABASE : 
+                NotionObjectType::UNKNOWN);
+
         return new RemoteNotionObject(
             $notionResult->id,
             self::getTitleFromNotionResult($notionResult),
-            NotionObjectType::from($notionResult->object),
+            $type,
             $notionResult->properties,
             Carbon::parse($notionResult->createdTime),
             Carbon::parse($notionResult->lastEditedTime)
