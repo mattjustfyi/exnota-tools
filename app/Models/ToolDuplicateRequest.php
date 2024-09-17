@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\RemoteNotionObjectArrayCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,7 +18,7 @@ class ToolDuplicateRequest extends Model
     ];
 
     protected $casts = [
-        'search_results' => 'array',
+        'search_results' => RemoteNotionObjectArrayCast::class,
         'searched_at' => 'datetime',
     ];
 

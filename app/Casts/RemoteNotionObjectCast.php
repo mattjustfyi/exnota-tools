@@ -9,7 +9,7 @@ use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
-class RemoteNotionObjectCast implements CastsAttributes
+class RemoteNotionObjectArrayCast implements CastsAttributes
 {
     /**
      * Cast the given value.

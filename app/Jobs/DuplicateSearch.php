@@ -64,7 +64,7 @@ class DuplicateSearch implements ShouldQueue
         });
 
         $this->toolDuplicateRequest->update([
-            'search_results' => $remoteNotionObjects->toArray(),
+            'search_results' => $remoteNotionObjects,
             'searched_at' => Carbon::now()
         ]);
     }
