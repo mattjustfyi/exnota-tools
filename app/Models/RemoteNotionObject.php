@@ -7,32 +7,32 @@ use Illuminate\Support\Carbon;
 
 class RemoteNotionObject
 {
-    private string $notionID;
+    private string $notion_id;
     private string $title;
     private NotionObjectType $type;
-    private array $propertyValues;
-    private Carbon $createdDate;
-    private Carbon $updatedDate;
+    private array $property_values;
+    private Carbon $created_date;
+    private Carbon $updated_date;
 
     public function __construct(
-        string $notionID,
+        string $notion_id,
         string $title,
         NotionObjectType $type,
-        array $propertyValues,
-        Carbon $createdDate,
-        Carbon $updatedDate
+        array $property_values,
+        Carbon $created_date,
+        Carbon $updated_date
     ) {
-        $this->notionID = $notionID;
+        $this->notion_id = $notion_id;
         $this->title = $title;
         $this->type = $type;
-        $this->propertyValues = $propertyValues;
-        $this->createdDate = $createdDate;
-        $this->updatedDate = $updatedDate;
+        $this->property_values = $property_values;
+        $this->created_date = $created_date;
+        $this->updated_date = $updated_date;
     }
 
-    public function getNotionID(): string
+    public function getNotionId(): string
     {
-        return $this->notionID;
+        return $this->notion_id;
     }
 
     public function getTitle(): string
@@ -47,16 +47,16 @@ class RemoteNotionObject
 
     public function getPropertyValues(): array
     {
-        return $this->propertyValues;
+        return $this->property_values;
     }
 
     public function getCreatedDate(): Carbon
     {
-        return $this->createdDate;
+        return $this->created_date;
     }
 
     public function getUpdatedDate(): Carbon
     {
-        return $this->updatedDate;
+        return $this->updated_date;
     }
 }
