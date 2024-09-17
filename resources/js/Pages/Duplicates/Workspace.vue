@@ -24,8 +24,19 @@ const selectedDatabase = ref(null);
 const selectDatabase = (database) => {
     selectedDatabase.value = database;
     console.log('Selected database:', database);
-    // Here you can add logic to handle the database selection,
-    // such as navigating to a search page or opening a modal
+    callDuplicatesCreateController(database.id);
+};
+
+const callDuplicatesCreateController = (notionObjectId) => {
+    axios.post('/duplicates/create', { notion_object_id: notionObjectId })
+        .then(response => {
+            console.log('DuplicatesCreateController response:', response.data);
+            // Handle the response, e.g., show a success message or redirect
+        })
+        .catch(error => {
+            console.error('Error calling DuplicatesCreateController:', error);
+            // Handle the error, e.g., show an error message
+        });
 };
 
 const fetchUserData = () => {
