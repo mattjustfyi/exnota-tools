@@ -4,8 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ToolDuplicateRequest extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'notion_object_id',
+    ];
+
+    public function notionObject(): BelongsTo
+    {
+        return $this->belongsTo(NotionObject::class);
+    }
 }
