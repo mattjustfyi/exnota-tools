@@ -7,6 +7,7 @@ use App\Enums\NotionObjectType;
 use Carbon\Carbon;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 class RemoteNotionObjectCast implements CastsAttributes
 {
@@ -15,7 +16,7 @@ class RemoteNotionObjectCast implements CastsAttributes
      *
      * @param  array<string, mixed>  $attributes
      */
-    public function get(Model $model, string $key, mixed $value, array $attributes): ?array
+    public function get(Model $model, string $key, mixed $value, array $attributes): ?Collection
     {
         if (is_null($value)) {
             return null;
@@ -23,7 +24,7 @@ class RemoteNotionObjectCast implements CastsAttributes
 
         $data = json_decode($value, true);
 
-        return array_map(function ($item) {
+        return collect($data)->map(function ($item) {
             return new RemoteNotionObject(
                 $item['notion_id'],
                 $item['title'],
@@ -32,7 +33,7 @@ class RemoteNotionObjectCast implements CastsAttributes
                 Carbon::parse($item['created_date']),
                 Carbon::parse($item['updated_date'])
             );
-        }, $data);
+        });
     }
 
     /**
@@ -46,11 +47,11 @@ class RemoteNotionObjectCast implements CastsAttributes
             return null;
         }
 
-        if (!is_array($value) || !$this->isArrayOfRemoteNotionObjects($value)) {
-            throw new \InvalidArgumentException('The given value is not an array of RemoteNotionObject instances.');
+        if (!$value instanceof Collection || !$this->isCollectionOfRemoteNotionObjects($value)) {
+            throw new \InvalidArgumentException('The given value is not a collection of RemoteNotionObject instances.');
         }
 
-        return json_encode(array_map(function (RemoteNotionObject $object) {
+        return json_encode($value->map(function (RemoteNotionObject $object) {
             return [
                 'notion_id' => $object->getNotionId(),
                 'title' => $object->getTitle(),
@@ -59,19 +60,19 @@ class RemoteNotionObjectCast implements CastsAttributes
                 'created_date' => $object->getCreatedDate()->toIso8601String(),
                 'updated_date' => $object->getUpdatedDate()->toIso8601String(),
             ];
-        }, $value));
+        })->all());
     }
 
     /**
-     * Check if the given array contains only RemoteNotionObject instances.
+     * Check if the given collection contains only RemoteNotionObject instances.
      *
-     * @param array $array
+     * @param Collection $collection
      * @return bool
      */
-    private function isArrayOfRemoteNotionObjects(array $array): bool
+    private function isCollectionOfRemoteNotionObjects(Collection $collection): bool
     {
-        return !empty($array) && array_reduce($array, function ($carry, $item) {
-            return $carry && $item instanceof RemoteNotionObject;
-        }, true);
+        return !$collection->isEmpty() && $collection->every(function ($item) {
+            return $item instanceof RemoteNotionObject;
+        });
     }
 }
