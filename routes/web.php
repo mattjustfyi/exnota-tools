@@ -74,4 +74,8 @@ Route::middleware([
     Route::post('/test/workspace/{workspace}/refresh', [WorkspaceController::class, 'refresh'])
         ->name('api.test.workspace.refresh')
         ->middleware('can:update,workspace');
+
+    Route::post('/duplicates/request', [DuplicatesController::class, 'createRequest'])
+        ->name('duplicates.create-request')
+        ->middleware('can:create,App\Models\DuplicateRequest');
 });
