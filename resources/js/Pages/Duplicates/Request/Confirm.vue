@@ -8,6 +8,10 @@ const props = defineProps({
         type: Object,
         required: true
     },
+    jobsInProgress: {
+        type: Boolean,
+        required: true
+    },
 });
 
 const truncateTitle = (title, maxLength = 50) => {
