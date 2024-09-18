@@ -22,7 +22,6 @@ class ToolDuplicateRequest extends Model
     ];
 
     protected $casts = [
-        // 'search_results' => RemoteNotionObject::class,
         'searched_at' => 'datetime',
     ];
 

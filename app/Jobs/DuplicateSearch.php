@@ -62,12 +62,12 @@ class DuplicateSearch implements ShouldQueue
         } while ($result->hasMore);
 
         $remoteNotionObjects = collect($pages)->map(function ($page) {
-            return NotionHelper::createRemoteNotionObject($page);
+            return NotionHelper::createNotionDTO($page);
         });
 
         // Group objects by title
         $groupedByTitle = $remoteNotionObjects->groupBy(function ($object) {
-            return $object->getTitle();
+            return $object->title;
         });
 
         // Filter out groups with only one item (no duplicates)
@@ -87,36 +87,16 @@ class DuplicateSearch implements ShouldQueue
         foreach ($duplicatePairs as $pair) {
             $oldest = null;
             foreach ($pair as $item) {
-                if ($oldest === null || $item->getCreatedDate() < $oldest->getCreatedDate()) {
+                if ($oldest === null || $item->created_date < $oldest->created_date) {
                     $oldest = $item;
                 }
             }
-
-            $oldestDTO = new NotionDTO(
-                $oldest->getNotionId(),
-                $oldest->getTitle(),
-                $oldest->getType(),
-                $oldest->getPropertyValues(),
-                $oldest->getCreatedDate(),
-                $oldest->getUpdatedDate()
-            );
 
             $remainingDuplicates = array_values(array_filter($pair, function ($item) use ($oldest) {
                 return $item !== $oldest;
             }));
 
-            $remainingDuplicatesDTO = array_map(function (RemoteNotionObject $notionObject) {
-                return new NotionDTO(
-                    $notionObject->getNotionId(),
-                    $notionObject->getTitle(),
-                    $notionObject->getType(),
-                    $notionObject->getPropertyValues(),
-                    $notionObject->getCreatedDate(),
-                    $notionObject->getUpdatedDate()
-                );
-            }, $remainingDuplicates);
-
-            array_push($duplicateResults, new DuplicateResultsDTO($oldestDTO, $remainingDuplicatesDTO));
+            array_push($duplicateResults, new DuplicateResultsDTO($oldest, $remainingDuplicates));
         }
 
         // Update the toolDuplicateRequest with the duplicate results

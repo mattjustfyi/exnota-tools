@@ -3,7 +3,7 @@
 namespace App\Helpers;
 
 use App\Enums\NotionObjectType;
-use App\Models\ToolDuplicateRequest\NotionDTO;
+use App\Models\NotionDTO;
 use Carbon\Carbon;
 use Notion\Common\RichText;
 use Notion\Databases\Database;
@@ -24,7 +24,7 @@ class NotionHelper
         return '';
     }
 
-    public static function createRemoteNotionObject($notionResult): NotionDTO
+    public static function createNotionDTO($notionResult): NotionDTO
     {
         if ($notionResult instanceof Page) {
             $type = NotionObjectType::PAGE;
