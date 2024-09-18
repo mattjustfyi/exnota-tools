@@ -63,8 +63,6 @@ onMounted(() => {
             <button @click="openNewWindow" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Connect to Notion</button>
         </div>
         <div v-else>
-            <p>Not connected</p>
-            <br>
             <button @click="openNewWindow" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Connect to Notion</button>
         </div>
     </AppLayoutNoUser>
