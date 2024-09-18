@@ -25,7 +25,7 @@ Route::get('/', function () {
 });
 
 // Public routes
-Route::get('/duplicates', [DuplicatesController::class, 'show']);
+Route::get('/duplicates', [DuplicatesController::class, 'show'])->name('duplicates');;
 
 Route::get('/duplicates/connect', function () {
     $user = Auth::user();

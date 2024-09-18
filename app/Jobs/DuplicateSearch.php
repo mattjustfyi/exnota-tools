@@ -73,6 +73,9 @@ class DuplicateSearch implements ShouldQueue
             return $group->count() > 1;
         });
 
+        // TODO: Update so it's clear, and we decide here, which ones will be
+        // deleted if user chooses so.
+
         // Create the list of duplicate pairs
         $duplicatePairs = $duplicates->map(function ($group) {
             return $group->values()->all();

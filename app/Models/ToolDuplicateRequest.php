@@ -32,7 +32,11 @@ class ToolDuplicateRequest extends Model
     protected function searchResults(): Attribute
     {
         return Attribute::make(
-            get: function (string $value) {
+            get: function (?string $value) {
+                if (!$value) {
+                    return null;
+                }
+
                 $arr = json_decode($value, true);
 
                 $notionDTOs = array_map(function ($entry) {

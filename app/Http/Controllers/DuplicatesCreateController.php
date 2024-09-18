@@ -9,7 +9,7 @@ use Illuminate\Http\JsonResponse;
 
 class DuplicatesCreateController extends Controller
 {
-    public function create(Request $request): JsonResponse
+    public function create(Request $request)
     {
         $request->validate([
             'notion_object_id' => 'required|integer',
@@ -40,6 +40,6 @@ class DuplicatesCreateController extends Controller
 
 
         // TODO: If user has already confirmed, instead redirect to /search
-        return to_route('duplicates.request.confirm', ['id' => $toolDuplicateRequest->id]);
+        return to_route('duplicates.request.confirm', ['toolDuplicateRequest' => $toolDuplicateRequest->id]);
     }
 }
