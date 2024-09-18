@@ -2,7 +2,6 @@
 import { Head } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { computed } from 'vue';
-import Spinner from '@/Components/Spinner.vue';
 
 const props = defineProps({
     toolDuplicateRequest: {
@@ -60,8 +59,8 @@ console.log('typeof toolDuplicateRequest.search_results', typeof props.toolDupli
 
                     <div class="mt-8">
                         <h4 class="text-lg font-medium text-gray-900">Search Results:</h4>
-                        <div v-if="jobsInProgress" class="mt-4 flex items-center justify-center">
-                            <Spinner class="h-8 w-8" />
+                        <div v-if="jobsInProgress" class="mt-4 flex justify-center items-center">
+                            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
                             <span class="ml-2 text-gray-600">Processing...</span>
                         </div>
                         <template v-else>
