@@ -44,13 +44,6 @@ console.log('typeof toolDuplicateRequest.search_results', typeof props.toolDupli
                         <h4 class="text-lg font-medium text-gray-900">Search Results:</h4>
                         <ul v-if="toolDuplicateRequest.search_results && toolDuplicateRequest.search_results.length"
                             class="mt-4 space-y-4">
-                            <li v-for="result in toolDuplicateRequest.search_results" :key="result.id"
-                                class="p-4 bg-gray-100 rounded">
-                                <div><strong>Notion ID:</strong> {{ result.notion_id }}</div>
-                                <div><strong>Name:</strong> {{ result.title }}</div>
-                                <div><strong>Created Date:</strong> {{ new Date(result.created_date).toLocaleString() }}
-                                </div>
-                            </li>
                         </ul>
                         <p v-else class="mt-4 text-gray-600">No search results available.</p>
                     </div>

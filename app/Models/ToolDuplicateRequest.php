@@ -41,6 +41,7 @@ class ToolDuplicateRequest extends Model
                         $entry['keep']['notion_id'],
                         $entry['keep']['title'],
                         NotionHelper::getNotionObjectType($entry['keep']['type']),
+                        $entry['keep']['url'],
                         $entry['keep']['property_values'],
                         Carbon::parse($entry['keep']['created_date']),
                         Carbon::parse($entry['keep']['updated_date']),
@@ -51,6 +52,7 @@ class ToolDuplicateRequest extends Model
                             $notionDTO['notion_id'],
                             $notionDTO['title'],
                             NotionHelper::getNotionObjectType($notionDTO['type']),
+                            $notionDTO['url'],
                             $notionDTO['property_values'],
                             Carbon::parse($notionDTO['created_date']),
                             Carbon::parse($notionDTO['updated_date']),
@@ -68,6 +70,7 @@ class ToolDuplicateRequest extends Model
                         $entry->keep->notion_id,
                         $entry->keep->title,
                         $entry->keep->type,
+                        $entry->keep->url,
                         $entry->keep->property_values,
                         $entry->keep->created_date,
                         $entry->keep->updated_date,
@@ -78,6 +81,7 @@ class ToolDuplicateRequest extends Model
                             'notion_id' => $notionDTO->notion_id,
                             'title' => $notionDTO->title,
                             'type' => $notionDTO->type,
+                            'url' => $notionDTO->url,
                             'property_values' => $notionDTO->property_values,
                             'created_date' => $notionDTO->created_date->toDateTimeString(),
                             'updated_date' => $notionDTO->updated_date->toDateTimeString(),
@@ -114,4 +118,3 @@ readonly class DuplicateResultsDTO
         public array $delete,
     ) {}
 }
-

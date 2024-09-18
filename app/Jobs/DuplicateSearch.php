@@ -2,17 +2,11 @@
 
 namespace App\Jobs;
 
-use App\DTOs\NotionDTO;
-use App\Enums\NotionObjectType;
 use App\Helpers\NotionHelper;
-use App\Models\RemoteNotionObject;
 use App\Models\ToolDuplicateRequest;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use Notion\Databases\Query;
 use Notion\Notion;
 use App\Models\DuplicateResultsDTO;
