@@ -15,7 +15,9 @@ const props = defineProps({
 });
 
 const searchAgain = () => {
-    router.post('/duplicates/request', { notion_object_id: props.toolDuplicateRequest.notion_object_id });
+    router.post('/duplicates/request',
+        { notion_object_id: props.toolDuplicateRequest.notion_object_id },
+        { replace: true });
 };
 
 const truncateTitle = (title, maxLength = 50) => {
@@ -81,7 +83,8 @@ onUnmounted(() => {
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-medium text-gray-900">Search Results</h3>
-                        <button v-if="!jobsInProgress" @click="searchAgain" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                        <button v-if="!jobsInProgress" @click="searchAgain"
+                            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
                             Search again
                         </button>
                     </div>
