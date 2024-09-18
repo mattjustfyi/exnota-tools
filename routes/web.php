@@ -88,10 +88,9 @@ Route::middleware([
         // Couldn't get back slashes escaping properly, so subtituted with wildcards.
         $incompleteJobs = DB::table('jobs')
             ->whereRaw('payload ~ ?', '"displayName":"App.{2}Jobs.{2}DuplicateSearch"')
-            // ->whereRaw('payload ~ ?', 'App.{2}Models.{2}Workspace.{1}";s:[0-9]+:.{1}"id.{1}";i:' . strval($workspace->id))
+            ->whereRaw('payload ~ ?', ';s:[0-9]+:.{1}"App.{2}Models.{2}ToolDuplicateRequest.{1}";s:[0-9]+:.{1}"id.{1}";i:' . strval($toolDuplicateRequest->id) . ';')
             ->count();
 
-        // Start showing results if <= 4 jobs remaining AND > 1 result
         $jobsInProgress = $incompleteJobs > 0;
 
         return Inertia::render('Duplicates/Request/Confirm', [
