@@ -3,6 +3,7 @@
 use App\Http\Controllers\DuplicatesController;
 use App\Http\Controllers\DuplicatesCreateController;
 use App\Http\Controllers\NotionAuthSaveController;
+use App\Http\Controllers\WorkspaceController;
 use App\Http\Controllers\WorkspaceRefreshController;
 use App\Http\Middleware\CreateDuplicateRequestPolicyMiddleware;
 use App\Jobs\WorkspaceRefresh;
@@ -56,27 +57,9 @@ Route::middleware([
         return Inertia::render('Dashboard');
     })->name('dashboard');
 
-    Route::get('/duplicates/workspace/{workspace}', function (Workspace $workspace) {
-        $workspace->load('notionObjects');
-
-        // Couldn't get back slashes escaping properly, so subtituted with wildcards.
-        $incompleteJobs = DB::table('jobs')
-            ->whereRaw('payload ~ ?', '"displayName":"App.{2}Jobs.{2}WorkspaceRefresh"')
-            ->whereRaw('payload ~ ?', 'App.{2}Models.{2}Workspace.{1}";s:[0-9]+:.{1}"id.{1}";i:' . strval($workspace->id))
-            ->count();
-
-        // Start showing results if <= 4 jobs remaining AND > 1 result
-        $showResults = $incompleteJobs <= 4;
-
-        $toolDuplicateRequests = ToolDuplicateRequest::whereIn('notion_object_id', $workspace->notionObjects->pluck('id'))
-            ->get();
-
-        return Inertia::render('Duplicates/Workspace', [
-            'workspace' => $workspace,
-            'refreshInProgress' => $incompleteJobs > 0,
-            'showResults' => $showResults,
-        ]);
-    })->name('duplicates.workspace')->middleware('can:view,workspace');
+    Route::get('/duplicates/workspace/{workspace}', [WorkspaceController::class, 'show'])
+        ->name('duplicates.workspace')
+        ->middleware('can:view,workspace');
 
     Route::post('/test/workspace/{workspace}/refresh', [WorkspaceRefreshController::class, 'refresh'])
         ->name('api.test.workspace.refresh')
