@@ -2,6 +2,7 @@
 import { Head } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { computed } from 'vue';
+import Spinner from '@/Components/Spinner.vue';
 
 const props = defineProps({
     toolDuplicateRequest: {
@@ -59,13 +60,19 @@ console.log('typeof toolDuplicateRequest.search_results', typeof props.toolDupli
 
                     <div class="mt-8">
                         <h4 class="text-lg font-medium text-gray-900">Search Results:</h4>
-                        <ul v-if="sortedSearchResults.length" class="mt-4 space-y-4">
-                            <li v-for="(result, index) in sortedSearchResults.slice(0, 5)" :key="index" class="border-b pb-4">
-                                <p class="font-semibold">{{ truncateTitle(result.keep.title) }}</p>
-                                <p class="text-sm text-gray-600">Number of duplicates to delete: {{ result.delete.length }}</p>
-                            </li>
-                        </ul>
-                        <p v-else class="mt-4 text-gray-600">No search results available.</p>
+                        <div v-if="jobsInProgress" class="mt-4 flex items-center justify-center">
+                            <Spinner class="h-8 w-8" />
+                            <span class="ml-2 text-gray-600">Processing...</span>
+                        </div>
+                        <template v-else>
+                            <ul v-if="sortedSearchResults.length" class="mt-4 space-y-4">
+                                <li v-for="(result, index) in sortedSearchResults.slice(0, 5)" :key="index" class="border-b pb-4">
+                                    <p class="font-semibold">{{ truncateTitle(result.keep.title) }}</p>
+                                    <p class="text-sm text-gray-600">Number of duplicates to delete: {{ result.delete.length }}</p>
+                                </li>
+                            </ul>
+                            <p v-else class="mt-4 text-gray-600">No search results available.</p>
+                        </template>
                     </div>
                 </div>
             </div>
