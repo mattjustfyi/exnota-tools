@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Casts\RemoteNotionObjectArrayCast;
-use App\Casts\RemoteNotionObjectArrayOfArraysCast;
 use App\Enums\NotionObjectType;
 use App\Helpers\NotionHelper;
 use Carbon\Carbon;
@@ -26,7 +24,6 @@ class ToolDuplicateRequest extends Model
     protected $casts = [
         // 'search_results' => RemoteNotionObject::class,
         'searched_at' => 'datetime',
-        'duplicates' => RemoteNotionObjectArrayOfArraysCast::class,
     ];
 
     protected function searchResults(): Attribute

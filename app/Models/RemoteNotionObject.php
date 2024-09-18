@@ -2,12 +2,11 @@
 
 namespace App\Models;
 
-use App\Casts\RemoteNotionObjectArrayCast;
 use App\Enums\NotionObjectType;
 use Carbon\Carbon;
 use Illuminate\Contracts\Database\Eloquent\Castable;
 
-class RemoteNotionObject implements Castable
+class RemoteNotionObject
 {
 
     // Define the attributes that should be visible in arrays
@@ -71,10 +70,5 @@ class RemoteNotionObject implements Castable
     public function getUpdatedDate(): Carbon
     {
         return $this->updated_date;
-    }
-
-    public static function castUsing(array $arguments)
-    {
-        return RemoteNotionObjectArrayCast::class;
     }
 }
