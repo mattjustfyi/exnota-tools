@@ -39,18 +39,31 @@ class ToolDuplicateRequest extends Model
 
                 $arr = json_decode($value, true);
 
-                $notionDTOs = array_map(function ($entry) {
-                    return new NotionDTO(
-                        $entry['notion_id'],
-                        $entry['title'],
-                        NotionHelper::getNotionObjectType($entry['type']),
-                        $entry['property_values'],
-                        Carbon::parse($entry['created_date']),
-                        Carbon::parse($entry['updated_date']),
+                $duplicateResultsDTOs = array_map(function ($entry) {
+                    $keep = new NotionDTO(
+                        $entry['keep']['notion_id'],
+                        $entry['keep']['title'],
+                        NotionHelper::getNotionObjectType($entry['keep']['type']),
+                        $entry['keep']['property_values'],
+                        Carbon::parse($entry['keep']['created_date']),
+                        Carbon::parse($entry['keep']['updated_date']),
                     );
+
+                    $delete = array_map(function ($notionDTO) {
+                        return new NotionDTO(
+                            $notionDTO['notion_id'],
+                            $notionDTO['title'],
+                            NotionHelper::getNotionObjectType($notionDTO['type']),
+                            $notionDTO['property_values'],
+                            Carbon::parse($notionDTO['created_date']),
+                            Carbon::parse($notionDTO['updated_date']),
+                        );
+                    }, $entry['delete']);
+
+                    return new DuplicateResultsDTO($keep, $delete);
                 }, $arr);
 
-                return $notionDTOs;
+                return $duplicateResultsDTOs;
             },
             set: function (array $value) {
                 $duplicateResultsDTOs = array_map(function (DuplicateResultsDTO $entry) {
