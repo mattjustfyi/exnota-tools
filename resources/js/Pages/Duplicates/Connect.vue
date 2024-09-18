@@ -47,12 +47,11 @@ onMounted(() => {
     <AppLayoutNoUser>
 
         <Head title="Duplicates - Exnota Tools - Find/delete duplicate Notion database rows" />
-        <h1>Find/Delete duplicate Rows</h1>
-        <h2>Connect</h2>
-        <br>
+        <h1 class="text-3xl font-bold mb-4">Find/Delete duplicate Rows</h1>
+        <h2 class="text-2xl font-semibold mb-4">Connect</h2>
         <div v-if="user">
             <p>Welcome, {{ user.name }}</p>
-            <h3>Your Workspaces:</h3>
+            <h3 class="text-xl font-semibold mb-2">Your Workspaces:</h3>
             <ul v-if="workspaces && workspaces.length > 0">
                 <li v-for="workspace in workspaces" :key="workspace.id">
                     {{ JSON.stringify(workspace) }}
