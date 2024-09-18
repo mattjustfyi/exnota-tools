@@ -6,6 +6,7 @@
 
 - User not logged in to Notion
 - Close window without completing or decline
+- Notion user already has an account
 
 ### Choose database
 
@@ -13,7 +14,8 @@
 - Getting database list fails and does not recover
 - No databases found
 - Desired database not found
--
+- Desired database in another workspace
+- Can't access another user's workspace
 
 ### Search database
 
@@ -25,6 +27,7 @@
 - Have lost Notion access
 - Searching fails once and recovers
 - Searching fails and does not recover
+- Can't search another user's workspace
 
 ### Delete
 
@@ -35,3 +38,4 @@
 - Have lost Notion access
 - Deleting fails once and recovers
 - Deleting fails and does not recover
+- Can't delete from another user's database
