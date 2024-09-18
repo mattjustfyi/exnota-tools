@@ -7,6 +7,14 @@ use App\Models\ToolDuplicateRequest;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
+readonly class ExistingDuplicateRequest
+{
+    public function __construct(
+        public string $notion_object_id,
+        public int $duplicate_request_id
+    ) {}
+}
+
 class WorkspaceController extends Controller
 {
     public function show(Workspace $workspace)
