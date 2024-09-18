@@ -53,18 +53,34 @@ class ToolDuplicateRequest extends Model
                 return $notionDTOs;
             },
             set: function (array $value) {
-                $notionDTOs = array_map(function (NotionDTO $entry) {
+                $duplicateResultsDTOs = array_map(function (DuplicateResultsDTO $entry) {
+                    $keep = new NotionDTO(
+                        $entry->keep->notion_id,
+                        $entry->keep->title,
+                        $entry->keep->type,
+                        $entry->keep->property_values,
+                        $entry->keep->created_date,
+                        $entry->keep->updated_date,
+                    );
+
+                    $delete = array_map(function (NotionDTO $notionDTO) {
+                        return [
+                            'notion_id' => $notionDTO->notion_id,
+                            'title' => $notionDTO->title,
+                            'type' => $notionDTO->type,
+                            'property_values' => $notionDTO->property_values,
+                            'created_date' => $notionDTO->created_date->toDateTimeString(),
+                            'updated_date' => $notionDTO->updated_date->toDateTimeString(),
+                        ];
+                    }, $entry->delete);
+
                     return [
-                        'notion_id' => $entry->notion_id,
-                        'title' => $entry->title,
-                        'type' => $entry->type,
-                        'property_values' => $entry->property_values,
-                        'created_date' => $entry->created_date->toDateTimeString(),
-                        'updated_date' => $entry->updated_date->toDateTimeString(),
+                        'keep' => $keep,
+                        'delete' => $delete,
                     ];
                 }, $value);
 
-                return json_encode($notionDTOs);
+                return json_encode($duplicateResultsDTOs);
             }
         );
     }
@@ -73,6 +89,20 @@ class ToolDuplicateRequest extends Model
     {
         return $this->belongsTo(NotionObject::class);
     }
+}
+
+readonly class DuplicateResultsDTO
+{
+    public function __construct(
+        /**
+         * Represents a Tool Duplicate Request.
+         *
+         * @property array<NotionDTO> $keep The items to keep in the duplicate request.
+         * @property array<NotionDTO> $delete The items to delete in the duplicate request.
+         */
+        public NotionDTO $keep,
+        public array $delete,
+    ) {}
 }
 
 readonly class NotionDTO

@@ -14,6 +14,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Notion\Databases\Query;
 use Notion\Notion;
+use App\Models\DuplicateResultsDTO;
+use App\Models\NotionDTO;
 
 class DuplicateSearch implements ShouldQueue
 {
@@ -81,10 +83,46 @@ class DuplicateSearch implements ShouldQueue
             return $group->values()->all();
         })->values()->all();
 
+        $duplicateResults = [];
+        foreach ($duplicatePairs as $pair) {
+            $oldest = null;
+            foreach ($pair as $item) {
+                if ($oldest === null || $item->getCreatedDate() < $oldest->getCreatedDate()) {
+                    $oldest = $item;
+                }
+            }
+
+            $oldestDTO = new NotionDTO(
+                $oldest->getNotionId(),
+                $oldest->getTitle(),
+                $oldest->getType(),
+                $oldest->getPropertyValues(),
+                $oldest->getCreatedDate(),
+                $oldest->getUpdatedDate()
+            );
+
+            $remainingDuplicates = array_values(array_filter($pair, function ($item) use ($oldest) {
+                return $item !== $oldest;
+            }));
+
+            $remainingDuplicatesDTO = array_map(function (RemoteNotionObject $notionObject) {
+                return new NotionDTO(
+                    $notionObject->getNotionId(),
+                    $notionObject->getTitle(),
+                    $notionObject->getType(),
+                    $notionObject->getPropertyValues(),
+                    $notionObject->getCreatedDate(),
+                    $notionObject->getUpdatedDate()
+                );
+            }, $remainingDuplicates);
+
+            array_push($duplicateResults, new DuplicateResultsDTO($oldestDTO, $remainingDuplicatesDTO));
+        }
+
+        // Update the toolDuplicateRequest with the duplicate results
         $this->toolDuplicateRequest->update([
-            'search_results' => $remoteNotionObjects,
-            'duplicates' => $duplicatePairs,
-            'searched_at' => Carbon::now()
+            'search_results' => $duplicateResults,
+            'searched_at' => Carbon::now(),
         ]);
     }
 }
