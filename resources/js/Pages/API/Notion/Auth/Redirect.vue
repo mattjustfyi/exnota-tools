@@ -58,6 +58,4 @@ fetch('/api/notion/auth/save', {
 
 <template>
     Taking you back to Exnota Tools...
-    <br />
-    code = {{ code }}
 </template>

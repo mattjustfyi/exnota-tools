@@ -67,7 +67,7 @@ Route::middleware([
 
     Route::post('/duplicates/request', [DuplicatesCreateController::class, 'create'])
         ->name('duplicates.create-request')
-        ->middleware(['can:create,App\Models\ToolDuplicateRequest', CreateDuplicateRequestPolicyMiddleware::class]);
+        ->middleware(CreateDuplicateRequestPolicyMiddleware::class);
 
     Route::get('/duplicates/request/{toolDuplicateRequest}/confirm', function (ToolDuplicateRequest $toolDuplicateRequest) {
         // Couldn't get back slashes escaping properly, so subtituted with wildcards.

@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\ToolDuplicateRequest;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,25 +17,14 @@ class CreateDuplicateRequestPolicyMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = Auth::user();
         $notionObjectId = $request->input('notion_object_id');
 
-        if (!$user || !$notionObjectId) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+        if (!$request->user() || !$notionObjectId) {
+            abort(403);
         }
 
-        $ws = $user->workspaces;
-        $notionObjectBelongsToUser = false;
-
-        foreach ($ws as $workspace) {
-            if ($workspace->notionObjects->contains('id', $notionObjectId)) {
-                $notionObjectBelongsToUser = true;
-                break;
-            }
-        }
-
-        if (!$notionObjectBelongsToUser) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+        if (!$request->user()->can('create', [ToolDuplicateRequest::class,  $notionObjectId])) {
+            abort(403);
         }
 
         return $next($request);
