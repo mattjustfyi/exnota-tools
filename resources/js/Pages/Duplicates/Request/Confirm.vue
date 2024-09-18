@@ -10,6 +10,11 @@ const props = defineProps({
     },
 });
 
+const truncateTitle = (title, maxLength = 50) => {
+    if (title.length <= maxLength) return title;
+    return title.slice(0, maxLength) + '...';
+};
+
 const sortedSearchResults = computed(() => {
     if (props.toolDuplicateRequest.search_results && Array.isArray(props.toolDuplicateRequest.search_results)) {
         return [...props.toolDuplicateRequest.search_results].sort((a, b) => b.delete.length - a.delete.length);
@@ -52,7 +57,7 @@ console.log('typeof toolDuplicateRequest.search_results', typeof props.toolDupli
                         <h4 class="text-lg font-medium text-gray-900">Search Results:</h4>
                         <ul v-if="sortedSearchResults.length" class="mt-4 space-y-4">
                             <li v-for="(result, index) in sortedSearchResults.slice(0, 5)" :key="index" class="border-b pb-4">
-                                <p class="font-semibold">{{ result.keep.title }}</p>
+                                <p class="font-semibold">{{ truncateTitle(result.keep.title) }}</p>
                                 <p class="text-sm text-gray-600">Number of duplicates to delete: {{ result.delete.length }}</p>
                             </li>
                         </ul>
