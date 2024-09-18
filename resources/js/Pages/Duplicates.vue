@@ -32,7 +32,7 @@ const fetchUserData = () => {
         <Head title="Duplicates - Exnota Tools - Find/delete duplicate Notion database rows" />
         <h1>Find/Delete duplicate Rows</h1>
         <p>User: {{ user }}</p>
-        <Link href="/duplicates/connect">Start</Link>
+        <Link href="/duplicates/connect" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Start</Link>
         <br><br>
         <button @click="fetchUserData">Refresh Workspace</button>
     </AppLayoutNoUser>
