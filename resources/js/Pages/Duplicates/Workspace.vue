@@ -1,7 +1,7 @@
 <script setup>
 import { Head, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { ref, watch, onMounted, onUnmounted } from 'vue';
+import { ref, watch, onMounted, onUnmounted, computed } from 'vue';
 
 const props = defineProps({
     workspace: {
@@ -47,6 +47,17 @@ const stopPeriodicRefresh = () => {
         refreshInterval.value = null;
     }
 };
+
+const sortedNotionObjects = computed(() => {
+    if (props.workspace.notion_objects) {
+        return [...props.workspace.notion_objects].sort((a, b) => {
+            const dateA = new Date(a.data.createdTime.date);
+            const dateB = new Date(b.data.createdTime.date);
+            return dateB - dateA; // Sort in descending order (newest first)
+        });
+    }
+    return [];
+});
 
 watch(() => props.refreshInProgress, (newValue) => {
     if (newValue) {
@@ -96,13 +107,11 @@ onUnmounted(() => {
                             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
                         </div>
                         <template v-if="showResults">
-                            <p v-if="workspace.notion_objects && workspace.notion_objects.length"
-                                class="mt-4 font-semibold">
-                                Databases found: {{ workspace.notion_objects.length }}
+                            <p v-if="sortedNotionObjects.length" class="mt-4 font-semibold">
+                                Databases found: {{ sortedNotionObjects.length }}
                             </p>
-                            <ul v-if="workspace.notion_objects && workspace.notion_objects.length"
-                                class="mt-4 space-y-2">
-                                <li v-for="object in workspace.notion_objects" :key="object.id"
+                            <ul v-if="sortedNotionObjects.length" class="mt-4 space-y-2">
+                                <li v-for="object in sortedNotionObjects" :key="object.id"
                                     class="p-4 bg-gray-100 rounded flex justify-between items-center">
                                     <div>
                                         <strong>{{ object.name }}</strong>
