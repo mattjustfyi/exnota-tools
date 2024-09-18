@@ -28,26 +28,11 @@ const selectDatabase = (database) => {
 };
 
 const callDuplicatesCreateController = (notionObjectId) => {
-    router.post('/duplicates/request', { notion_object_id: notionObjectId })
-        .then(response => {
-            console.log('DuplicatesCreateController response:', response.data);
-            // Handle the response, e.g., show a success message or redirect
-        })
-        .catch(error => {
-            console.error('Error calling DuplicatesCreateController:', error);
-            // Handle the error, e.g., show an error message
-        });
+    router.post('/duplicates/request', { notion_object_id: notionObjectId });
 };
 
 const fetchUserData = () => {
-    axios.post(`/test/workspace/${props.workspace.id}/refresh`)
-        .then(response => {
-            console.log(response);
-            // response.data
-        })
-        .catch(error => {
-            console.error('Error fetching user data:', error);
-        });
+    router.post(`/test/workspace/${props.workspace.id}/refresh`);
 };
 
 const startPeriodicRefresh = () => {
@@ -102,7 +87,7 @@ onUnmounted(() => {
                     </p>
                     <button @click="fetchUserData"
                         class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                        Fetch User Data
+                        Refresh Workspace
                     </button>
 
                     <div class="mt-8">

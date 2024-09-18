@@ -6,7 +6,7 @@ use App\Jobs\WorkspaceRefresh;
 use App\Models\Workspace;
 use Illuminate\Http\JsonResponse;
 
-class WorkspaceController extends Controller
+class WorkspaceRefreshController extends Controller
 {
     /**
      * Refresh the specified workspace.
@@ -14,10 +14,10 @@ class WorkspaceController extends Controller
      * @param  Workspace  $workspace
      * @return JsonResponse
      */
-    public function refresh(Workspace $workspace): JsonResponse
+    public function refresh(Workspace $workspace)
     {
         WorkspaceRefresh::dispatch($workspace);
 
-        return response()->json(['message' => 'Workspace refresh job dispatched successfully']);
+        return to_route('duplicates.workspace', ['workspace' => $workspace->id]);
     }
 }

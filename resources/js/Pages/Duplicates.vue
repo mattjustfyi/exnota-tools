@@ -34,6 +34,6 @@ const fetchUserData = () => {
         <p>User: {{ user }}</p>
         <Link href="/duplicates/connect">Start</Link>
         <br><br>
-        <button @click="fetchUserData">Fetch User Data</button>
+        <button @click="fetchUserData">Refresh Workspace</button>
     </AppLayoutNoUser>
 </template>
