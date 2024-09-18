@@ -3,7 +3,7 @@
 namespace App\Helpers;
 
 use App\Enums\NotionObjectType;
-use App\Models\RemoteNotionObject;
+use App\Models\ToolDuplicateRequest\NotionDTO;
 use Carbon\Carbon;
 use Notion\Common\RichText;
 use Notion\Databases\Database;
@@ -24,7 +24,7 @@ class NotionHelper
         return '';
     }
 
-    public static function createRemoteNotionObject($notionResult): RemoteNotionObject
+    public static function createRemoteNotionObject($notionResult): NotionDTO
     {
         if ($notionResult instanceof Page) {
             $type = NotionObjectType::PAGE;
@@ -34,7 +34,7 @@ class NotionHelper
             throw new \InvalidArgumentException('Unsupported Notion object type');
         }
 
-        return new RemoteNotionObject(
+        return new NotionDTO(
             $notionResult->id,
             self::getTitleFromNotionResult($notionResult),
             $type,
