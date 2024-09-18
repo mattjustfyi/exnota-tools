@@ -1,7 +1,7 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { computed } from 'vue';
+import { computed, ref, watch, onMounted, onUnmounted } from 'vue';
 
 const props = defineProps({
     toolDuplicateRequest: {
@@ -24,6 +24,39 @@ const sortedSearchResults = computed(() => {
         return [...props.toolDuplicateRequest.search_results].sort((a, b) => b.delete.length - a.delete.length);
     }
     return [];
+});
+
+const refreshInterval = ref(null);
+
+const startPeriodicRefresh = () => {
+    refreshInterval.value = setInterval(() => {
+        router.reload();
+    }, 2000);
+};
+
+const stopPeriodicRefresh = () => {
+    if (refreshInterval.value) {
+        clearInterval(refreshInterval.value);
+        refreshInterval.value = null;
+    }
+};
+
+watch(() => props.jobsInProgress, (newValue) => {
+    if (newValue) {
+        startPeriodicRefresh();
+    } else {
+        stopPeriodicRefresh();
+    }
+});
+
+onMounted(() => {
+    if (props.jobsInProgress) {
+        startPeriodicRefresh();
+    }
+});
+
+onUnmounted(() => {
+    stopPeriodicRefresh();
 });
 
 </script>
