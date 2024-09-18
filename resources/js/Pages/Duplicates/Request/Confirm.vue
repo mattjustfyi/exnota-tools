@@ -44,6 +44,10 @@ console.log('typeof toolDuplicateRequest.search_results', typeof props.toolDupli
                         <h4 class="text-lg font-medium text-gray-900">Search Results:</h4>
                         <ul v-if="toolDuplicateRequest.search_results && toolDuplicateRequest.search_results.length"
                             class="mt-4 space-y-4">
+                            <li v-for="(result, index) in toolDuplicateRequest.search_results.slice(0, 5)" :key="index" class="border-b pb-4">
+                                <p class="font-semibold">{{ result.keep.title }}</p>
+                                <p class="text-sm text-gray-600">Number of duplicates to delete: {{ result.delete.length }}</p>
+                            </li>
                         </ul>
                         <p v-else class="mt-4 text-gray-600">No search results available.</p>
                     </div>
