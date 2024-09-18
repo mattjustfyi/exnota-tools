@@ -33,10 +33,21 @@ class WorkspaceController extends Controller
         $toolDuplicateRequests = ToolDuplicateRequest::whereIn('notion_object_id', $workspace->notionObjects->pluck('id'))
             ->get();
 
+        $existing_duplicate_requests = $workspace->notionObjects->pluck('id')
+            ->mapWithKeys(function ($notionObjectId) use ($toolDuplicateRequests) {
+                $latestRequest = $toolDuplicateRequests
+                    ->where('notion_object_id', $notionObjectId)
+                    ->sortByDesc('created_at')
+                    ->first();
+                
+                return [$notionObjectId => $latestRequest ? $latestRequest->id : null];
+            });
+
         return Inertia::render('Duplicates/Workspace', [
             'workspace' => $workspace,
             'refreshInProgress' => $incompleteJobs > 0,
             'showResults' => $showResults,
+            'existing_duplicate_requests' => $existing_duplicate_requests,
         ]);
     }
 }
