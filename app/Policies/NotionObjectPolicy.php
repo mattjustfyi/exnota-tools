@@ -27,9 +27,11 @@ class NotionObjectPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(User $user, int $workspace): bool
     {
-        return true; // Assuming all users can create notion objects
+        return $user->workspaces()
+            ->where('id', $workspace)
+            ->exists();
     }
 
     /**

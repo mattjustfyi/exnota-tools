@@ -19,9 +19,13 @@ class ToolDuplicateRequestPolicy
     /**
      * Determine whether the user can create tool duplicate requests.
      */
-    public function create(User $user): bool
+    public function create(User $user, int $notionObject): bool
     {
-        return true; // Assuming all users can create requests
+        return $user->workspaces()
+            ->whereHas('notionObjects', function ($query) use ($notionObject) {
+                $query->where('id', $notionObject);
+            })
+            ->exists();
     }
 
     /**
