@@ -1,5 +1,5 @@
 <script setup>
-import { Head, router } from '@inertiajs/vue3';
+import { Head, router, Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { ref, watch, onMounted, onUnmounted, computed } from 'vue';
 
@@ -14,6 +14,10 @@ const props = defineProps({
     },
     showResults: {
         type: Boolean,
+        required: true
+    },
+    existing_duplicate_requests: {
+        type: Object,
         required: true
     }
 });
@@ -116,7 +120,13 @@ onUnmounted(() => {
                                     <div>
                                         <strong>{{ object.name }}</strong>
                                     </div>
-                                    <button @click="selectDatabase(object)"
+                                    <button v-if="existing_duplicate_requests[object.id]"
+                                        @click="router.visit(`/duplicates/request/${existing_duplicate_requests[object.id]}/confirm`)"
+                                        class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+                                        Results
+                                    </button>
+                                    <button v-else
+                                        @click="selectDatabase(object)"
                                         class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
                                         Search
                                     </button>
