@@ -25,10 +25,6 @@ class DuplicatesCreateController extends Controller
             ], 403);
         }
 
-        // TODO: Update this to not create a new one if there's a job already
-        // existing for a notion object id (no point creating a new job if one)
-        // already exists.
-        // TODO: Then maybe redirect to the existing request page?
         $existingDuplicateRequest = ToolDuplicateRequest::where('notion_object_id', $request->notion_object_id)
             ->orderByDesc('created_at')
             ->first();
