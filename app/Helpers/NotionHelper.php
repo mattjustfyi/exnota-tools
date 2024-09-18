@@ -2,8 +2,8 @@
 
 namespace App\Helpers;
 
+use App\DTOs\NotionDTO;
 use App\Enums\NotionObjectType;
-use App\Models\NotionDTO;
 use Carbon\Carbon;
 use Notion\Common\RichText;
 use Notion\Databases\Database;

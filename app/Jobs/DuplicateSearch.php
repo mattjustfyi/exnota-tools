@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\DTOs\NotionDTO;
 use App\Enums\NotionObjectType;
 use App\Helpers\NotionHelper;
 use App\Models\RemoteNotionObject;
@@ -15,7 +16,6 @@ use Illuminate\Queue\SerializesModels;
 use Notion\Databases\Query;
 use Notion\Notion;
 use App\Models\DuplicateResultsDTO;
-use App\Models\NotionDTO;
 
 class DuplicateSearch implements ShouldQueue
 {

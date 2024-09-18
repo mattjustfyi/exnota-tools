@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\DTOs\NotionDTO;
 use App\Enums\NotionObjectType;
 use App\Helpers\NotionHelper;
 use Carbon\Carbon;
@@ -114,14 +115,3 @@ readonly class DuplicateResultsDTO
     ) {}
 }
 
-readonly class NotionDTO
-{
-    public function __construct(
-        public string $notion_id,
-        public string $title,
-        public NotionObjectType $type,
-        public array $property_values = [],
-        public Carbon $created_date,
-        public Carbon $updated_date
-    ) {}
-}
