@@ -26,13 +26,6 @@ const sortedSearchResults = computed(() => {
     return [];
 });
 
-console.log('toolDuplicateRequest', props.toolDuplicateRequest);
-console.log('toolDuplicateRequest.search_results', props.toolDuplicateRequest.search_results);
-if (props.toolDuplicateRequest.search_results instanceof Array) {
-    console.log('toolDuplicateRequest.search_results[0]', props.toolDuplicateRequest.search_results[0]);
-    console.log('Object.entries(toolDuplicateRequest.search_results[0])', Object.entries(props.toolDuplicateRequest.search_results[0]));
-}
-console.log('typeof toolDuplicateRequest.search_results', typeof props.toolDuplicateRequest.search_results);
 </script>
 
 <template>
@@ -65,9 +58,11 @@ console.log('typeof toolDuplicateRequest.search_results', typeof props.toolDupli
                         </div>
                         <template v-else>
                             <ul v-if="sortedSearchResults.length" class="mt-4 space-y-4">
-                                <li v-for="(result, index) in sortedSearchResults.slice(0, 5)" :key="index" class="border-b pb-4">
+                                <li v-for="(result, index) in sortedSearchResults.slice(0, 5)" :key="index"
+                                    class="border-b pb-4">
                                     <p class="font-semibold">{{ truncateTitle(result.keep.title) }}</p>
-                                    <p class="text-sm text-gray-600">Number of duplicates to delete: {{ result.delete.length }}</p>
+                                    <p class="text-sm text-gray-600">Number of duplicates to delete: {{
+                                        result.delete.length }}</p>
                                 </li>
                             </ul>
                             <p v-else class="mt-4 text-gray-600">No search results available.</p>
