@@ -52,7 +52,9 @@ class DuplicateDelete implements ShouldQueue
                 try {
                     $page = $notion->pages()->find($deleteItem->notion_id);
                     $notion->pages()->update($page, [
-                        'archived' => true
+                        'properties' => [
+                            'archived' => ['checkbox' => true]
+                        ]
                     ]);
                     $deletedPageIds[] = $deleteItem->notion_id;
                 } catch (\Exception $e) {
@@ -61,12 +63,10 @@ class DuplicateDelete implements ShouldQueue
             }
         }
 
-        // Update the toolDuplicateRequest with the delete results
-        $this->toolDuplicateRequest->update([
-            'delete_results' => $deletedPageIds,
-            'delete_started_at' => $deleteStartedAt,
-            'delete_ended_at' => Carbon::now(),
-        ]);
+        $this->toolDuplicateRequest->delete_results = $deletedPageIds;
+        $this->toolDuplicateRequest->delete_started_at = $deleteStartedAt;
+        $this->toolDuplicateRequest->delete_ended_at = Carbon::now();
+        $this->toolDuplicateRequest->save();
 
         logger('Duplicate delete job completed for request: ' . $this->toolDuplicateRequest->id);
     }
