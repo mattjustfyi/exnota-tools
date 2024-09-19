@@ -79,6 +79,8 @@
         ```
 
 2. Deploy app
+   TODO: Migrations technically need to be run first to avoid issues. When site
+   starts getting traffic, need to move to this.
 
       ```bash
       # Deploy master branch
@@ -442,11 +444,16 @@ See <https://dokku.com/docs/configuration/environment-variables/>
 ### Checking local logs
 
 ```bash
-# Local
-./vendor/bin/sail shell
+docker exec -it exnota-tools-local tail -f /var/www/html/storage/logs/laravel.log
 
-# Docker in local
-tail -f /var/www/html/storage/logs/laravel.log
+# Prod-like: App
+docker exec -it exnota-tools-prod tail -f /var/www/html/storage/logs/laravel.log
+
+# Prod-like: Workers - Jobs
+docker exec -it exnota-tools-prod-workers tail -f /var/log/supervisor/worker-default.log
+
+# Prod-like: Workers - Supervisor
+docker exec -it exnota-tools-prod-workers tail -f /var/log/supervisor/supervisor.log
 ```
 
 ### Checking prod logs

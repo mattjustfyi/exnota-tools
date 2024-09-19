@@ -48,6 +48,25 @@ services:
 #         extra_hosts:
 #             - 'host.docker.internal:host-gateway'
 
+    # Uses ./Dockerfile to mimic prod environment
+    # laravel.prod.workers:
+    #     container_name: exnota-tools-prod-workers
+    #     image: app-name:latest
+    #     build:
+    #         target: prod
+    #         context: .
+    #     command: /usr/bin/supervisord -c /etc/supervisor/conf.d/supervised-worker.conf -l /var/log/supervisor/supervisor.log
+    #     env_file:
+    #         - .env
+    #     volumes:
+    #         - .:/var/www/html
+    #     depends_on:
+    #         - pgsql
+    #     networks:
+    #         - sail
+    #     extra_hosts:
+    #         - 'host.docker.internal:host-gateway'
+
     # Database
     pgsql:
         # TODO: Update to 16.1 to match prod
