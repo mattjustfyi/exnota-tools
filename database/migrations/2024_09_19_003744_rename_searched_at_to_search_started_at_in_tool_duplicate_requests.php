@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tool_duplicate_requests', function (Blueprint $table) {
-            //
+            $table->renameColumn('searched_at', 'search_started_at');
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('tool_duplicate_requests', function (Blueprint $table) {
-            //
+            $table->renameColumn('search_started_at', 'searched_at');
         });
     }
 };
