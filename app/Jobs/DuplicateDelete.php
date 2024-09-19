@@ -40,6 +40,8 @@ class DuplicateDelete implements ShouldQueue
     {
         $deleteStartedAt = Carbon::now();
 
+        // TODO: Don't allow deleting if search_results is empty.
+
         $notionObject = $this->toolDuplicateRequest->notionObject;
         $workspace = $notionObject->workspace;
 
@@ -50,13 +52,10 @@ class DuplicateDelete implements ShouldQueue
         foreach ($this->toolDuplicateRequest->search_results as $result) {
             foreach ($result->delete as $deleteItem) {
                 try {
-                    $page = $notion->pages()->find($deleteItem->notion_id);
-                    $notion->pages()->update($page, [
-                        'properties' => [
-                            'archived' => ['checkbox' => true]
-                        ]
-                    ]);
-                    $deletedPageIds[] = $deleteItem->notion_id;
+                    $pageId = $deleteItem->notion_id;
+                    $page = $notion->pages()->find($pageId);
+                    $notion->pages()->delete($page);
+                    $deletedPageIds[] = $pageId;
                 } catch (\Exception $e) {
                     logger('Error deleting page: ' . $deleteItem->notion_id . '. Error: ' . $e->getMessage());
                 }
@@ -67,6 +66,13 @@ class DuplicateDelete implements ShouldQueue
         $this->toolDuplicateRequest->delete_started_at = $deleteStartedAt;
         $this->toolDuplicateRequest->delete_ended_at = Carbon::now();
         $this->toolDuplicateRequest->save();
+
+        // // Update the toolDuplicateRequest with the delete results
+        // $this->toolDuplicateRequest->update([
+        //     'delete_results' => $deletedPageIds,
+        //     'delete_started_at' => $deleteStartedAt,
+        //     'delete_ended_at' => Carbon::now(),
+        // ]);
 
         logger('Duplicate delete job completed for request: ' . $this->toolDuplicateRequest->id);
     }

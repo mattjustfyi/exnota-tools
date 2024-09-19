@@ -6,6 +6,7 @@ use App\Http\Controllers\NotionAuthSaveController;
 use App\Http\Controllers\WorkspaceController;
 use App\Http\Controllers\WorkspaceRefreshController;
 use App\Http\Middleware\CreateDuplicateRequestPolicyMiddleware;
+use App\Jobs\DuplicateDelete;
 use App\Jobs\WorkspaceRefresh;
 use App\Models\ToolDuplicateRequest;
 use App\Models\Workspace;
@@ -68,6 +69,11 @@ Route::middleware([
     Route::post('/duplicates/request', [DuplicatesCreateController::class, 'create'])
         ->name('duplicates.create-request')
         ->middleware(CreateDuplicateRequestPolicyMiddleware::class);
+
+    Route::post('/duplicates/request/{toolDuplicateRequest}/delete', function (ToolDuplicateRequest $toolDuplicateRequest) {
+        DuplicateDelete::dispatch($toolDuplicateRequest);
+        return to_route('duplicates.request.confirm', ['toolDuplicateRequest' => $toolDuplicateRequest->id]);
+    })->name('duplicates.delete-request')->middleware('can:update,toolDuplicateRequest');
 
     Route::get('/duplicates/request/{toolDuplicateRequest}/confirm', function (ToolDuplicateRequest $toolDuplicateRequest) {
         // Couldn't get back slashes escaping properly, so subtituted with wildcards.
