@@ -19,12 +19,18 @@ class ToolDuplicateRequest extends Model
         'notion_object_id',
         'search_results',
         'searched_at',
+        'search_ended_at',
+        'delete_started_at',
+        'delete_ended_at',
         'duplicates',
         'delete_results',
     ];
 
     protected $casts = [
         'searched_at' => 'datetime',
+        'search_ended_at' => 'datetime',
+        'delete_started_at' => 'datetime',
+        'delete_ended_at' => 'datetime',
     ];
 
     protected function searchResults(): Attribute
