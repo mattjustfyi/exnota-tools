@@ -96,7 +96,7 @@ class DuplicateSearch implements ShouldQueue
         // Update the toolDuplicateRequest with the duplicate results
         $this->toolDuplicateRequest->update([
             'search_results' => $duplicateResults,
-            'searched_at' => Carbon::now(),
+            'searched_started_at' => Carbon::now(),
         ]);
     }
 }

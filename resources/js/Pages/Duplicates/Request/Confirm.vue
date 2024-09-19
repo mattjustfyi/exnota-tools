@@ -92,7 +92,7 @@ onUnmounted(() => {
                         Notion Object ID: {{ toolDuplicateRequest.notion_object_id }}
                     </p>
                     <p class="mt-2 text-gray-600">
-                        Searched At: {{ new Date(toolDuplicateRequest.searched_at).toLocaleString() }}
+                        Searched At: {{ new Date(toolDuplicateRequest.searched_started_at).toLocaleString() }}
                     </p>
 
                     <div class="mt-8">
