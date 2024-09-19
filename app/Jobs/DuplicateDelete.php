@@ -54,6 +54,13 @@ class DuplicateDelete implements ShouldQueue
                 try {
                     $pageId = $deleteItem->notion_id;
                     $page = $notion->pages()->find($pageId);
+
+                    // Notion API will return an error if trying to archive an
+                    // already archived page: "Can't edit block that is archived. You must unarchive the block before editing."
+                    if ($page->archived) {
+                        continue;
+                    }
+
                     $notion->pages()->delete($page);
                     $deletedPageIds[] = $pageId;
                 } catch (\Exception $e) {
@@ -62,17 +69,11 @@ class DuplicateDelete implements ShouldQueue
             }
         }
 
-        $this->toolDuplicateRequest->delete_results = $deletedPageIds;
-        $this->toolDuplicateRequest->delete_started_at = $deleteStartedAt;
-        $this->toolDuplicateRequest->delete_ended_at = Carbon::now();
-        $this->toolDuplicateRequest->save();
-
-        // // Update the toolDuplicateRequest with the delete results
-        // $this->toolDuplicateRequest->update([
-        //     'delete_results' => $deletedPageIds,
-        //     'delete_started_at' => $deleteStartedAt,
-        //     'delete_ended_at' => Carbon::now(),
-        // ]);
+        $this->toolDuplicateRequest->update([
+            'delete_results' => $deletedPageIds,
+            'delete_started_at' => $deleteStartedAt,
+            'delete_ended_at' => Carbon::now(),
+        ]);
 
         logger('Duplicate delete job completed for request: ' . $this->toolDuplicateRequest->id);
     }
