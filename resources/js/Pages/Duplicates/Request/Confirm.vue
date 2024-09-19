@@ -34,7 +34,7 @@ const sortedSearchResults = computed(() => {
 });
 
 const notionObjectTitle = computed(() => {
-    return truncateTitle(props.toolDuplicateRequest.notion_object?.title || '');
+    return truncateTitle(props.toolDuplicateRequest.notion_object?.name || '');
 });
 
 const refreshInterval = ref(null);
@@ -93,7 +93,7 @@ onUnmounted(() => {
                                 class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2">
                                 Search again
                             </button>
-                            <button v-if="!jobsInProgress && sortedSearchResults.length > 0" 
+                            <button v-if="!jobsInProgress && sortedSearchResults.length > 0"
                                 @click="() => router.post(route('duplicates.delete-request', toolDuplicateRequest.id))"
                                 class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
                                 Delete Duplicates
@@ -101,13 +101,10 @@ onUnmounted(() => {
                         </div>
                     </div>
                     <p class="mt-4 text-gray-800 font-semibold">
-                        Notion Object Title: {{ notionObjectTitle }}
+                        Database: {{ notionObjectTitle }}
                     </p>
                     <p class="mt-2 text-gray-600">
-                        Notion Object ID: {{ toolDuplicateRequest.notion_object_id }}
-                    </p>
-                    <p class="mt-2 text-gray-600">
-                        Searched At: {{ new Date(toolDuplicateRequest.searched_started_at).toLocaleString() }}
+                        Searched At: {{ new Date(toolDuplicateRequest.search_started_at).toLocaleString() }}
                     </p>
 
                     <div class="mt-8">

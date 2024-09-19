@@ -76,6 +76,8 @@ Route::middleware([
     })->name('duplicates.delete-request')->middleware('can:update,toolDuplicateRequest');
 
     Route::get('/duplicates/request/{toolDuplicateRequest}/confirm', function (ToolDuplicateRequest $toolDuplicateRequest) {
+        $toolDuplicateRequest->loadMissing('notionObject');
+
         // Couldn't get back slashes escaping properly, so subtituted with wildcards.
         $incompleteJobs = DB::table('jobs')
             ->whereRaw('payload ~ ?', '"displayName":"App.{2}Jobs.{2}DuplicateSearch"')
