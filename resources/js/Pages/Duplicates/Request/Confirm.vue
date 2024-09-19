@@ -33,6 +33,13 @@ const sortedSearchResults = computed(() => {
     return [];
 });
 
+const notionObjectTitle = computed(() => {
+    if (props.toolDuplicateRequest.search_results && props.toolDuplicateRequest.search_results.length > 0) {
+        return truncateTitle(props.toolDuplicateRequest.search_results[0].keep.title || '');
+    }
+    return '(Untitled)';
+});
+
 const refreshInterval = ref(null);
 
 const startPeriodicRefresh = () => {
@@ -96,7 +103,10 @@ onUnmounted(() => {
                             </button>
                         </div>
                     </div>
-                    <p class="mt-4 text-gray-600">
+                    <p class="mt-4 text-gray-800 font-semibold">
+                        Notion Object Title: {{ notionObjectTitle }}
+                    </p>
+                    <p class="mt-2 text-gray-600">
                         Notion Object ID: {{ toolDuplicateRequest.notion_object_id }}
                     </p>
                     <p class="mt-2 text-gray-600">
