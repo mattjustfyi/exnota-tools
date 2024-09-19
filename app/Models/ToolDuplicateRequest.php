@@ -20,10 +20,12 @@ class ToolDuplicateRequest extends Model
         'search_results',
         'searched_at',
         'duplicates',
+        'delete_results',
     ];
 
     protected $casts = [
         'searched_at' => 'datetime',
+        'delete_results' => 'array',
     ];
 
     protected function searchResults(): Attribute
@@ -96,6 +98,14 @@ class ToolDuplicateRequest extends Model
 
                 return json_encode($duplicateResultsDTOs);
             }
+        );
+    }
+
+    protected function deleteResults(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $value ? json_decode($value, true) : [],
+            set: fn ($value) => json_encode($value)
         );
     }
 
