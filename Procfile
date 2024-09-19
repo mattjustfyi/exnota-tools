@@ -8,5 +8,10 @@
 # - These commands are passed to `docker run`, which means they override any
 #   `CMD` or `ENTRYPOINT` in the Dockerfile.
 web: apache2-foreground
-worker: php artisan queue:work -v
 
+# TODO: How to restart this?
+# - Dokku should be able to do it on: dokku ps:set exnota-tools restart-policy unless-stopped
+#   - But would need to test in production
+# - Otherwise, supervisor?
+#   - Instead: supervisorctl start "laravel-worker:*"
+worker: php artisan queue:work -v --timeout=120
