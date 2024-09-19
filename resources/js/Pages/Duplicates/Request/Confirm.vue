@@ -34,10 +34,7 @@ const sortedSearchResults = computed(() => {
 });
 
 const notionObjectTitle = computed(() => {
-    if (props.toolDuplicateRequest.search_results && props.toolDuplicateRequest.search_results.length > 0) {
-        return truncateTitle(props.toolDuplicateRequest.search_results[0].keep.title || '');
-    }
-    return '(Untitled)';
+    return truncateTitle(props.toolDuplicateRequest.notion_object?.title || '');
 });
 
 const refreshInterval = ref(null);
