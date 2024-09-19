@@ -104,9 +104,19 @@ class ToolDuplicateRequest extends Model
     protected function deleteResults(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => $value ? json_decode($value, true) : [],
-            set: fn ($value) => json_encode($value)
+            get: fn (?string $value): array => $value ? json_decode($value, true) : [],
+            set: function (array $value): string {
+                if (!$this->isArrayOfStrings($value)) {
+                    throw new \InvalidArgumentException('The delete_results must be an array of strings.');
+                }
+                return json_encode($value);
+            }
         );
+    }
+
+    private function isArrayOfStrings(array $array): bool
+    {
+        return array_reduce($array, fn($carry, $item) => $carry && is_string($item), true);
     }
 
     public function notionObject(): BelongsTo
