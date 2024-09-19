@@ -25,7 +25,6 @@ class ToolDuplicateRequest extends Model
 
     protected $casts = [
         'searched_at' => 'datetime',
-        'delete_results' => 'array',
     ];
 
     protected function searchResults(): Attribute
@@ -104,7 +103,7 @@ class ToolDuplicateRequest extends Model
     protected function deleteResults(): Attribute
     {
         return Attribute::make(
-            get: fn (?string $value): array => $value ? json_decode($value, true) : [],
+            get: fn(?string $value): array => $value ? json_decode($value, true) : [],
             set: function (array $value): string {
                 if (!$this->isArrayOfStrings($value)) {
                     throw new \InvalidArgumentException('The delete_results must be an array of strings.');
