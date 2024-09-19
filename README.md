@@ -30,6 +30,7 @@
       - [Laravel (try first)](#laravel-try-first)
       - [Dokku](#dokku-1)
       - [Laravel Pail](#laravel-pail)
+    - [Restart jobs (prod)](#restart-jobs-prod)
     - [How to execute Dokku commands](#how-to-execute-dokku-commands)
   - [Hetzner SSH](#hetzner-ssh)
     - [Terminal](#terminal)
@@ -475,6 +476,22 @@ So far I haven't found these useful. Maybe because prod logs by default are mini
 ```bash
 # "web" is the default app process when no Dokku Procfile is provided
 dokku enter exnota-tools web php artisan pail -vv
+```
+
+### Restart jobs (prod)
+
+```bash
+# Single (on server)
+php artisan queue:retry <uuid>
+
+# Single (off server)
+ssh -t dokku@195.201.33.178 enter exnota-tools worker php artisan queue:retry <uuid>
+
+# All (on server)
+php artisan queue:retry all
+
+# All (off server)
+ssh -t dokku@195.201.33.178 enter exnota-tools worker php artisan queue:retry <uuid>
 ```
 
 ### How to execute Dokku commands
