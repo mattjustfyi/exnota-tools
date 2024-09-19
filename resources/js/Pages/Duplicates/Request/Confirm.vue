@@ -21,6 +21,7 @@ const searchAgain = () => {
 };
 
 const truncateTitle = (title, maxLength = 50) => {
+    if (!title || title.trim() === '') return "(Untitled)";
     if (title.length <= maxLength) return title;
     return title.slice(0, maxLength) + '...';
 };
@@ -112,7 +113,7 @@ onUnmounted(() => {
                             <ul v-if="sortedSearchResults.length" class="mt-4 space-y-4">
                                 <li v-for="(result, index) in sortedSearchResults.slice(0, 5)" :key="index"
                                     class="border-b pb-4">
-                                    <p class="font-semibold">{{ truncateTitle(result.keep.title) }}</p>
+                                    <p class="font-semibold">{{ truncateTitle(result.keep.title || '') }}</p>
                                     <p class="text-sm text-gray-600">Number of duplicates to delete: {{
                                         result.delete.length }}</p>
                                 </li>
