@@ -22,7 +22,6 @@ class ToolDuplicateRequest extends Model
         'search_ended_at',
         'delete_started_at',
         'delete_ended_at',
-        'duplicates',
         'delete_results',
     ];
 
