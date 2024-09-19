@@ -83,10 +83,17 @@ onUnmounted(() => {
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-medium text-gray-900">Search Results</h3>
-                        <button v-if="!jobsInProgress" @click="searchAgain"
-                            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                            Search again
-                        </button>
+                        <div>
+                            <button v-if="!jobsInProgress" @click="searchAgain"
+                                class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2">
+                                Search again
+                            </button>
+                            <button v-if="!jobsInProgress && sortedSearchResults.length > 0" 
+                                @click="() => router.post(route('duplicates.delete-request', toolDuplicateRequest.id))"
+                                class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                                Delete Duplicates
+                            </button>
+                        </div>
                     </div>
                     <p class="mt-4 text-gray-600">
                         Notion Object ID: {{ toolDuplicateRequest.notion_object_id }}
