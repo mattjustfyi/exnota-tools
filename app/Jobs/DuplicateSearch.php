@@ -38,6 +38,8 @@ class DuplicateSearch implements ShouldQueue
      */
     public function handle(): void
     {
+        $searchStartedAt = Carbon::now();
+
         $notionObject = $this->toolDuplicateRequest->notionObject;
         $workspace = $notionObject->workspace;
 
@@ -96,7 +98,8 @@ class DuplicateSearch implements ShouldQueue
         // Update the toolDuplicateRequest with the duplicate results
         $this->toolDuplicateRequest->update([
             'search_results' => $duplicateResults,
-            'searched_started_at' => Carbon::now(),
+            'search_started_at' => $searchStartedAt,
+            'search_ended_at' => Carbon::now(),
         ]);
     }
 }
