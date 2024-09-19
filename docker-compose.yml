@@ -2,6 +2,7 @@ services:
 
     # Uses Sails for local development
     laravel.test:
+        container_name: exnota-tools-local
         build:
             context: ./vendor/laravel/sail/runtimes/8.3
             dockerfile: Dockerfile
@@ -28,6 +29,7 @@ services:
 
     # Uses ./Dockerfile to mimic prod environment
 #     laravel.prod:
+#         container_name: exnota-tools-prod
 #         image: app-name:latest
 #         build:
 #             target: prod
@@ -49,6 +51,7 @@ services:
     # Database
     pgsql:
         # TODO: Update to 16.1 to match prod
+        container_name: exnota-tools-pgsql
         image: 'postgres:15'
         ports:
             - '${FORWARD_DB_PORT:-5432}:5432'
