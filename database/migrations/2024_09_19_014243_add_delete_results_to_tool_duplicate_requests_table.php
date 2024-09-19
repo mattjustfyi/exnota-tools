@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tool_duplicate_requests', function (Blueprint $table) {
-            //
+            $table->json('delete_results')->nullable()->after('duplicates');
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('tool_duplicate_requests', function (Blueprint $table) {
-            //
+            $table->dropColumn('delete_results');
         });
     }
 };
