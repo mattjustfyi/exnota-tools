@@ -143,25 +143,3 @@ readonly class DuplicateResultsDTO
         public array $delete,
     ) {}
 }
-<?php
-
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
-
-return new class extends Migration
-{
-    public function up()
-    {
-        Schema::table('tool_duplicate_requests', function (Blueprint $table) {
-            $table->renameColumn('searched_at', 'search_started_at');
-        });
-    }
-
-    public function down()
-    {
-        Schema::table('tool_duplicate_requests', function (Blueprint $table) {
-            $table->renameColumn('search_started_at', 'searched_at');
-        });
-    }
-};
