@@ -18,7 +18,7 @@ class ToolDuplicateRequest extends Model
     protected $fillable = [
         'notion_object_id',
         'search_results',
-        'searched_at',
+        'search_started_at',
         'search_ended_at',
         'delete_started_at',
         'delete_ended_at',
@@ -27,7 +27,7 @@ class ToolDuplicateRequest extends Model
     ];
 
     protected $casts = [
-        'searched_at' => 'datetime',
+        'search_started_at' => 'datetime',
         'search_ended_at' => 'datetime',
         'delete_started_at' => 'datetime',
         'delete_ended_at' => 'datetime',
@@ -143,3 +143,25 @@ readonly class DuplicateResultsDTO
         public array $delete,
     ) {}
 }
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up()
+    {
+        Schema::table('tool_duplicate_requests', function (Blueprint $table) {
+            $table->renameColumn('searched_at', 'search_started_at');
+        });
+    }
+
+    public function down()
+    {
+        Schema::table('tool_duplicate_requests', function (Blueprint $table) {
+            $table->renameColumn('search_started_at', 'searched_at');
+        });
+    }
+};
