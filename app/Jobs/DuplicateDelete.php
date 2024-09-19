@@ -58,6 +58,9 @@ class DuplicateDelete implements ShouldQueue
                     // Notion API will return an error if trying to archive an
                     // already archived page: "Can't edit block that is archived. You must unarchive the block before editing."
                     if ($page->archived) {
+                        // Still flag as deleted to track that it was (probably)
+                        // done in a previous attempt at this job.
+                        $deletedPageIds[] = $pageId;
                         continue;
                     }
 
