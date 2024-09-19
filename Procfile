@@ -9,9 +9,5 @@
 #   `CMD` or `ENTRYPOINT` in the Dockerfile.
 web: apache2-foreground
 
-# TODO: How to restart this?
-# - Dokku should be able to do it on: dokku ps:set exnota-tools restart-policy unless-stopped
-#   - But would need to test in production
-# - Otherwise, supervisor?
-#   - Instead: supervisorctl start "laravel-worker:*"
-worker: php artisan queue:work -v --timeout=120
+# Number of workers and restart policy set in Dokku. See README.md.
+worker: php artisan queue:work -v --timeout=600

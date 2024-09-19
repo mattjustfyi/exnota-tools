@@ -285,6 +285,9 @@ Reference: <https://laravel.com/docs/11.x/csrf#csrf-excluding-uris>
     GRANT CREATE, CONNECT ON DATABASE exnotatools TO app;
     GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO app;
     GRANT USAGE, CREATE ON SCHEMA public TO app;
+
+    # Configure worker
+    dokku ps:set exnota-tools restart-policy unless-stopped
     ```
 
 2. Add Dokku as git remote
