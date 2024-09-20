@@ -27,7 +27,6 @@
     - [Environment variables](#environment-variables)
     - [Checking local logs](#checking-local-logs)
     - [Checking prod logs](#checking-prod-logs)
-      - [Laravel (try first)](#laravel-try-first)
       - [Dokku](#dokku-1)
       - [Laravel Pail](#laravel-pail)
     - [Restart jobs (prod)](#restart-jobs-prod)
@@ -458,15 +457,15 @@ docker exec -it exnota-tools-prod-workers tail -f /var/log/supervisor/supervisor
 
 ### Checking prod logs
 
-#### Laravel (try first)
-
 ```bash
-# Local machine
+# Web
 ssh -t dokku@195.201.33.178 enter exnota-tools web tail -f /var/www/html/storage/logs/laravel.log
 
-ssh -t dokku@195.201.33.178 enter exnota-tools web tail -f /var/www/html/storage/logs/laravel.log
+# Workers
+ssh -t dokku@195.201.33.178 enter exnota-tools worker tail -f /var/www/html/storage/logs/laravel.log
 
-./vendor/bin/sail tail -f /var/www/html/storage/logs/laravel.log
+# Workers - Supervisor
+ssh -t dokku@195.201.33.178 enter exnota-tools worker tail -f /var/log/supervisor/supervisor.log
 ```
 
 #### Dokku

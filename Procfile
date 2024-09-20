@@ -10,4 +10,7 @@
 web: apache2-foreground
 
 # Number of workers and restart policy set in Dokku. See README.md.
-worker: php artisan queue:work -v --timeout=600
+# /usr/bin/supervisord -c /var/www/html/supervised-worker.conf -l /var/log/supervisor/supervisor.log
+
+# TODO: Try this
+worker: /usr/bin/supervisord -c /etc/supervisor/conf.d/supervised-worker.conf -l /var/log/supervisor/supervisor.log
