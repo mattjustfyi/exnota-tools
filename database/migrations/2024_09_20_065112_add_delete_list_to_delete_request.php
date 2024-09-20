@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('delete_request', function (Blueprint $table) {
-            //
+        Schema::table('tool_duplicate_requests', function (Blueprint $table) {
+            $table->json('delete_list')->nullable()->after('delete_results');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('delete_request', function (Blueprint $table) {
-            //
+        Schema::table('tool_duplicate_requests', function (Blueprint $table) {
+            $table->dropColumn('delete_list');
         });
     }
 };
