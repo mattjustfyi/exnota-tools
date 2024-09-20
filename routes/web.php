@@ -2,11 +2,11 @@
 
 use App\Http\Controllers\DuplicatesController;
 use App\Http\Controllers\DuplicatesCreateController;
+use App\Http\Controllers\DuplicateRequestDeleteController;
 use App\Http\Controllers\NotionAuthSaveController;
 use App\Http\Controllers\WorkspaceController;
 use App\Http\Controllers\WorkspaceRefreshController;
 use App\Http\Middleware\CreateDuplicateRequestPolicyMiddleware;
-use App\Jobs\DuplicateDelete;
 use App\Jobs\WorkspaceRefresh;
 use App\Models\ToolDuplicateRequest;
 use App\Models\Workspace;
@@ -70,10 +70,9 @@ Route::middleware([
         ->name('duplicates.create-request')
         ->middleware(CreateDuplicateRequestPolicyMiddleware::class);
 
-    Route::post('/duplicates/request/{toolDuplicateRequest}/delete', function (ToolDuplicateRequest $toolDuplicateRequest) {
-        DuplicateDelete::dispatch($toolDuplicateRequest);
-        return to_route('duplicates.request.confirm', ['toolDuplicateRequest' => $toolDuplicateRequest->id]);
-    })->name('duplicates.delete-request')->middleware('can:update,toolDuplicateRequest');
+    Route::post('/duplicates/request/{toolDuplicateRequest}/delete', [DuplicateRequestDeleteController::class, 'delete'])
+        ->name('duplicates.delete-request')
+        ->middleware('can:update,toolDuplicateRequest');
 
     Route::get('/duplicates/request/{toolDuplicateRequest}/confirm', function (ToolDuplicateRequest $toolDuplicateRequest) {
         $toolDuplicateRequest->loadMissing('notionObject');
