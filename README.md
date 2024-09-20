@@ -447,6 +447,7 @@ docker exec -it exnota-tools-local tail -f /var/www/html/storage/logs/laravel.lo
 
 # Prod-like: App + Default Worker + Delete Worker + Supervisor
 docker exec -it exnota-tools-prod tail -f /var/www/html/storage/logs/laravel.log
+docker exec -it exnota-tools-prod-workers tail -f /var/www/html/storage/logs/laravel.log
 docker exec -it exnota-tools-prod-workers tail -f /var/log/supervisor/worker-default.log
 docker exec -it exnota-tools-prod-workers tail -f /var/log/supervisor/worker-delete-1.log
 docker exec -it exnota-tools-prod-workers tail -f /var/log/supervisor/supervisor.log
@@ -455,13 +456,11 @@ docker exec -it exnota-tools-prod-workers tail -f /var/log/supervisor/supervisor
 ### Checking prod logs
 
 ```bash
-# Web
+# Web + Default Worker + Delete Worker + Supervisor
 ssh -t dokku@195.201.33.178 enter exnota-tools web tail -f /var/www/html/storage/logs/laravel.log
-
-# Workers
 ssh -t dokku@195.201.33.178 enter exnota-tools worker tail -f /var/www/html/storage/logs/laravel.log
-
-# Workers - Supervisor
+ssh -t dokku@195.201.33.178 enter exnota-tools worker tail -f /var/log/supervisor/worker-default.log
+ssh -t dokku@195.201.33.178 enter exnota-tools worker tail -f /var/log/supervisor/worker-delete-1.log
 ssh -t dokku@195.201.33.178 enter exnota-tools worker tail -f /var/log/supervisor/supervisor.log
 ```
 
