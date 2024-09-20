@@ -27,7 +27,7 @@ echo "Waiting for containers to start..."
 sleep 10
 
 # Check if Sail is running
-if ! ./vendor/bin/sail ps | grep -q "laravel.test"; then
+if ! ./vendor/bin/sail ps | grep -q "laravel.local"; then
     echo "Error: Sail containers are not running. Exiting."
     kill $VITE_PID
     exit 1

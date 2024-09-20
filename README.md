@@ -92,7 +92,6 @@
 3. Run migrations
 
       ```bash
-      # TODO: Untested. Remove this comment after first success.
       ssh -t dokku@195.201.33.178 enter exnota-tools web php artisan migrate
 
       # OR
@@ -234,7 +233,7 @@ Reference: <https://laravel.com/docs/11.x/csrf#csrf-excluding-uris>
 
 ### Testing prod build locally
 
-1. In `docker-compose-yml`, comment out `laravel.test` and uncomment `laravel.prod`
+1. In `docker-compose-yml`, comment out `laravel.local` and uncomment `laravel.prod`
 2. Run
 
   ```bash
@@ -443,15 +442,13 @@ See <https://dokku.com/docs/configuration/environment-variables/>
 ### Checking local logs
 
 ```bash
+# Using Sail
 docker exec -it exnota-tools-local tail -f /var/www/html/storage/logs/laravel.log
 
-# Prod-like: App
+# Prod-like: App + Default Worker + Delete Worker + Supervisor
 docker exec -it exnota-tools-prod tail -f /var/www/html/storage/logs/laravel.log
-
-# Prod-like: Workers - Jobs
 docker exec -it exnota-tools-prod-workers tail -f /var/log/supervisor/worker-default.log
-
-# Prod-like: Workers - Supervisor
+docker exec -it exnota-tools-prod-workers tail -f /var/log/supervisor/worker-delete-1.log
 docker exec -it exnota-tools-prod-workers tail -f /var/log/supervisor/supervisor.log
 ```
 
