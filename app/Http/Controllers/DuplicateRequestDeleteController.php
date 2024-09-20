@@ -11,7 +11,7 @@ class DuplicateRequestDeleteController extends Controller
 {
     public function delete(ToolDuplicateRequest $toolDuplicateRequest): RedirectResponse
     {
-        DuplicateDelete::dispatch($toolDuplicateRequest)->onQueue(QueueConstants::DELETE_QUEUE);
+        DuplicateDelete::dispatch($toolDuplicateRequest)->onQueue(QueueConstants::DELETE_QUEUE_1);
         return to_route('duplicates.request.confirm', ['toolDuplicateRequest' => $toolDuplicateRequest->id]);
     }
 }

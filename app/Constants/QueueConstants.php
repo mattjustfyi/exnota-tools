@@ -4,5 +4,5 @@ namespace App\Constants;
 
 class QueueConstants
 {
-    public const DELETE_QUEUE = 'delete-1';
+    public const DELETE_QUEUE_1 = 'delete-1';
 }
