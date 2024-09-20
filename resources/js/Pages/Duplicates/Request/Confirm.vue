@@ -37,6 +37,10 @@ const notionObjectTitle = computed(() => {
     return truncateTitle(props.toolDuplicateRequest.notion_object?.name || '');
 });
 
+const totalDuplicates = computed(() => {
+    return sortedSearchResults.value.reduce((total, result) => total + result.delete.length, 0);
+});
+
 const refreshInterval = ref(null);
 
 const startPeriodicRefresh = () => {
@@ -102,6 +106,9 @@ onUnmounted(() => {
                     </div>
                     <p class="mt-4 text-gray-800 font-semibold">
                         Database: {{ notionObjectTitle }}
+                    </p>
+                    <p class="mt-2 text-gray-700">
+                        Total Duplicates: {{ totalDuplicates }}
                     </p>
                     <p class="mt-2 text-gray-600">
                         Searched At: {{ new Date(toolDuplicateRequest.search_started_at).toLocaleString() }}
