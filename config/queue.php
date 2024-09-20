@@ -39,7 +39,14 @@ return [
             'connection' => env('DB_QUEUE_CONNECTION'),
             'table' => env('DB_QUEUE_TABLE', 'jobs'),
             'queue' => env('DB_QUEUE', 'default'),
-            'retry_after' => (int) env('DB_QUEUE_RETRY_AFTER', 90),
+            # From Laravel docs: https://laravel.com/docs/11.x/queues#job-expirations-and-timeouts
+            #
+            # The --timeout value should always be at least several seconds shorter than
+            # your retry_after configuration value. This will ensure that a worker
+            # processing a frozen job is always terminated before the job is retried. If
+            # your --timeout option is longer than your retry_after configuration value,
+            # your jobs may be processed twice.
+            'retry_after' => (int) env('DB_QUEUE_RETRY_AFTER', 63),
             'after_commit' => false,
         ],
 
