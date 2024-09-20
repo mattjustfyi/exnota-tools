@@ -117,7 +117,7 @@ class ToolDuplicateRequest extends Model
         return $this->getJsonArrayAttribute('delete_list');
     }
 
-    private function getJsonArrayAttribute(string $attributeName): Attribute
+    private function getJsonArrayAttribute(string $attributeName)
     {
         return Attribute::make(
             get: fn(?string $value): array => $value ? json_decode($value, true) : [],
