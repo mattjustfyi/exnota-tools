@@ -23,6 +23,7 @@ class ToolDuplicateRequest extends Model
         'delete_started_at',
         'delete_ended_at',
         'delete_results',
+        'delete_list',
     ];
 
     protected $casts = [
@@ -107,11 +108,21 @@ class ToolDuplicateRequest extends Model
 
     protected function deleteResults(): Attribute
     {
+        return $this->getJsonArrayAttribute('delete_results');
+    }
+
+    protected function deleteList(): Attribute
+    {
+        return $this->getJsonArrayAttribute('delete_list');
+    }
+
+    private function getJsonArrayAttribute(string $attributeName): Attribute
+    {
         return Attribute::make(
             get: fn(?string $value): array => $value ? json_decode($value, true) : [],
-            set: function (array $value): string {
+            set: function (array $value) use ($attributeName): string {
                 if (!$this->isArrayOfStrings($value)) {
-                    throw new \InvalidArgumentException('The delete_results must be an array of strings.');
+                    throw new \InvalidArgumentException("The {$attributeName} must be an array of strings.");
                 }
                 return json_encode($value);
             }
