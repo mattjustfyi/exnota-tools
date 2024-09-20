@@ -31,7 +31,7 @@ class DuplicateRequestDeleteController extends Controller
         $toolDuplicateRequest->delete_list = $deleteList;
         $toolDuplicateRequest->save();
 
-        $batchSize = 5;
+        $batchSize = 20;
         $deleteListChunks = array_chunk($deleteList, $batchSize);
 
         $jobs = [];
