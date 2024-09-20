@@ -43,10 +43,11 @@ class DuplicateDelete implements ShouldQueue
      */
     public function handle(): void
     {
-        DB::transaction(function () {
+        $startedAt = Carbon::now();
+        DB::transaction(function () use ($startedAt) {
             if (!$this->toolDuplicateRequest->refresh()->delete_started_at) {
                 $this->toolDuplicateRequest->update([
-                    'delete_started_at' => Carbon::now(),
+                    'delete_started_at' => $startedAt,
                 ]);
             }
         });
@@ -109,6 +110,7 @@ class DuplicateDelete implements ShouldQueue
             ]);
         });
 
-        Log::debug('Duplicate delete job completed for request: ' . $this->toolDuplicateRequest->id);
+        $durationInSeconds = round($startedAt->diffInSeconds(Carbon::now()), 1);
+        Log::debug('Duplicate delete job completed in ' . strval($durationInSeconds) . 's for request: ' . $this->toolDuplicateRequest->id);
     }
 }
