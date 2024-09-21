@@ -43,12 +43,12 @@ const totalDuplicates = computed(() => {
 
 const refreshInterval = ref(null);
 
-const isLoading = computed(() => {
+const deleteInProgress = computed(() => {
     return props.toolDuplicateRequest.batch_id && !props.toolDuplicateRequest.delete_ended_at;
 });
 
 const shouldRefresh = computed(() => {
-    return isLoading.value || props.searchInProgress;
+    return deleteInProgress.value || props.searchInProgress;
 });
 
 const startPeriodicRefresh = () => {
@@ -124,7 +124,7 @@ onUnmounted(() => {
 
                     <div class="mt-8">
                         <h4 class="text-lg font-medium text-gray-900">Search Results:</h4>
-                        <div v-if="isLoading" class="mt-4 flex justify-center items-center">
+                        <div v-if="deleteInProgress" class="mt-4 flex justify-center items-center">
                             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
                             <span class="ml-2 text-gray-600">Processing1...</span>
                         </div>
