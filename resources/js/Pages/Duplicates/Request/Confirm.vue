@@ -150,8 +150,11 @@ onUnmounted(() => {
                         <h4 class="text-lg font-medium text-gray-900">Search Results:</h4>
                         <div v-if="deleteInProgress" class="mt-4">
                             <ProgressBar :progress="deleteProgress" />
-                            <p class="mt-2 text-center text-gray-600">
+                            <p v-if="toolDuplicateRequest.delete_started_at" class="mt-2 text-center text-gray-600">
                                 Deleting duplicates... {{ deletionStatus.deletedItems }} of {{ deletionStatus.totalItems }} completed
+                            </p>
+                            <p v-else class="mt-2 text-center text-gray-600">
+                                Queued
                             </p>
                         </div>
                         <template v-else-if="searchInProgress">
