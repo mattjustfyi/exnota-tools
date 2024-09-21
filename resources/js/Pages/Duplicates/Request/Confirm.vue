@@ -43,6 +43,10 @@ const totalDuplicates = computed(() => {
 
 const refreshInterval = ref(null);
 
+const isLoading = computed(() => {
+    return props.toolDuplicateRequest.batch_id && !props.toolDuplicateRequest.delete_ended_at;
+});
+
 const startPeriodicRefresh = () => {
     refreshInterval.value = setInterval(() => {
         router.reload();
@@ -56,7 +60,7 @@ const stopPeriodicRefresh = () => {
     }
 };
 
-watch(() => props.jobsInProgress, (newValue) => {
+watch(() => isLoading.value, (newValue) => {
     if (newValue) {
         startPeriodicRefresh();
     } else {
@@ -65,7 +69,7 @@ watch(() => props.jobsInProgress, (newValue) => {
 });
 
 onMounted(() => {
-    if (props.jobsInProgress) {
+    if (isLoading.value) {
         startPeriodicRefresh();
     }
 });
@@ -116,10 +120,16 @@ onUnmounted(() => {
 
                     <div class="mt-8">
                         <h4 class="text-lg font-medium text-gray-900">Search Results:</h4>
-                        <div v-if="jobsInProgress" class="mt-4 flex justify-center items-center">
+                        <div v-if="isLoading" class="mt-4 flex justify-center items-center">
                             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
                             <span class="ml-2 text-gray-600">Processing...</span>
                         </div>
+                        <template v-else-if="jobsInProgress">
+                            <div class="mt-4 flex justify-center items-center">
+                                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                                <span class="ml-2 text-gray-600">Processing...</span>
+                            </div>
+                        </template>
                         <template v-else>
                             <ul v-if="sortedSearchResults.length" class="mt-4 space-y-4">
                                 <li v-for="(result, index) in sortedSearchResults.slice(0, 5)" :key="index"
