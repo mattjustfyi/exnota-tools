@@ -24,6 +24,7 @@
     - [Troubleshooting assorted old](#troubleshooting-assorted-old)
       - [Error: At least one invalid signature was encountered, or "no space left on device"](#error-at-least-one-invalid-signature-was-encountered-or-no-space-left-on-device)
   - [Maintenance](#maintenance)
+    - [Check PHP settings](#check-php-settings)
     - [Environment variables](#environment-variables)
     - [Checking local logs](#checking-local-logs)
     - [Checking prod logs](#checking-prod-logs)
@@ -427,6 +428,14 @@ Fix:
 Use `df -h` before/after to check how much space this is freeing up.
 
 ## Maintenance
+
+### Check PHP settings
+
+```bash
+php artisan tinker
+
+phpinfo()
+```
 
 ### Environment variables
 

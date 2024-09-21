@@ -45,6 +45,13 @@ ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
+# Set php.ini (from https://hub.docker.com/_/php/)
+# Use the default production configuration
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+
+# Increase memory from 128M
+RUN echo "memory_limit = 512M" > $PHP_INI_DIR/conf.d/memory_limit.ini
+
 # Copy the application code
 COPY . /var/www/html
 
