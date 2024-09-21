@@ -8,8 +8,13 @@ function mergeCSVFiles(file1, file2) {
     const data2 = fs.readFileSync(file2, "utf8");
 
     console.log("Parsing CSV data");
-    const records1 = csv.parse(data1);
-    const records2 = csv.parse(data2);
+    try {
+    const parseOptions = {
+        relax_column_count: true,
+        skip_empty_lines: true
+    };
+    const records1 = csv.parse(data1, parseOptions);
+    const records2 = csv.parse(data2, parseOptions);
 
     console.log(
         `File 1 has ${records1.length} rows, File 2 has ${records2.length} rows`
@@ -24,6 +29,10 @@ function mergeCSVFiles(file1, file2) {
 
     console.log("Stringifying merged records");
     return stringify(mergedRecords);
+    } catch (error) {
+        console.error("Error parsing CSV:", error.message);
+        throw error;
+    }
 }
 
 function main() {
