@@ -24,6 +24,7 @@ class ToolDuplicateRequest extends Model
         'delete_ended_at',
         'delete_results',
         'delete_list',
+        'delete_retry_list',
         'batch_id',
     ];
 
@@ -115,6 +116,11 @@ class ToolDuplicateRequest extends Model
     protected function deleteList(): Attribute
     {
         return $this->getJsonArrayAttribute('delete_list');
+    }
+
+    protected function deleteRetryList(): Attribute
+    {
+        return $this->getJsonArrayAttribute('delete_retry_list');
     }
 
     private function getJsonArrayAttribute(string $attributeName)
