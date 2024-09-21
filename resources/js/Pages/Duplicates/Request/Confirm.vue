@@ -2,6 +2,7 @@
 import { Head, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { computed, ref, watch, onMounted, onUnmounted } from 'vue';
+import ProgressBar from '@/Components/ProgressBar.vue';
 
 const props = defineProps({
     toolDuplicateRequest: {
@@ -45,6 +46,15 @@ const refreshInterval = ref(null);
 
 const deleteInProgress = computed(() => {
     return props.toolDuplicateRequest.batch_id && !props.toolDuplicateRequest.delete_ended_at;
+});
+
+const deleteProgress = computed(() => {
+    if (!props.toolDuplicateRequest.delete_list || !props.toolDuplicateRequest.delete_results) {
+        return 0;
+    }
+    const totalItems = props.toolDuplicateRequest.delete_list.length;
+    const deletedItems = props.toolDuplicateRequest.delete_results.length;
+    return totalItems > 0 ? (deletedItems / totalItems) * 100 : 0;
 });
 
 const shouldRefresh = computed(() => {
@@ -128,9 +138,9 @@ onUnmounted(() => {
 
                     <div class="mt-8">
                         <h4 class="text-lg font-medium text-gray-900">Search Results:</h4>
-                        <div v-if="deleteInProgress" class="mt-4 flex justify-center items-center">
-                            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-                            <span class="ml-2 text-gray-600">Processing1...</span>
+                        <div v-if="deleteInProgress" class="mt-4">
+                            <ProgressBar :progress="deleteProgress" />
+                            <p class="mt-2 text-center text-gray-600">Deleting duplicates...</p>
                         </div>
                         <template v-else-if="searchInProgress">
                             <div class="mt-4 flex justify-center items-center">
