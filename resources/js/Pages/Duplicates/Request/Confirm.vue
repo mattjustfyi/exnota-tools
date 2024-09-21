@@ -57,6 +57,16 @@ const deleteProgress = computed(() => {
     return totalItems > 0 ? (deletedItems / totalItems) * 100 : 0;
 });
 
+const deletionStatus = computed(() => {
+    if (!props.toolDuplicateRequest.delete_list || !props.toolDuplicateRequest.delete_results) {
+        return { deletedItems: 0, totalItems: 0 };
+    }
+    return {
+        deletedItems: props.toolDuplicateRequest.delete_results.length,
+        totalItems: props.toolDuplicateRequest.delete_list.length
+    };
+});
+
 const shouldRefresh = computed(() => {
     return deleteInProgress.value || props.searchInProgress;
 });
@@ -140,7 +150,9 @@ onUnmounted(() => {
                         <h4 class="text-lg font-medium text-gray-900">Search Results:</h4>
                         <div v-if="deleteInProgress" class="mt-4">
                             <ProgressBar :progress="deleteProgress" />
-                            <p class="mt-2 text-center text-gray-600">Deleting duplicates...</p>
+                            <p class="mt-2 text-center text-gray-600">
+                                Deleting duplicates... {{ deletionStatus.deletedItems }} of {{ deletionStatus.totalItems }} completed
+                            </p>
                         </div>
                         <template v-else-if="searchInProgress">
                             <div class="mt-4 flex justify-center items-center">
