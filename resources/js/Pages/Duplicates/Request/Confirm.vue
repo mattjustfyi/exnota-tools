@@ -8,7 +8,7 @@ const props = defineProps({
         type: Object,
         required: true
     },
-    jobsInProgress: {
+    searchInProgress: {
         type: Boolean,
         required: true
     },
@@ -48,7 +48,7 @@ const isLoading = computed(() => {
 });
 
 const shouldRefresh = computed(() => {
-    return isLoading.value || props.jobsInProgress;
+    return isLoading.value || props.searchInProgress;
 });
 
 const startPeriodicRefresh = () => {
@@ -101,11 +101,11 @@ onUnmounted(() => {
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-medium text-gray-900">Search Results</h3>
                         <div>
-                            <button v-if="!jobsInProgress" @click="searchAgain"
+                            <button v-if="!searchInProgress" @click="searchAgain"
                                 class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2">
                                 Search again
                             </button>
-                            <button v-if="!jobsInProgress && sortedSearchResults.length > 0"
+                            <button v-if="!searchInProgress && sortedSearchResults.length > 0"
                                 @click="() => router.post(route('duplicates.delete-request', toolDuplicateRequest.id))"
                                 class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
                                 Delete Duplicates
@@ -128,7 +128,7 @@ onUnmounted(() => {
                             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
                             <span class="ml-2 text-gray-600">Processing1...</span>
                         </div>
-                        <template v-else-if="jobsInProgress">
+                        <template v-else-if="searchInProgress">
                             <div class="mt-4 flex justify-center items-center">
                                 <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
                                 <span class="ml-2 text-gray-600">Processing2...</span>

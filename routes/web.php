@@ -83,11 +83,11 @@ Route::middleware([
             ->whereRaw('payload ~ ?', ';s:[0-9]+:.{1}"App.{2}Models.{2}ToolDuplicateRequest.{1}";s:[0-9]+:.{1}"id.{1}";i:' . strval($toolDuplicateRequest->id) . ';')
             ->count();
 
-        $jobsInProgress = $incompleteJobs > 0;
+        $searchInProgress = $incompleteJobs > 0;
 
         return Inertia::render('Duplicates/Request/Confirm', [
             'toolDuplicateRequest' => $toolDuplicateRequest,
-            'jobsInProgress' => $jobsInProgress,
+            'searchInProgress' => $searchInProgress,
         ]);
     })->name('duplicates.request.confirm')->middleware('can:view,toolDuplicateRequest');
 });
