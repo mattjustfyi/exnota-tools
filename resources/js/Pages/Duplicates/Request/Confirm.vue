@@ -122,12 +122,12 @@ onUnmounted(() => {
                         <h4 class="text-lg font-medium text-gray-900">Search Results:</h4>
                         <div v-if="isLoading" class="mt-4 flex justify-center items-center">
                             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-                            <span class="ml-2 text-gray-600">Processing...</span>
+                            <span class="ml-2 text-gray-600">Processing1...</span>
                         </div>
                         <template v-else-if="jobsInProgress">
                             <div class="mt-4 flex justify-center items-center">
                                 <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-                                <span class="ml-2 text-gray-600">Processing...</span>
+                                <span class="ml-2 text-gray-600">Processing2...</span>
                             </div>
                         </template>
                         <template v-else>
