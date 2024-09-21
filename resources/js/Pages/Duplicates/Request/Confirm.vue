@@ -107,7 +107,11 @@ onUnmounted(() => {
                             </button>
                             <button v-if="!searchInProgress && sortedSearchResults.length > 0"
                                 @click="() => router.post(route('duplicates.delete-request', toolDuplicateRequest.id))"
-                                class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                                :disabled="!!toolDuplicateRequest.batch_id"
+                                :class="[
+                                    'px-4 py-2 text-white rounded',
+                                    toolDuplicateRequest.batch_id ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-500 hover:bg-red-600'
+                                ]">
                                 Delete Duplicates
                             </button>
                         </div>
