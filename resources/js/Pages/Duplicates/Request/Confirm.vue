@@ -47,6 +47,10 @@ const isLoading = computed(() => {
     return props.toolDuplicateRequest.batch_id && !props.toolDuplicateRequest.delete_ended_at;
 });
 
+const shouldRefresh = computed(() => {
+    return isLoading.value || props.jobsInProgress;
+});
+
 const startPeriodicRefresh = () => {
     refreshInterval.value = setInterval(() => {
         router.reload();
@@ -60,7 +64,7 @@ const stopPeriodicRefresh = () => {
     }
 };
 
-watch(() => isLoading.value, (newValue) => {
+watch(() => shouldRefresh.value, (newValue) => {
     if (newValue) {
         startPeriodicRefresh();
     } else {
@@ -69,7 +73,7 @@ watch(() => isLoading.value, (newValue) => {
 });
 
 onMounted(() => {
-    if (isLoading.value) {
+    if (shouldRefresh.value) {
         startPeriodicRefresh();
     }
 });
