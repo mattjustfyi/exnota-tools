@@ -6,6 +6,7 @@
     - [Steps](#steps)
   - [Local development](#local-development)
     - [Running](#running)
+    - [Workers](#workers)
     - [Setup](#setup)
     - [Database UI](#database-ui)
       - [Local](#local)
@@ -144,6 +145,16 @@ Deploy improvement ideas:
 ```bash
 ./vendor/bin/sail up
 ./vendor/bin/sail down
+```
+
+### Workers
+
+Manually start workers in debug mode:
+
+```bash
+# See supervised-worker.conf
+./vendor/bin/sail debug queue:listen -vvv --queue=default --timeout=120
+./vendor/bin/sail debug queue:listen -vvv --queue=delete-1 --timeout=120
 ```
 
 ### Setup

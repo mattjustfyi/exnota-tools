@@ -26,7 +26,7 @@ class DuplicateDelete implements ShouldQueue
      *
      * @var int
      */
-    public $tries = 3;
+    public $tries = 4;
 
     /**
      * Create a new job instance.
@@ -52,7 +52,8 @@ class DuplicateDelete implements ShouldQueue
             }
         });
 
-        if (empty($this->notion_ids)) {
+        $pageIds = array_diff($this->notion_ids, $this->toolDuplicateRequest->delete_results);
+        if (empty($pageIds)) {
             Log::debug('No notion IDs to delete for request: ' . $this->toolDuplicateRequest->id);
             return;
         }
@@ -63,9 +64,19 @@ class DuplicateDelete implements ShouldQueue
         $notion = Notion::create($workspace->authData['access_token']);
 
         $deletedPageIds = [];
-        $erroredPageIds = [];
+        foreach ($pageIds as $pageId) {
+            // Back off to handle temporary issues, such as rate limiting and
+            // "Unsaved transactions: Unrecognized error."
+            if ($this->job->attempts() === 1) {
+                usleep(10000); // 10ms
+            } elseif ($this->job->attempts() === 2) {
+                usleep(50000); // 50ms
+            } elseif ($this->job->attempts() === 3) {
+                usleep(200000); // 200ms
+            } elseif ($this->job->attempts() === 4) {
+                usleep(500000); // 500ms
+            }
 
-        foreach ($this->notion_ids as $pageId) {
             try {
                 if ($this->batch()->cancelled()) {
                     Log::debug('Duplicate delete batch cancelled for request: ' . $this->toolDuplicateRequest->id);
@@ -89,14 +100,32 @@ class DuplicateDelete implements ShouldQueue
                 $notion->pages()->delete($page);
                 $deletedPageIds[] = $pageId;
             } catch (\Exception $e) {
-                Log::error('Error deleting page: ' . $pageId . '. Error: ' . $e->getMessage());
-                $erroredPageIds[] = $pageId;
+                if ($e instanceof \Notion\Exceptions\ApiException) {
+                    if ($e->notionCode === 'internal_server_error') {
+                        // Known errors:
+                        // 
+                        // 1. Transaction issue. Always temporary.
+                        // - message: "Unsaved transactions: Unrecognized error."
+                        // - notionCode: "internal_server_error"
+                        // - response->statusCode: 500
+                        Log::warning('Error deleting page. Notion internal server error. ', ['statusCode' => $e->response->getStatusCode(),  'pageId' => $pageId, 'message' => $e->getMessage(), 'notionCode' => $e->notionCode]);
+                    } else if ($e->notionCode === 'validation_error') {
+                        // Known errors
+                        //
+                        // 1. Property too large. Happened when I imported a CSV
+                        //    with long text columns.
+                        // - message: "body failed validation: body.properties.Description.rich_text[0].text.content.length should be ≤ `2000`, instead was `2950`."
+                        // - notionCode: "validation_error
+                        // - response->statusCode: 400
+                        //
+                        Log::warning('Error deleting page. Notion validation error. ', ['statusCode' => $e->response->getStatusCode(),  'pageId' => $pageId, 'message' => $e->getMessage(), 'notionCode' => $e->notionCode]);
+                    } else {
+                        Log::error('Error deleting page. Other Notion error. ', ['statusCode' => $e->response->getStatusCode(),  'pageId' => $pageId, 'message' => $e->getMessage(), 'notionCode' => $e->notionCode]);
+                    }
+                } else {
+                    Log::error('Error deleting page. Other error. ', ['pageId' => $pageId, 'message' => $e->getMessage()]);
+                }
             }
-        }
-
-        if (!empty($erroredPageIds)) {
-            Log::debug('Re-queueing errored pages for request: ' . $this->toolDuplicateRequest->id);
-            $this->batch()->add(new DuplicateDelete($this->toolDuplicateRequest, $erroredPageIds));
         }
 
         DB::transaction(function () use ($deletedPageIds) {
