@@ -145,7 +145,11 @@ onUnmounted(() => {
                         <h3 class="text-lg font-medium text-gray-900">Search Results</h3>
                         <div>
                             <button v-if="!searchInProgress" @click="searchAgain"
-                                class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2">
+                                :disabled="deleteInProgress"
+                                :class="[
+                                    'px-4 py-2 text-white rounded mr-2',
+                                    deleteInProgress ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
+                                ]">
                                 Search again
                             </button>
                             <button v-if="!searchInProgress && sortedSearchResults.length > 0"
