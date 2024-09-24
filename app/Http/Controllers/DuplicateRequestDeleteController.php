@@ -31,11 +31,19 @@ class DuplicateRequestDeleteController extends Controller
         $toolDuplicateRequest->delete_list = $deleteList;
         $toolDuplicateRequest->save();
 
-        $batchSize = 20;
-        $deleteListChunks = array_chunk($deleteList, $batchSize);
-
         $jobs = [];
-        foreach ($deleteListChunks as $chunk) {
+        $remainingList = $deleteList;
+
+        // First 4 jobs with size 5
+        for ($i = 0; $i < 4; $i++) {
+            $chunk = array_slice($remainingList, 0, 5);
+            $remainingList = array_slice($remainingList, 5);
+            $jobs[] = new DuplicateDelete($toolDuplicateRequest, $chunk);
+        }
+
+        // Remaining jobs with size 20
+        $remainingChunks = array_chunk($remainingList, 20);
+        foreach ($remainingChunks as $chunk) {
             $jobs[] = new DuplicateDelete($toolDuplicateRequest, $chunk);
         }
 
