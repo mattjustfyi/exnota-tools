@@ -71,6 +71,25 @@ const undeleteablePages = computed(() => {
     );
 });
 
+const undeleteablePages = computed(() => {
+    if (!props.toolDuplicateRequest.delete_list || !props.toolDuplicateRequest.delete_results || !props.toolDuplicateRequest.search_results) {
+        return [];
+    }
+    
+    const deleteSet = new Set(props.toolDuplicateRequest.delete_list);
+    const deletedSet = new Set(props.toolDuplicateRequest.delete_results);
+    
+    const undeleteableIds = [...deleteSet].filter(id => !deletedSet.has(id));
+    
+    return props.toolDuplicateRequest.search_results.flatMap(result => 
+        result.delete.filter(page => undeleteableIds.includes(page.id))
+            .map(page => ({
+                name: page.title,
+                url: page.url
+            }))
+    );
+});
+
 const deleteProgress = computed(() => {
     if (!props.toolDuplicateRequest.delete_list || !props.toolDuplicateRequest.delete_results) {
         return 0;
