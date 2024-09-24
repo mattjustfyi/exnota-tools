@@ -63,7 +63,7 @@ const undeleteablePages = computed(() => {
     const undeleteableIds = [...deleteSet].filter(id => !deletedSet.has(id));
 
     return props.toolDuplicateRequest.search_results.flatMap(result =>
-        result.delete.filter(page => undeleteableIds.includes(page.id))
+        result.delete.filter(page => undeleteableIds.includes(page.notion_id))
             .map(page => ({
                 name: page.title,
                 url: page.url
