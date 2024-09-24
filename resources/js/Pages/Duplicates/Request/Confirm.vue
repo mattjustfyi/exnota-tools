@@ -56,32 +56,13 @@ const undeleteablePages = computed(() => {
     if (!props.toolDuplicateRequest.delete_list || !props.toolDuplicateRequest.delete_results || !props.toolDuplicateRequest.search_results) {
         return [];
     }
-    
-    const deleteSet = new Set(props.toolDuplicateRequest.delete_list);
-    const deletedSet = new Set(props.toolDuplicateRequest.delete_results);
-    
-    const undeleteableIds = [...deleteSet].filter(id => !deletedSet.has(id));
-    
-    return props.toolDuplicateRequest.search_results.flatMap(result => 
-        result.delete.filter(page => undeleteableIds.includes(page.id))
-            .map(page => ({
-                name: page.title,
-                url: page.url
-            }))
-    );
-});
 
-const undeleteablePages = computed(() => {
-    if (!props.toolDuplicateRequest.delete_list || !props.toolDuplicateRequest.delete_results || !props.toolDuplicateRequest.search_results) {
-        return [];
-    }
-    
     const deleteSet = new Set(props.toolDuplicateRequest.delete_list);
     const deletedSet = new Set(props.toolDuplicateRequest.delete_results);
-    
+
     const undeleteableIds = [...deleteSet].filter(id => !deletedSet.has(id));
-    
-    return props.toolDuplicateRequest.search_results.flatMap(result => 
+
+    return props.toolDuplicateRequest.search_results.flatMap(result =>
         result.delete.filter(page => undeleteableIds.includes(page.id))
             .map(page => ({
                 name: page.title,
@@ -169,8 +150,7 @@ onUnmounted(() => {
                             </button>
                             <button v-if="!searchInProgress && sortedSearchResults.length > 0"
                                 @click="() => router.post(route('duplicates.delete-request', toolDuplicateRequest.id))"
-                                :disabled="!!toolDuplicateRequest.batch_id"
-                                :class="[
+                                :disabled="!!toolDuplicateRequest.batch_id" :class="[
                                     'px-4 py-2 text-white rounded',
                                     toolDuplicateRequest.batch_id ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-500 hover:bg-red-600'
                                 ]">
@@ -193,7 +173,9 @@ onUnmounted(() => {
                         <div v-if="deleteInProgress" class="mt-4">
                             <ProgressBar :progress="deleteProgress" />
                             <p v-if="toolDuplicateRequest.delete_started_at" class="mt-2 text-center text-gray-600">
-                                Deleting duplicates... {{ deletionStatus.deletedItems }} of {{ deletionStatus.totalItems }} completed
+                                Deleting duplicates... {{ deletionStatus.deletedItems }} of {{ deletionStatus.totalItems
+                                }}
+                                completed
                             </p>
                             <p v-else class="mt-2 text-center text-gray-600">
                                 Queued
@@ -210,7 +192,8 @@ onUnmounted(() => {
                             <ul v-if="undeleteablePages.length" class="mt-4 space-y-4">
                                 <li v-for="(page, index) in undeleteablePages" :key="index" class="border-b pb-4">
                                     <p class="font-semibold">{{ truncateTitle(page.name || '') }}</p>
-                                    <a :href="page.url" target="_blank" class="text-sm text-blue-600 hover:underline">View in Notion</a>
+                                    <a :href="page.url" target="_blank"
+                                        class="text-sm text-blue-600 hover:underline">View in Notion</a>
                                 </li>
                             </ul>
                             <p v-else class="mt-4 text-gray-600">All pages were successfully deleted.</p>
