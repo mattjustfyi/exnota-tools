@@ -39,6 +39,16 @@ class DuplicateDelete implements ShouldQueue
     }
 
     /**
+     * Calculate the number of seconds to wait before retrying the job.
+     *
+     * @return array<int, int>
+     */
+    public function backoff(): array
+    {
+        return [2, 10, 20];
+    }
+
+    /**
      * Execute the job.
      */
     public function handle(): void
@@ -64,6 +74,7 @@ class DuplicateDelete implements ShouldQueue
         $notion = Notion::create($workspace->authData['access_token']);
 
         $deletedPageIds = [];
+        $errorPageIds = [];
         foreach ($pageIds as $pageId) {
             // Back off to handle temporary issues, such as rate limiting and
             // "Unsaved transactions: Unrecognized error."
@@ -100,6 +111,7 @@ class DuplicateDelete implements ShouldQueue
                 $notion->pages()->delete($page);
                 $deletedPageIds[] = $pageId;
             } catch (\Exception $e) {
+                $errorPageIds[] = $pageId;
                 if ($e instanceof \Notion\Exceptions\ApiException) {
                     if ($e->notionCode === 'internal_server_error') {
                         // Known errors:
@@ -140,6 +152,12 @@ class DuplicateDelete implements ShouldQueue
         });
 
         $durationInSeconds = round($startedAt->diffInSeconds(Carbon::now()), 1);
-        Log::debug('Duplicate delete job completed in ' . strval($durationInSeconds) . 's for request: ' . $this->toolDuplicateRequest->id);
+        if (!empty($errorPageIds)) {
+            Log::warning('Error deleting pages for request: ' . $this->toolDuplicateRequest->id, ['errorPageIds' => $errorPageIds]);
+            Log::debug('Duplicate delete job completed in ' . strval($durationInSeconds) . 's for request: ' . $this->toolDuplicateRequest->id);
+            throw new \Exception('Error deleting pages. Job should be retried.');
+        } else {
+            Log::debug('Duplicate delete job completed in ' . strval($durationInSeconds) . 's for request: ' . $this->toolDuplicateRequest->id);
+        }
     }
 }
