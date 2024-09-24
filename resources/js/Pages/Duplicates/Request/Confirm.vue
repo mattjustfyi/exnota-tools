@@ -48,6 +48,29 @@ const deleteInProgress = computed(() => {
     return props.toolDuplicateRequest.batch_id && !props.toolDuplicateRequest.delete_ended_at;
 });
 
+const deletionFinished = computed(() => {
+    return props.toolDuplicateRequest.batch_id && props.toolDuplicateRequest.delete_ended_at;
+});
+
+const undeleteablePages = computed(() => {
+    if (!props.toolDuplicateRequest.delete_list || !props.toolDuplicateRequest.delete_results || !props.toolDuplicateRequest.search_results) {
+        return [];
+    }
+    
+    const deleteSet = new Set(props.toolDuplicateRequest.delete_list);
+    const deletedSet = new Set(props.toolDuplicateRequest.delete_results);
+    
+    const undeleteableIds = [...deleteSet].filter(id => !deletedSet.has(id));
+    
+    return props.toolDuplicateRequest.search_results.flatMap(result => 
+        result.delete.filter(page => undeleteableIds.includes(page.id))
+            .map(page => ({
+                name: page.title,
+                url: page.url
+            }))
+    );
+});
+
 const deleteProgress = computed(() => {
     if (!props.toolDuplicateRequest.delete_list || !props.toolDuplicateRequest.delete_results) {
         return 0;
@@ -162,6 +185,16 @@ onUnmounted(() => {
                                 <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
                                 <span class="ml-2 text-gray-600">Processing2...</span>
                             </div>
+                        </template>
+                        <template v-else-if="deletionFinished">
+                            <h4 class="text-lg font-medium text-gray-900 mt-4">Pages that could not be deleted:</h4>
+                            <ul v-if="undeleteablePages.length" class="mt-4 space-y-4">
+                                <li v-for="(page, index) in undeleteablePages" :key="index" class="border-b pb-4">
+                                    <p class="font-semibold">{{ truncateTitle(page.name || '') }}</p>
+                                    <a :href="page.url" target="_blank" class="text-sm text-blue-600 hover:underline">View in Notion</a>
+                                </li>
+                            </ul>
+                            <p v-else class="mt-4 text-gray-600">All pages were successfully deleted.</p>
                         </template>
                         <template v-else>
                             <ul v-if="sortedSearchResults.length" class="mt-4 space-y-4">
