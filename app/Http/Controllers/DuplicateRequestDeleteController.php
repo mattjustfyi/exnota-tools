@@ -34,7 +34,7 @@ class DuplicateRequestDeleteController extends Controller
         $jobs = [];
         $remainingList = $deleteList;
 
-        // First 4 jobs with size 5
+        // First 4 jobs with size 5, so users get feedback faster.
         for ($i = 0; $i < 4; $i++) {
             $chunk = array_slice($remainingList, 0, 5);
             $remainingList = array_slice($remainingList, 5);
