@@ -63,8 +63,125 @@ class NotionAuthSaveController extends Controller
                 ], 500);
             }
 
-            // TODO: Check if user/workspace exists
+            $loggedInUser = Auth::user();
+            $botId = $responseData['bot_id'];
+            if ($loggedInUser !== null) {
+                $existingWorkspace = Workspace::where('authData->bot_id', $botId)->first();
 
+                // Workspace already exists
+                if ($existingWorkspace !== null) {
+
+                    // Wrong user
+                    if ($existingWorkspace->user_id !== $loggedInUser->id) {
+                        return response()->json([
+                            'message' => 'Workspace not valid for user.',
+                        ], 403);
+                    }
+
+                    // Wrong workspace_id or owner id. Throwing here because
+                    // it's not currently expected behaviour. Although it might
+                    // be expected for the owner of the workspace to change and
+                    // this still to be a proper user+workspace match.
+                    if ($existingWorkspace->authData['workspace_id'] !== $responseData['workspace_id'] || $existingWorkspace->authData['owner']['user']['id'] !== $responseData['owner']['user']['id']) {
+                        return response()->json([
+                            'message' => 'Workspace ID or Owner ID mismatch.',
+                        ], 403);
+                    }
+
+                    $existingWorkspace->update([
+                        'authData' => $responseData,
+                        'workspace_name' => $responseData['workspace_name'] ?? null,
+                        'workspace_icon' => $responseData['workspace_icon'] ?? null,
+                        'user_avatar' => $responseData['owner']['user']['avatar_url'] ?? null,
+                    ]);
+
+                    // Create multiple jobs as search results appear gradually over
+                    // 30 seconds or so.
+                    WorkspaceRefresh::dispatch($existingWorkspace);
+                    WorkspaceRefresh::dispatch($existingWorkspace)
+                        ->delay(now()->addSeconds(5));
+                    WorkspaceRefresh::dispatch($existingWorkspace)
+                        ->delay(now()->addSeconds(10));
+
+                    return response()->json([
+                        'message' => 'Workspace updated successfully',
+                        'data' => [
+                            'workspace_id' => $existingWorkspace->id,
+                        ]
+                    ], 200);
+                }
+
+                // Workspace does not exist
+                $workspace = Workspace::create([
+                    'authData' => $responseData,
+                    'user_id' => $loggedInUser->id,
+                    'user_avatar' => $responseData['owner']['user']['avatar_url'] ?? null,
+                    'workspace_name' => $responseData['workspace_name'] ?? null,
+                    'workspace_icon' => $responseData['workspace_icon'] ?? null,
+                ]);
+
+                // Create multiple jobs as search results appear gradually over
+                // 30 seconds or so.
+                WorkspaceRefresh::dispatch($workspace);
+                WorkspaceRefresh::dispatch($workspace)
+                    ->delay(now()->addSeconds(5));
+                WorkspaceRefresh::dispatch($workspace)
+                    ->delay(now()->addSeconds(10));
+
+
+                return response()->json([
+                    'message' => 'Workspace created successfully',
+                    'data' => [
+                        'workspace_id' => $workspace->id,
+                    ]
+                ], 201);
+            }
+
+            // Not logged in
+            $existingWorkspace = Workspace::where('authData->bot_id', $botId)->first();
+
+            // Workspace already exists
+            if ($existingWorkspace !== null) {
+
+                // Wrong workspace_id or owner id. Throwing here because
+                // it's not currently expected behaviour. Although it might
+                // be expected for the owner of the workspace to change and
+                // this still to be a proper user+workspace match.
+                if ($existingWorkspace->authData['workspace_id'] !== $responseData['workspace_id'] || $existingWorkspace->authData['owner']['user']['id'] !== $responseData['owner']['user']['id']) {
+                    return response()->json([
+                        'message' => 'Workspace ID or Owner ID mismatch.',
+                    ], 403);
+                }
+
+                // Login as user
+                $existingUser = $existingWorkspace->user;
+                Auth::login($existingUser, true);
+
+                $existingWorkspace->update([
+                    'authData' => $responseData,
+                    'workspace_name' => $responseData['workspace_name'] ?? null,
+                    'workspace_icon' => $responseData['workspace_icon'] ?? null,
+                    'user_avatar' => $responseData['owner']['user']['avatar_url'] ?? null,
+                ]);
+
+                // Create multiple jobs as search results appear gradually over
+                // 30 seconds or so.
+                WorkspaceRefresh::dispatch($existingWorkspace);
+                WorkspaceRefresh::dispatch($existingWorkspace)
+                    ->delay(now()->addSeconds(5));
+                WorkspaceRefresh::dispatch($existingWorkspace)
+                    ->delay(now()->addSeconds(10));
+
+                return response()->json([
+                    'message' => 'Workspace updated successfully',
+                    'data' => [
+                        'workspace_id' => $existingWorkspace->id,
+                    ]
+                ], 200);
+            }
+
+            // Workspace does not exist
+            //
             // Create a new user
             $user = User::create([
                 'email' => $email,
@@ -73,9 +190,7 @@ class NotionAuthSaveController extends Controller
                 'password' => bcrypt(Str::random(32)),
             ]);
 
-            // Save the auth data to the workspace
-
-
+            // Save the auth data to a new workspace
             $workspace = Workspace::create([
                 'authData' => $responseData,
                 'user_id' => $user->id,
@@ -93,12 +208,6 @@ class NotionAuthSaveController extends Controller
                 ->delay(now()->addSeconds(5));
             WorkspaceRefresh::dispatch($workspace)
                 ->delay(now()->addSeconds(10));
-            WorkspaceRefresh::dispatch($workspace)
-                ->delay(now()->addSeconds(15));
-            WorkspaceRefresh::dispatch($workspace)
-                ->delay(now()->addSeconds(20));
-            WorkspaceRefresh::dispatch($workspace)
-                ->delay(now()->addSeconds(30));
 
 
             return response()->json([

@@ -477,11 +477,11 @@ docker exec -it exnota-tools-prod-workers tail -f /var/log/supervisor/supervisor
 
 ```bash
 # Web + Default Worker + Delete Worker + Supervisor
-ssh -t dokku@195.201.33.178 enter exnota-tools web tail -f /var/www/html/storage/logs/laravel.log
-ssh -t dokku@195.201.33.178 enter exnota-tools worker tail -f /var/www/html/storage/logs/laravel.log
-ssh -t dokku@195.201.33.178 enter exnota-tools worker tail -f /var/log/supervisor/worker-default.log
-ssh -t dokku@195.201.33.178 enter exnota-tools worker tail -f /var/log/supervisor/worker-delete-1.log
-ssh -t dokku@195.201.33.178 enter exnota-tools worker tail -f /var/log/supervisor/supervisor.log
+ssh -t dokku@195.201.33.178 enter exnota-tools web tail -f --retry /var/www/html/storage/logs/laravel.log
+ssh -t dokku@195.201.33.178 enter exnota-tools worker tail -f --retry /var/www/html/storage/logs/laravel.log
+ssh -t dokku@195.201.33.178 enter exnota-tools worker tail -f --retry /var/log/supervisor/worker-default.log
+ssh -t dokku@195.201.33.178 enter exnota-tools worker tail -f --retry /var/log/supervisor/worker-delete-1.log
+ssh -t dokku@195.201.33.178 enter exnota-tools worker tail -f --retry /var/log/supervisor/supervisor.log
 ```
 
 #### Dokku

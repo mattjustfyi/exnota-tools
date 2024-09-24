@@ -10,8 +10,8 @@ Mockaroo schema: <https://www.mockaroo.com/schemas/648173>
 
 #### Search 500
 
-- Start: 2024-09-21 06:05:19.000
-- End:   2024-09-21 06:05:34.000
+- Start:
+- End:
 - Duration: TODO: Calc
 
 #### Delete 500
@@ -22,8 +22,8 @@ Mockaroo schema: <https://www.mockaroo.com/schemas/648173>
 
 #### Search 1000
 
-- Start: 2024-09-21 06:07:11.000
-- End: 2024-09-21 06:07:33.000
+- Start:
+- End:
 - Duration: TODO: Calc
 
 #### Delete 1000
