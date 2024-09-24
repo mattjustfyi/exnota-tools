@@ -4,10 +4,13 @@ SESH=ex-tools
 
 # tmux commands
 #
-# ctrl+b <then> type any `:command` command
-# ctrl+b <then> other shortcut combinations
+# Do `ctrl+b` then type a `:` command or enter a keyboard shortcut.
 #
+# Commands:
 # `:kill-session` - Close all.
+# `select-layout tiled` - Re-size panes equally.
+#
+# Keyboard:
 # arrows - Move between panes.
 
 tmux has-session -t $SESH 2>/dev/null
