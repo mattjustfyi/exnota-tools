@@ -26,6 +26,7 @@ class ToolDuplicateRequest extends Model
         'delete_list',
         'delete_retry_list',
         'delete_batch_id',
+        'search_batch_id',
     ];
 
     protected $casts = [
