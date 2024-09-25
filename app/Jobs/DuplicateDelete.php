@@ -35,7 +35,7 @@ class DuplicateDelete implements ShouldQueue
     {
         $this->toolDuplicateRequest = $toolDuplicateRequest;
         $this->notion_ids = $notion_ids;
-        Log::debug('Duplicate delete job created for request: ' . $toolDuplicateRequest->id . ' (Job ID: ' . $this->job->getJobId() . ')');
+        Log::debug('Duplicate delete job created for request: ' . $toolDuplicateRequest->id);
     }
 
     /**
