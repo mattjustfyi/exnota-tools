@@ -227,7 +227,11 @@ onUnmounted(() => {
 
                     <div class="mt-8">
                         <h4 class="text-lg font-medium text-gray-900">Search Results:</h4>
-                        <div v-if="deleteInProgress" class="mt-4">
+                        <div v-if="props.numFailedJobs > 0" class="mt-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
+                            <p class="font-bold">Error</p>
+                            <p>Searching failed. Check that Exnota still has access to the database and try again.</p>
+                        </div>
+                        <div v-else-if="deleteInProgress" class="mt-4">
                             <ProgressBar :progress="deleteProgress" />
                             <p v-if="toolDuplicateRequest.delete_started_at" class="mt-2 text-center text-gray-600">
                                 Deleting duplicates... {{ deletionStatus.deletedItems }} of {{ deletionStatus.totalItems
