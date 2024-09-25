@@ -21,6 +21,7 @@ class DuplicateSearch implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $toolDuplicateRequest;
+    protected $nextCursor;
 
     /**
      * The number of times the job may be attempted.
@@ -32,10 +33,11 @@ class DuplicateSearch implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(ToolDuplicateRequest $toolDuplicateRequest)
+    public function __construct(ToolDuplicateRequest $toolDuplicateRequest, $nextCursor = null)
     {
         $this->toolDuplicateRequest = $toolDuplicateRequest;
-        Log::debug('Duplicate search job created for request: ' . $toolDuplicateRequest->id);
+        $this->nextCursor = $nextCursor;
+        Log::debug('Duplicate search job created for request: ' . $toolDuplicateRequest->id . ' with cursor: ' . $nextCursor);
     }
 
     /**
@@ -54,11 +56,13 @@ class DuplicateSearch implements ShouldQueue
     public function handle(): void
     {
         $startedAt = Carbon::now();
-        Log::debug('Duplicate search job started for request: ' . $this->toolDuplicateRequest->id);
+        Log::debug('Duplicate search job started for request: ' . $this->toolDuplicateRequest->id . ' with cursor: ' . $this->nextCursor);
         
-        $this->toolDuplicateRequest->update([
-            'search_started_at' => $startedAt,
-        ]);
+        if (!$this->nextCursor) {
+            $this->toolDuplicateRequest->update([
+                'search_started_at' => $startedAt,
+            ]);
+        }
 
         // Get database
         $notionObject = $this->toolDuplicateRequest->notionObject;
@@ -66,11 +70,12 @@ class DuplicateSearch implements ShouldQueue
         $notion = Notion::create($workspace->authData['access_token']);
         $database = $notion->databases()->find($notionObject->data['id']);
 
-        $allResults = collect();
+        $allResults = collect($this->toolDuplicateRequest->search_results ?? []);
         $hasMore = true;
-        $nextCursor = null;
+        $nextCursor = $this->nextCursor;
+        $queryCount = 0;
 
-        while ($hasMore) {
+        while ($hasMore && $queryCount < 6) {
             // Create query
             $query = Query::create();
             if ($nextCursor) {
@@ -78,7 +83,7 @@ class DuplicateSearch implements ShouldQueue
             }
 
             // Submit and get results
-            Log::debug('Submitting query for request: ' . $this->toolDuplicateRequest->id);
+            Log::debug('Submitting query ' . ($queryCount + 1) . ' for request: ' . $this->toolDuplicateRequest->id);
             $result = $notion->databases()->query($database, $query);
             Log::debug('Received results for request: ' . $this->toolDuplicateRequest->id);
             
@@ -91,20 +96,25 @@ class DuplicateSearch implements ShouldQueue
 
             $hasMore = $result->hasMore;
             $nextCursor = $result->nextCursor;
+            $queryCount++;
         }
 
         $this->toolDuplicateRequest->update([
             'search_results' => $allResults->toArray(),
         ]);
 
-        $this->processDuplicates();
-
-        $this->toolDuplicateRequest->update([
-            'search_ended_at' => now(),
-        ]);
+        if ($hasMore) {
+            Log::debug('Dispatching new job for remaining results. Request: ' . $this->toolDuplicateRequest->id . ' Next cursor: ' . $nextCursor);
+            self::dispatch($this->toolDuplicateRequest, $nextCursor)->onQueue('default');
+        } else {
+            $this->processDuplicates();
+            $this->toolDuplicateRequest->update([
+                'search_ended_at' => now(),
+            ]);
+        }
 
         $durationInSeconds = round($startedAt->diffInSeconds(Carbon::now()), 1);
-        Log::debug('Duplicate search job completed in ' . strval($durationInSeconds) . 's for request: ' . $this->toolDuplicateRequest->id);
+        Log::debug('Duplicate search job batch completed in ' . strval($durationInSeconds) . 's for request: ' . $this->toolDuplicateRequest->id);
     }
 
     /**
