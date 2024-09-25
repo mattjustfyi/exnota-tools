@@ -5,7 +5,6 @@ namespace App\Jobs;
 use App\Helpers\NotionHelper;
 use App\Models\ToolDuplicateRequest;
 use Carbon\Carbon;
-use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -19,10 +18,9 @@ use Illuminate\Foundation\Queue\Queueable;
 
 class DuplicateSearch implements ShouldQueue
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $toolDuplicateRequest;
-    protected $next_cursor;
 
     /**
      * The number of times the job may be attempted.
@@ -34,10 +32,9 @@ class DuplicateSearch implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(ToolDuplicateRequest $toolDuplicateRequest, ?string $next_cursor = null)
+    public function __construct(ToolDuplicateRequest $toolDuplicateRequest)
     {
         $this->toolDuplicateRequest = $toolDuplicateRequest;
-        $this->next_cursor = $next_cursor;
         Log::debug('Duplicate search job created for request: ' . $toolDuplicateRequest->id);
     }
 
@@ -58,13 +55,10 @@ class DuplicateSearch implements ShouldQueue
     {
         $startedAt = Carbon::now();
         Log::debug('Duplicate search job started for request: ' . $this->toolDuplicateRequest->id);
-        DB::transaction(function () use ($startedAt) {
-            if (!$this->toolDuplicateRequest->refresh()->search_started_at) {
-                $this->toolDuplicateRequest->update([
-                    'search_started_at' => $startedAt,
-                ]);
-            }
-        });
+        
+        $this->toolDuplicateRequest->update([
+            'search_started_at' => $startedAt,
+        ]);
 
         // Get database
         $notionObject = $this->toolDuplicateRequest->notionObject;
@@ -72,52 +66,88 @@ class DuplicateSearch implements ShouldQueue
         $notion = Notion::create($workspace->authData['access_token']);
         $database = $notion->databases()->find($notionObject->data['id']);
 
-        // Create query
-        $query = Query::create();
-        if ($this->next_cursor) {
-            $query = $query->changeStartCursor($this->next_cursor);
+        $allResults = collect();
+        $hasMore = true;
+        $nextCursor = null;
+
+        while ($hasMore) {
+            // Create query
+            $query = Query::create();
+            if ($nextCursor) {
+                $query = $query->changeStartCursor($nextCursor);
+            }
+
+            // Submit and get results
+            Log::debug('Submitting query for request: ' . $this->toolDuplicateRequest->id);
+            $result = $notion->databases()->query($database, $query);
+            Log::debug('Received results for request: ' . $this->toolDuplicateRequest->id);
+            
+            $pages = $result->pages;
+            $pageDTOs = collect($pages)->map(function ($page) {
+                return NotionHelper::createNotionDTO($page);
+            });
+
+            $allResults = $allResults->concat($pageDTOs);
+
+            $hasMore = $result->hasMore;
+            $nextCursor = $result->nextCursor;
         }
 
-        // Submit and get results
-        Log::debug('Submitting query for request: ' . $this->toolDuplicateRequest->id);
-        $result = $notion->databases()->query($database, $query);
-        Log::debug('Received results for request: ' . $this->toolDuplicateRequest->id);
-        $pages = $result->pages;
-        $pageDTOs = collect($pages)->map(function ($page) {
-            return NotionHelper::createNotionDTO($page);
-        });
+        $this->toolDuplicateRequest->update([
+            'search_results' => $allResults->toArray(),
+        ]);
 
-        // Create next job, if needed
-        //
-        // This dispatch was originally in the transaction after the update, but
-        // the batch was executing the finished callback after the first job
-        // was run, so I moved it here.
-        //
-        // Batches might not be the best approach here, since it's not a known
-        // amount ahead of time. If there are issues, perhaps refactor to a job
-        // that simply creates another job when done. And the last job can
-        // set `duplicates` and `search_ended_at`. `search_batch_id` can be
-        // removed, and the frontend queued status can simply assume if it's
-        // created and has no `search_started_at` that it's waiting in queue.
-        if ($result->hasMore) {
-            Log::debug('Creating next job for request: ' . $this->toolDuplicateRequest->id);
-            self::dispatch($this->toolDuplicateRequest, $result->nextCursor)->onQueue('default');
-        } else {
-            Log::debug('No more jobs needed for request: ' . $this->toolDuplicateRequest->id);
-        }
+        $this->processDuplicates();
 
-        DB::transaction(function () use ($pageDTOs, $result) {
-            // Save results
-            Log::debug('Saving results for request: ' . $this->toolDuplicateRequest->id);
-            $existingResults = $this->toolDuplicateRequest->refresh()->search_results ?? [];
-            $mergedResults = array_merge($existingResults, $pageDTOs->toArray());
-
-            $this->toolDuplicateRequest->update([
-                'search_results' => $mergedResults,
-            ]);
-        });
+        $this->toolDuplicateRequest->update([
+            'search_ended_at' => now(),
+        ]);
 
         $durationInSeconds = round($startedAt->diffInSeconds(Carbon::now()), 1);
         Log::debug('Duplicate search job completed in ' . strval($durationInSeconds) . 's for request: ' . $this->toolDuplicateRequest->id);
+    }
+
+    /**
+     * Process the collected results to find duplicates.
+     */
+    private function processDuplicates(): void
+    {
+        $allResults = collect($this->toolDuplicateRequest->search_results);
+
+        // Group objects by title
+        $groupedByTitle = $allResults->groupBy(function (NotionDTO $object) {
+            return $object->title;
+        });
+
+        // Filter out groups with only one item (no duplicates)
+        $duplicates = $groupedByTitle->filter(function ($group) {
+            return $group->count() > 1;
+        });
+
+        // Create the list of duplicate pairs
+        $duplicatePairs = $duplicates->map(function ($group) {
+            return $group->values()->all();
+        })->values()->all();
+
+        $duplicateResults = [];
+        foreach ($duplicatePairs as $pair) {
+            $oldest = null;
+            foreach ($pair as $item) {
+                if ($oldest === null || $item->created_date < $oldest->created_date) {
+                    $oldest = $item;
+                }
+            }
+
+            $remainingDuplicates = array_values(array_filter($pair, function ($item) use ($oldest) {
+                return $item !== $oldest;
+            }));
+
+            array_push($duplicateResults, new DuplicateResultsDTO($oldest, $remainingDuplicates));
+        }
+
+        // Update the toolDuplicateRequest with the final duplicate results
+        $this->toolDuplicateRequest->update([
+            'duplicates' => $duplicateResults,
+        ]);
     }
 }
