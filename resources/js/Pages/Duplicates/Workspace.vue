@@ -28,10 +28,10 @@ const selectedDatabase = ref(null);
 const selectDatabase = (database) => {
     selectedDatabase.value = database;
     console.log('Selected database:', database);
-    callDuplicatesCreateController(database.id);
+    callDuplicateCreateController(database.id);
 };
 
-const callDuplicatesCreateController = (notionObjectId) => {
+const callDuplicateCreateController = (notionObjectId) => {
     router.post('/duplicates/request', { notion_object_id: notionObjectId });
 };
 

@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\DuplicatesController;
-use App\Http\Controllers\DuplicatesCreateController;
+use App\Http\Controllers\DuplicateCreateController;
 use App\Http\Controllers\DuplicateRequestDeleteController;
 use App\Http\Controllers\NotionAuthSaveController;
 use App\Http\Controllers\WorkspaceController;
@@ -66,7 +66,7 @@ Route::middleware([
         ->name('api.test.workspace.refresh')
         ->middleware('can:update,workspace');
 
-    Route::post('/duplicates/request', [DuplicatesCreateController::class, 'create'])
+    Route::post('/duplicates/request', [DuplicateCreateController::class, 'create'])
         ->name('duplicates.create-request')
         ->middleware(CreateDuplicateRequestPolicyMiddleware::class);
 
