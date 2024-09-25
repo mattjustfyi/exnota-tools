@@ -59,7 +59,8 @@ class DuplicateSearch implements ShouldQueue
         $startedAt = Carbon::now();
         Log::debug('Duplicate search job started for request: ' . $this->toolDuplicateRequest->id . ' with cursor: ' . $this->nextCursor . ' (Job ID: ' . $this->job->getJobId() . ')');
 
-        if (!$this->nextCursor) {
+        $isFirstJob = !$this->nextCursor;
+        if ($isFirstJob) {
             $this->toolDuplicateRequest->update([
                 'search_started_at' => $startedAt,
             ]);
@@ -74,9 +75,10 @@ class DuplicateSearch implements ShouldQueue
         $allResults = collect($this->toolDuplicateRequest->search_results ?? []);
         $hasMore = true;
         $nextCursor = $this->nextCursor;
+        $maxQueries = $isFirstJob ? 1 : 6;
         $queryCount = 0;
 
-        while ($hasMore && $queryCount < 6) {
+        while ($hasMore && $queryCount < $maxQueries) {
             // Create query
             $query = Query::create();
             if ($nextCursor) {
