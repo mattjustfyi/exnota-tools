@@ -27,9 +27,9 @@ const truncateTitle = (title, maxLength = 50) => {
     return title.slice(0, maxLength) + '...';
 };
 
-const sortedSearchResults = computed(() => {
-    if (props.toolDuplicateRequest.search_results && Array.isArray(props.toolDuplicateRequest.search_results)) {
-        return [...props.toolDuplicateRequest.search_results].sort((a, b) => b.delete.length - a.delete.length);
+const sortedDuplicates = computed(() => {
+    if (props.toolDuplicateRequest.duplicates && Array.isArray(props.toolDuplicateRequest.duplicates)) {
+        return [...props.toolDuplicateRequest.duplicates].sort((a, b) => b.delete.length - a.delete.length);
     }
     return [];
 });
@@ -39,7 +39,7 @@ const notionObjectTitle = computed(() => {
 });
 
 const totalDuplicates = computed(() => {
-    return sortedSearchResults.value.reduce((total, result) => total + result.delete.length, 0);
+    return sortedDuplicates.value.reduce((total, result) => total + result.delete.length, 0);
 });
 
 const refreshInterval = ref(null);
@@ -53,7 +53,7 @@ const deletionFinished = computed(() => {
 });
 
 const undeleteablePages = computed(() => {
-    if (!props.toolDuplicateRequest.delete_list || !props.toolDuplicateRequest.delete_results || !props.toolDuplicateRequest.search_results) {
+    if (!props.toolDuplicateRequest.delete_list || !props.toolDuplicateRequest.delete_results || !props.toolDuplicateRequest.duplicates) {
         return [];
     }
 
@@ -62,7 +62,7 @@ const undeleteablePages = computed(() => {
 
     const undeleteableIds = [...deleteSet].filter(id => !deletedSet.has(id));
 
-    return props.toolDuplicateRequest.search_results.flatMap(result =>
+    return props.toolDuplicateRequest.duplicates.flatMap(result =>
         result.delete.filter(page => undeleteableIds.includes(page.notion_id))
             .map(page => ({
                 name: page.title,
@@ -150,7 +150,7 @@ onUnmounted(() => {
                             ]">
                                 Search again
                             </button>
-                            <button v-if="!searchInProgress.value && sortedSearchResults.length > 0"
+                            <button v-if="!searchInProgress.value && sortedDuplicates.length > 0"
                                 @click="() => router.post(route('duplicates.delete-request', toolDuplicateRequest.id))"
                                 :disabled="!!toolDuplicateRequest.delete_batch_id" :class="[
                                     'px-4 py-2 text-white rounded',
@@ -201,8 +201,8 @@ onUnmounted(() => {
                             <p v-else class="mt-4 text-gray-600">All pages were successfully deleted.</p>
                         </template>
                         <template v-else>
-                            <ul v-if="sortedSearchResults.length" class="mt-4 space-y-4">
-                                <li v-for="(result, index) in sortedSearchResults.slice(0, 5)" :key="index"
+                            <ul v-if="sortedDuplicates.length" class="mt-4 space-y-4">
+                                <li v-for="(result, index) in sortedDuplicates.slice(0, 5)" :key="index"
                                     class="border-b pb-4">
                                     <p class="font-semibold">{{ truncateTitle(result.keep.title || '') }}</p>
                                     <p class="text-sm text-gray-600">Number of duplicates to delete: {{
