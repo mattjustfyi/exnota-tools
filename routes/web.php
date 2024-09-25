@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\DuplicatesController;
 use App\Http\Controllers\DuplicateCreateController;
-use App\Http\Controllers\DuplicateRequestDeleteController;
+use App\Http\Controllers\DuplicateDeleteController;
 use App\Http\Controllers\NotionAuthSaveController;
 use App\Http\Controllers\WorkspaceController;
 use App\Http\Controllers\WorkspaceRefreshController;
@@ -70,7 +70,7 @@ Route::middleware([
         ->name('duplicates.create-request')
         ->middleware(CreateDuplicateRequestPolicyMiddleware::class);
 
-    Route::post('/duplicates/request/{toolDuplicateRequest}/delete', [DuplicateRequestDeleteController::class, 'delete'])
+    Route::post('/duplicates/request/{toolDuplicateRequest}/delete', [DuplicateDeleteController::class, 'delete'])
         ->name('duplicates.delete-request')
         ->middleware('can:update,toolDuplicateRequest');
 

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class DuplicateRequestDeleteController extends Controller
+class DuplicateDeleteController extends Controller
 {
     public function delete(ToolDuplicateRequest $toolDuplicateRequest): RedirectResponse
     {
