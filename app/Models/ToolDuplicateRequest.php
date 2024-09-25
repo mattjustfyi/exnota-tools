@@ -27,6 +27,7 @@ class ToolDuplicateRequest extends Model
         'delete_retry_list',
         'delete_batch_id',
         'search_batch_id',
+        'search_results',
     ];
 
     protected $casts = [
@@ -140,6 +141,44 @@ class ToolDuplicateRequest extends Model
     private function isArrayOfStrings(array $array): bool
     {
         return array_reduce($array, fn($carry, $item) => $carry && is_string($item), true);
+    }
+
+    protected function searchResults(): Attribute
+    {
+        return Attribute::make(
+            get: function (?string $value) {
+                if (!$value) {
+                    return null;
+                }
+
+                $arr = json_decode($value, true);
+
+                return array_map(function ($entry) {
+                    return new NotionDTO(
+                        $entry['notion_id'],
+                        $entry['title'],
+                        NotionHelper::getNotionObjectType($entry['type']),
+                        $entry['url'],
+                        $entry['property_values'],
+                        Carbon::parse($entry['created_date']),
+                        Carbon::parse($entry['updated_date'])
+                    );
+                }, $arr);
+            },
+            set: function (array $value) {
+                return json_encode(array_map(function (NotionDTO $dto) {
+                    return [
+                        'notion_id' => $dto->notion_id,
+                        'title' => $dto->title,
+                        'type' => $dto->type->value,
+                        'url' => $dto->url,
+                        'property_values' => $dto->property_values,
+                        'created_date' => $dto->created_date->toDateTimeString(),
+                        'updated_date' => $dto->updated_date->toDateTimeString(),
+                    ];
+                }, $value));
+            }
+        );
     }
 
     public function notionObject(): BelongsTo
