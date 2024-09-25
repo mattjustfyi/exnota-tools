@@ -16,7 +16,7 @@ const props = defineProps({
 });
 
 const searchInProgress = computed(() => {
-    return !props.toolDuplicateRequest.search_ended_at;
+    return props.numIncompleteJobs > 0;
 });
 
 const searchStatus = computed(() => {
