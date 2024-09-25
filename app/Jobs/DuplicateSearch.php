@@ -57,6 +57,7 @@ class DuplicateSearch implements ShouldQueue
     public function handle(): void
     {
         $startedAt = Carbon::now();
+        Log::debug('Duplicate search job started for request: ' . $this->toolDuplicateRequest->id);
         DB::transaction(function () use ($startedAt) {
             if (!$this->toolDuplicateRequest->refresh()->search_started_at) {
                 $this->toolDuplicateRequest->update([
@@ -78,26 +79,42 @@ class DuplicateSearch implements ShouldQueue
         }
 
         // Submit and get results
+        Log::debug('Submitting query for request: ' . $this->toolDuplicateRequest->id);
         $result = $notion->databases()->query($database, $query);
+        Log::debug('Received results for request: ' . $this->toolDuplicateRequest->id);
         $pages = $result->pages;
-        $remoteNotionObjects = collect($pages)->map(function ($page) {
+        $pageDTOs = collect($pages)->map(function ($page) {
             return NotionHelper::createNotionDTO($page);
         });
 
-        DB::transaction(function () use ($remoteNotionObjects, $result) {
+        // Create next job, if needed
+        //
+        // This dispatch was originally in the transaction after the update, but
+        // the batch was executing the finished callback after the first job
+        // was run, so I moved it here.
+        //
+        // Batches might not be the best approach here, since it's not a known
+        // amount ahead of time. If there are issues, perhaps refactor to a job
+        // that simply creates another job when done. And the last job can
+        // set `duplicates` and `search_ended_at`. `search_batch_id` can be
+        // removed, and the frontend queued status can simply assume if it's
+        // created and has no `search_started_at` that it's waiting in queue.
+        if ($result->hasMore) {
+            Log::debug('Creating next job for request: ' . $this->toolDuplicateRequest->id);
+            self::dispatch($this->toolDuplicateRequest, $result->nextCursor)->onQueue('default');
+        } else {
+            Log::debug('No more jobs needed for request: ' . $this->toolDuplicateRequest->id);
+        }
+
+        DB::transaction(function () use ($pageDTOs, $result) {
             // Save results
+            Log::debug('Saving results for request: ' . $this->toolDuplicateRequest->id);
             $existingResults = $this->toolDuplicateRequest->refresh()->search_results ?? [];
-            $mergedResults = array_merge($existingResults, $remoteNotionObjects->toArray());
+            $mergedResults = array_merge($existingResults, $pageDTOs->toArray());
 
             $this->toolDuplicateRequest->update([
                 'search_results' => $mergedResults,
             ]);
-
-
-            // Create next job, if needed
-            if ($result->hasMore) {
-                self::dispatch($this->toolDuplicateRequest, $result->nextCursor)->onQueue('default');
-            }
         });
 
         $durationInSeconds = round($startedAt->diffInSeconds(Carbon::now()), 1);

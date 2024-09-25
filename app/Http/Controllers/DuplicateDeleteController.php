@@ -20,7 +20,7 @@ class DuplicateDeleteController extends Controller
         }
 
         $deleteList = [];
-        foreach ($toolDuplicateRequest->search_results as $result) {
+        foreach ($toolDuplicateRequest->duplicates as $result) {
             $dtos = $result->delete;
             $notion_ids = array_map(function ($dto) {
                 return $dto->notion_id;

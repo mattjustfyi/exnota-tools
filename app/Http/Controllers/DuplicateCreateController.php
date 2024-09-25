@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DTOs\NotionDTO;
 use App\Jobs\DuplicateSearch;
 use App\Models\DuplicateResultsDTO;
 use App\Models\NotionObject;
@@ -73,10 +74,10 @@ class DuplicateCreateController extends Controller
                 $this->processDuplicates($toolDuplicateRequest);
                 Log::debug('Finished processing duplicates for request: ' . $toolDuplicateRequest->id);
 
-                $toolDuplicateRequest->search_started_at = now();
+                $toolDuplicateRequest->search_ended_at = now();
                 $toolDuplicateRequest->save();
             })
-            ->name('Delete duplicates for request: ' . $toolDuplicateRequest->id)
+            ->name('Search duplicates for request: ' . $toolDuplicateRequest->id)
             ->dispatch();
 
         $toolDuplicateRequest->update([
@@ -127,7 +128,7 @@ class DuplicateCreateController extends Controller
 
         // Update the toolDuplicateRequest with the final duplicate results
         $toolDuplicateRequest->update([
-            'search_results' => $duplicateResults,
+            'duplicates' => $duplicateResults,
         ]);
     }
 }
