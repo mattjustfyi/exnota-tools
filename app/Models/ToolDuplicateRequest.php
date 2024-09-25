@@ -17,7 +17,7 @@ class ToolDuplicateRequest extends Model
 
     protected $fillable = [
         'notion_object_id',
-        'search_results',
+        'duplicates',
         'search_started_at',
         'search_ended_at',
         'delete_started_at',
@@ -36,7 +36,7 @@ class ToolDuplicateRequest extends Model
         'delete_ended_at' => 'datetime',
     ];
 
-    protected function searchResults(): Attribute
+    protected function duplicates(): Attribute
     {
         return Attribute::make(
             get: function (?string $value) {
