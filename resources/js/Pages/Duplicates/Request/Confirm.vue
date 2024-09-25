@@ -39,11 +39,24 @@ const searchResultsCount = computed(() => {
     return props.toolDuplicateRequest.search_results ? props.toolDuplicateRequest.search_results.length : 0;
 });
 
+const isSearchButtonDisabled = ref(false);
+
 const searchAgain = () => {
+    isSearchButtonDisabled.value = true;
     router.post('/duplicates/request',
         { notion_object_id: props.toolDuplicateRequest.notion_object_id },
-        { replace: true });
+        { 
+            replace: true,
+            preserveState: false,
+            preserveScroll: false,
+        });
 };
+
+watch(() => props.toolDuplicateRequest.search_ended_at, (newValue) => {
+    if (newValue) {
+        isSearchButtonDisabled.value = false;
+    }
+});
 
 const truncateTitle = (title, maxLength = 50) => {
     if (!title || title.trim() === '') return "(Untitled)";
@@ -168,9 +181,9 @@ onUnmounted(() => {
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-medium text-gray-900">Search Results</h3>
                         <div>
-                            <button @click="searchAgain" :disabled="searchInProgress || deleteInProgress" :class="[
+                            <button @click="searchAgain" :disabled="isSearchButtonDisabled || searchInProgress || deleteInProgress" :class="[
                                 'px-4 py-2 text-white rounded mr-2',
-                                searchInProgress || deleteInProgress ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
+                                isSearchButtonDisabled || searchInProgress || deleteInProgress ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
                             ]">
                                 Search again
                             </button>
