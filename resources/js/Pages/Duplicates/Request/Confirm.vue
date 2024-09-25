@@ -35,6 +35,10 @@ const searchProgress = computed(() => {
     return Math.min(Math.round((Math.log(count + 1) / Math.log(1000)) * 100), 99);
 });
 
+const searchResultsCount = computed(() => {
+    return props.toolDuplicateRequest.search_results ? props.toolDuplicateRequest.search_results.length : 0;
+});
+
 const searchAgain = () => {
     router.post('/duplicates/request',
         { notion_object_id: props.toolDuplicateRequest.notion_object_id },
@@ -210,7 +214,7 @@ onUnmounted(() => {
                             <div v-else-if="searchStatus === 'in_progress'" class="mt-4">
                                 <ProgressBar :progress="searchProgress" />
                                 <p class="mt-2 text-center text-gray-600">
-                                    Searching for duplicates...
+                                    Searching for duplicates... ({{ searchResultsCount }} found so far)
                                 </p>
                             </div>
                         </template>
