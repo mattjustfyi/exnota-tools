@@ -12,7 +12,7 @@ const props = defineProps({
 });
 
 const searchInProgress = computed(() => {
-    return props.toolDuplicateRequest.search_ended_at === null;
+    return !props.toolDuplicateRequest.search_ended_at;
 });
 
 const searchAgain = () => {
