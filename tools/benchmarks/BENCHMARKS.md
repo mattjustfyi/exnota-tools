@@ -42,7 +42,7 @@ Mockaroo schema: <https://www.mockaroo.com/schemas/648173>
 
 - Start:
 - End:
-- Duration:
+- Duration: 40m
 
 #### Search 5000
 
