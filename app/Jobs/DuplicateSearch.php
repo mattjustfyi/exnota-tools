@@ -38,7 +38,7 @@ class DuplicateSearch implements ShouldQueue
     {
         $this->toolDuplicateRequest = $toolDuplicateRequest;
         $this->nextCursor = $nextCursor;
-        Log::debug('Duplicate search job created for request: ' . $toolDuplicateRequest->id . ' with cursor: ' . $nextCursor . ' (Job ID: ' . $this->job->getJobId() . ')');
+        Log::debug('Duplicate search job created for request: ' . $toolDuplicateRequest->id . ' with cursor: ' . $nextCursor);
     }
 
     /**
