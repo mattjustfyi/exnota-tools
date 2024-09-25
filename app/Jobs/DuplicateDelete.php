@@ -35,7 +35,7 @@ class DuplicateDelete implements ShouldQueue
     {
         $this->toolDuplicateRequest = $toolDuplicateRequest;
         $this->notion_ids = $notion_ids;
-        Log::debug('Duplicate delete job created for request: ' . $toolDuplicateRequest->id);
+        Log::debug('Duplicate delete job created for request: ' . $toolDuplicateRequest->id . ' (Job ID: ' . $this->job->getJobId() . ')');
     }
 
     /**
@@ -64,7 +64,7 @@ class DuplicateDelete implements ShouldQueue
 
         $pageIds = array_diff($this->notion_ids, $this->toolDuplicateRequest->delete_results);
         if (empty($pageIds)) {
-            Log::debug('No notion IDs to delete for request: ' . $this->toolDuplicateRequest->id);
+            Log::debug('No notion IDs to delete for request: ' . $this->toolDuplicateRequest->id . ' (Job ID: ' . $this->job->getJobId() . ')');
             return;
         }
 
@@ -90,11 +90,11 @@ class DuplicateDelete implements ShouldQueue
 
             try {
                 if ($this->batch()->cancelled()) {
-                    Log::debug('Duplicate delete batch cancelled for request: ' . $this->toolDuplicateRequest->id);
+                    Log::debug('Duplicate delete batch cancelled for request: ' . $this->toolDuplicateRequest->id . ' (Job ID: ' . $this->job->getJobId() . ')');
                     break;
                 }
 
-                Log::debug('Fetching page: ' . $pageId);
+                Log::debug('Fetching page: ' . $pageId . ' (Job ID: ' . $this->job->getJobId() . ')');
                 $page = $notion->pages()->find($pageId);
 
                 // Notion API will return an error if trying to archive an
@@ -102,12 +102,12 @@ class DuplicateDelete implements ShouldQueue
                 if ($page->archived) {
                     // Still flag as deleted to track that it was (probably)
                     // done in a previous attempt at this job.
-                    Log::debug('Skipping already-deleted page: ' . $pageId);
+                    Log::debug('Skipping already-deleted page: ' . $pageId . ' (Job ID: ' . $this->job->getJobId() . ')');
                     $deletedPageIds[] = $pageId;
                     continue;
                 }
 
-                Log::debug('Deleting page: ' . $pageId);
+                Log::debug('Deleting page: ' . $pageId . ' (Job ID: ' . $this->job->getJobId() . ')');
                 $notion->pages()->delete($page);
                 $deletedPageIds[] = $pageId;
             } catch (\Exception $e) {
@@ -120,7 +120,7 @@ class DuplicateDelete implements ShouldQueue
                         // - message: "Unsaved transactions: Unrecognized error."
                         // - notionCode: "internal_server_error"
                         // - response->statusCode: 500
-                        Log::warning('Error deleting page. Notion internal server error. ', ['statusCode' => $e->response->getStatusCode(),  'pageId' => $pageId, 'message' => $e->getMessage(), 'notionCode' => $e->notionCode]);
+                        Log::warning('Error deleting page. Notion internal server error. ', ['statusCode' => $e->response->getStatusCode(),  'pageId' => $pageId, 'message' => $e->getMessage(), 'notionCode' => $e->notionCode, 'jobId' => $this->job->getJobId()]);
                     } else if ($e->notionCode === 'validation_error') {
                         // Known errors
                         //
@@ -130,12 +130,12 @@ class DuplicateDelete implements ShouldQueue
                         // - notionCode: "validation_error
                         // - response->statusCode: 400
                         //
-                        Log::warning('Error deleting page. Notion validation error. ', ['statusCode' => $e->response->getStatusCode(),  'pageId' => $pageId, 'message' => $e->getMessage(), 'notionCode' => $e->notionCode]);
+                        Log::warning('Error deleting page. Notion validation error. ', ['statusCode' => $e->response->getStatusCode(),  'pageId' => $pageId, 'message' => $e->getMessage(), 'notionCode' => $e->notionCode, 'jobId' => $this->job->getJobId()]);
                     } else {
-                        Log::error('Error deleting page. Other Notion error. ', ['statusCode' => $e->response->getStatusCode(),  'pageId' => $pageId, 'message' => $e->getMessage(), 'notionCode' => $e->notionCode]);
+                        Log::error('Error deleting page. Other Notion error. ', ['statusCode' => $e->response->getStatusCode(),  'pageId' => $pageId, 'message' => $e->getMessage(), 'notionCode' => $e->notionCode, 'jobId' => $this->job->getJobId()]);
                     }
                 } else {
-                    Log::error('Error deleting page. Other error. ', ['pageId' => $pageId, 'message' => $e->getMessage()]);
+                    Log::error('Error deleting page. Other error. ', ['pageId' => $pageId, 'message' => $e->getMessage(), 'jobId' => $this->job->getJobId()]);
                 }
             }
         }
@@ -153,11 +153,11 @@ class DuplicateDelete implements ShouldQueue
 
         $durationInSeconds = round($startedAt->diffInSeconds(Carbon::now()), 1);
         if (!empty($errorPageIds)) {
-            Log::warning('Error deleting pages for request: ' . $this->toolDuplicateRequest->id, ['errorPageIds' => $errorPageIds]);
-            Log::debug('Duplicate delete job completed in ' . strval($durationInSeconds) . 's for request: ' . $this->toolDuplicateRequest->id);
+            Log::warning('Error deleting pages for request: ' . $this->toolDuplicateRequest->id, ['errorPageIds' => $errorPageIds, 'jobId' => $this->job->getJobId()]);
+            Log::debug('Duplicate delete job completed in ' . strval($durationInSeconds) . 's for request: ' . $this->toolDuplicateRequest->id . ' (Job ID: ' . $this->job->getJobId() . ')');
             throw new \Exception('Error deleting pages. Job should be retried.');
         } else {
-            Log::debug('Duplicate delete job completed in ' . strval($durationInSeconds) . 's for request: ' . $this->toolDuplicateRequest->id);
+            Log::debug('Duplicate delete job completed in ' . strval($durationInSeconds) . 's for request: ' . $this->toolDuplicateRequest->id . ' (Job ID: ' . $this->job->getJobId() . ')');
         }
     }
 }
