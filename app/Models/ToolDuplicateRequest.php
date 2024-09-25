@@ -53,7 +53,6 @@ class ToolDuplicateRequest extends Model
                         $entry['keep']['title'],
                         NotionHelper::getNotionObjectType($entry['keep']['type']),
                         $entry['keep']['url'],
-                        $entry['keep']['property_values'],
                         Carbon::parse($entry['keep']['created_date']),
                         Carbon::parse($entry['keep']['updated_date']),
                     );
@@ -64,7 +63,6 @@ class ToolDuplicateRequest extends Model
                             $notionDTO['title'],
                             NotionHelper::getNotionObjectType($notionDTO['type']),
                             $notionDTO['url'],
-                            $notionDTO['property_values'],
                             Carbon::parse($notionDTO['created_date']),
                             Carbon::parse($notionDTO['updated_date']),
                         );
@@ -82,7 +80,6 @@ class ToolDuplicateRequest extends Model
                         $entry->keep->title,
                         $entry->keep->type,
                         $entry->keep->url,
-                        $entry->keep->property_values,
                         $entry->keep->created_date,
                         $entry->keep->updated_date,
                     );
@@ -93,7 +90,6 @@ class ToolDuplicateRequest extends Model
                             'title' => $notionDTO->title,
                             'type' => $notionDTO->type,
                             'url' => $notionDTO->url,
-                            'property_values' => $notionDTO->property_values,
                             'created_date' => $notionDTO->created_date->toDateTimeString(),
                             'updated_date' => $notionDTO->updated_date->toDateTimeString(),
                         ];
@@ -159,7 +155,6 @@ class ToolDuplicateRequest extends Model
                         $entry['title'],
                         NotionHelper::getNotionObjectType($entry['type']),
                         $entry['url'],
-                        $entry['property_values'],
                         Carbon::parse($entry['created_date']),
                         Carbon::parse($entry['updated_date'])
                     );
@@ -172,7 +167,6 @@ class ToolDuplicateRequest extends Model
                         'title' => $dto->title,
                         'type' => $dto->type->value,
                         'url' => $dto->url,
-                        'property_values' => $dto->property_values,
                         'created_date' => $dto->created_date->toDateTimeString(),
                         'updated_date' => $dto->updated_date->toDateTimeString(),
                     ];

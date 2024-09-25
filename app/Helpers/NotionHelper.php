@@ -39,7 +39,6 @@ class NotionHelper
             self::getTitleFromNotionResult($notionResult),
             $type,
             $notionResult->url,
-            $notionResult->properties,
             Carbon::createFromImmutable($notionResult->createdTime),
             Carbon::createFromImmutable($notionResult->lastEditedTime)
         );

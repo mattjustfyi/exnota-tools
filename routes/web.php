@@ -89,6 +89,8 @@ Route::middleware([
             ->whereRaw('payload ~ ?', ';s:[0-9]+:.{1}"App.{2}Models.{2}ToolDuplicateRequest.{1}";s:[0-9]+:.{1}"id.{1}";i:' . strval($toolDuplicateRequest->id) . ';')
             ->count();
 
+        // TODO: Add error info for failed deletion jobs.
+
         return Inertia::render('Duplicates/Request/Confirm', [
             'toolDuplicateRequest' => $toolDuplicateRequest,
             'numIncompleteSearchJobs' => $numIncompleteSearchJobs,

@@ -153,9 +153,10 @@ class DuplicateDelete implements ShouldQueue
 
         $durationInSeconds = round($startedAt->diffInSeconds(Carbon::now()), 1);
         if (!empty($errorPageIds)) {
-            Log::warning('Error deleting pages for request: ' . $this->toolDuplicateRequest->id, ['errorPageIds' => $errorPageIds, 'jobId' => $this->job->getJobId()]);
+            Log::debug('Releasing job due to some page deletions erroring ' . $this->toolDuplicateRequest->id, ['errorPageIds' => $errorPageIds, 'jobId' => $this->job->getJobId()]);
             Log::debug('Duplicate delete job completed in ' . strval($durationInSeconds) . 's for request: ' . $this->toolDuplicateRequest->id . ' (Job ID: ' . $this->job->getJobId() . ')');
-            throw new \Exception('Error deleting pages. Job should be retried.');
+            $this->job->release(4);
+            return;
         } else {
             Log::debug('Duplicate delete job completed in ' . strval($durationInSeconds) . 's for request: ' . $this->toolDuplicateRequest->id . ' (Job ID: ' . $this->job->getJobId() . ')');
         }
