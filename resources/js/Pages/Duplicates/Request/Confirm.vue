@@ -232,7 +232,7 @@ onUnmounted(() => {
                                 <p class="mt-2 text-center text-gray-600">
                                     Searching for duplicates...
                                     <template v-if="searchResultsCount > 0">
-                                        ({{ searchResultsCount }} found so far)
+                                        (scanned {{ searchResultsCount }} rows so far)
                                     </template>
                                 </p>
                             </div>
