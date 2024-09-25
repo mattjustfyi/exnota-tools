@@ -79,6 +79,10 @@ const totalDuplicates = computed(() => {
     return sortedDuplicates.value.reduce((total, result) => total + result.delete.length, 0);
 });
 
+const totalDeleted = computed(() => {
+    return props.toolDuplicateRequest.delete_results ? props.toolDuplicateRequest.delete_results.length : 0;
+});
+
 const refreshInterval = ref(null);
 
 const deleteInProgress = computed(() => {
@@ -205,6 +209,9 @@ onUnmounted(() => {
                     </p>
                     <p class="mt-2 text-gray-700">
                         Total Duplicates: {{ totalDuplicates }}
+                    </p>
+                    <p class="mt-2 text-gray-700">
+                        Total Deleted: {{ totalDeleted }}
                     </p>
                     <p class="mt-2 text-gray-600">
                         Searched At: {{ new Date(toolDuplicateRequest.search_started_at).toLocaleString() }}
