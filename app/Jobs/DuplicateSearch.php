@@ -5,17 +5,23 @@ namespace App\Jobs;
 use App\Helpers\NotionHelper;
 use App\Models\ToolDuplicateRequest;
 use Carbon\Carbon;
+use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Notion\Databases\Query;
 use Notion\Notion;
 use App\Models\DuplicateResultsDTO;
 
 class DuplicateSearch implements ShouldQueue
 {
-    use Queueable;
+    use Batchable, Dispatchable, InteractsWithQueue, SerializesModels;
 
     protected $toolDuplicateRequest;
+    protected $next_cursor;
 
     /**
      * The number of times the job may be attempted.
@@ -27,10 +33,21 @@ class DuplicateSearch implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(ToolDuplicateRequest $toolDuplicateRequest)
+    public function __construct(ToolDuplicateRequest $toolDuplicateRequest, ?string $next_cursor = null)
     {
         $this->toolDuplicateRequest = $toolDuplicateRequest;
-        logger('Duplicate search job created for request: ' . $toolDuplicateRequest->id);
+        $this->next_cursor = $next_cursor;
+        Log::debug('Duplicate search job created for request: ' . $toolDuplicateRequest->id);
+    }
+
+    /**
+     * Calculate the number of seconds to wait before retrying the job.
+     *
+     * @return array<int, int>
+     */
+    public function backoff(): array
+    {
+        return [2, 10];
     }
 
     /**
@@ -38,7 +55,14 @@ class DuplicateSearch implements ShouldQueue
      */
     public function handle(): void
     {
-        $searchStartedAt = Carbon::now();
+        $startedAt = Carbon::now();
+        DB::transaction(function () use ($startedAt) {
+            if (!$this->toolDuplicateRequest->refresh()->search_started_at) {
+                $this->toolDuplicateRequest->update([
+                    'search_started_at' => $startedAt,
+                ]);
+            }
+        });
 
         $notionObject = $this->toolDuplicateRequest->notionObject;
         $workspace = $notionObject->workspace;
@@ -46,33 +70,53 @@ class DuplicateSearch implements ShouldQueue
         $notion = Notion::create($workspace->authData['access_token']);
         $database = $notion->databases()->find($notionObject->data['id']);
 
-        $pages = [];
-
         $query = Query::create();
-        do {
-            $result = $notion->databases()->query($database, $query);
-            $pages = array_merge($pages, $result->pages);
-            if ($result->hasMore) {
-                $query = $query->changeStartCursor($result->nextCursor);
-            }
-        } while ($result->hasMore);
+        if ($this->next_cursor) {
+            $query = $query->changeStartCursor($this->next_cursor);
+        }
+
+        $result = $notion->databases()->query($database, $query);
+        $pages = $result->pages;
 
         $remoteNotionObjects = collect($pages)->map(function ($page) {
             return NotionHelper::createNotionDTO($page);
         });
 
+        DB::transaction(function () use ($remoteNotionObjects, $result) {
+            $existingResults = $this->toolDuplicateRequest->refresh()->search_results ?? [];
+            $mergedResults = array_merge($existingResults, $remoteNotionObjects->toArray());
+
+            $this->toolDuplicateRequest->update([
+                'search_results' => $mergedResults,
+            ]);
+
+            if ($result->hasMore) {
+                self::dispatch($this->toolDuplicateRequest, $result->nextCursor)->onQueue('default');
+            } else {
+                $this->processDuplicates();
+            }
+        });
+
+        $durationInSeconds = round($startedAt->diffInSeconds(Carbon::now()), 1);
+        Log::debug('Duplicate search job completed in ' . strval($durationInSeconds) . 's for request: ' . $this->toolDuplicateRequest->id);
+    }
+
+    /**
+     * Process the collected results to find duplicates.
+     */
+    private function processDuplicates(): void
+    {
+        $allResults = collect($this->toolDuplicateRequest->search_results);
+
         // Group objects by title
-        $groupedByTitle = $remoteNotionObjects->groupBy(function ($object) {
-            return $object->title;
+        $groupedByTitle = $allResults->groupBy(function ($object) {
+            return $object['title'];
         });
 
         // Filter out groups with only one item (no duplicates)
         $duplicates = $groupedByTitle->filter(function ($group) {
             return $group->count() > 1;
         });
-
-        // TODO: Update so it's clear, and we decide here, which ones will be
-        // deleted if user chooses so.
 
         // Create the list of duplicate pairs
         $duplicatePairs = $duplicates->map(function ($group) {
@@ -83,7 +127,7 @@ class DuplicateSearch implements ShouldQueue
         foreach ($duplicatePairs as $pair) {
             $oldest = null;
             foreach ($pair as $item) {
-                if ($oldest === null || $item->created_date < $oldest->created_date) {
+                if ($oldest === null || $item['created_date'] < $oldest['created_date']) {
                     $oldest = $item;
                 }
             }
@@ -95,10 +139,9 @@ class DuplicateSearch implements ShouldQueue
             array_push($duplicateResults, new DuplicateResultsDTO($oldest, $remainingDuplicates));
         }
 
-        // Update the toolDuplicateRequest with the duplicate results
+        // Update the toolDuplicateRequest with the final duplicate results
         $this->toolDuplicateRequest->update([
             'search_results' => $duplicateResults,
-            'search_started_at' => $searchStartedAt,
             'search_ended_at' => Carbon::now(),
         ]);
     }
