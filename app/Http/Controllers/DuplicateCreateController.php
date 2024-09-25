@@ -25,11 +25,10 @@ class DuplicateCreateController extends Controller
         }
 
         $existingDuplicateRequest = ToolDuplicateRequest::where('notion_object_id', $request->notion_object_id)
-            ->whereNull('search_ended_at')
-            ->orderByDesc('created_at')
+            ->latest()
             ->first();
 
-        if ($existingDuplicateRequest) {
+        if ($existingDuplicateRequest && $existingDuplicateRequest->search_ended_at === null) {
             return to_route('duplicates.request.confirm', ['toolDuplicateRequest' => $existingDuplicateRequest->id]);
         }
 
