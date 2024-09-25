@@ -9,6 +9,10 @@ const props = defineProps({
         type: Object,
         required: true
     },
+    numIncompleteJobs: {
+        type: Number,
+        required: true
+    },
 });
 
 const searchInProgress = computed(() => {
