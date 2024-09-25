@@ -15,10 +15,11 @@ use Illuminate\Support\Facades\Log;
 use Notion\Databases\Query;
 use Notion\Notion;
 use App\Models\DuplicateResultsDTO;
+use Illuminate\Foundation\Queue\Queueable;
 
 class DuplicateSearch implements ShouldQueue
 {
-    use Batchable, Dispatchable, InteractsWithQueue, SerializesModels;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $toolDuplicateRequest;
     protected $next_cursor;
@@ -64,25 +65,27 @@ class DuplicateSearch implements ShouldQueue
             }
         });
 
+        // Get database
         $notionObject = $this->toolDuplicateRequest->notionObject;
         $workspace = $notionObject->workspace;
-
         $notion = Notion::create($workspace->authData['access_token']);
         $database = $notion->databases()->find($notionObject->data['id']);
 
+        // Create query
         $query = Query::create();
         if ($this->next_cursor) {
             $query = $query->changeStartCursor($this->next_cursor);
         }
 
+        // Submit and get results
         $result = $notion->databases()->query($database, $query);
         $pages = $result->pages;
-
         $remoteNotionObjects = collect($pages)->map(function ($page) {
             return NotionHelper::createNotionDTO($page);
         });
 
         DB::transaction(function () use ($remoteNotionObjects, $result) {
+            // Save results
             $existingResults = $this->toolDuplicateRequest->refresh()->search_results ?? [];
             $mergedResults = array_merge($existingResults, $remoteNotionObjects->toArray());
 
@@ -90,9 +93,12 @@ class DuplicateSearch implements ShouldQueue
                 'search_results' => $mergedResults,
             ]);
 
+
+            // Create next job or, if no more results, determine duplicates
             if ($result->hasMore) {
                 self::dispatch($this->toolDuplicateRequest, $result->nextCursor)->onQueue('default');
             } else {
+                // TODO: Add to batch 'finished' callback, along with setting search_ended_at
                 $this->processDuplicates();
             }
         });
@@ -142,7 +148,6 @@ class DuplicateSearch implements ShouldQueue
         // Update the toolDuplicateRequest with the final duplicate results
         $this->toolDuplicateRequest->update([
             'search_results' => $duplicateResults,
-            'search_ended_at' => Carbon::now(),
         ]);
     }
 }
