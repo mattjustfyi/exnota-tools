@@ -30,9 +30,9 @@ const searchProgress = computed(() => {
         return 0;
     }
     const count = props.toolDuplicateRequest.search_results.length;
-    // Using a square root scale up to 100,000 results
+    // Using a logarithmic scale up to 10,000 results
     // We'll cap it at 99% to indicate it's not fully complete until search_ended_at is set
-    return Math.min(Math.round(Math.sqrt(count / 100000) * 100), 99);
+    return Math.min(Math.round((Math.log(count + 1) / Math.log(10000)) * 100), 99);
 });
 
 const searchResultsCount = computed(() => {
