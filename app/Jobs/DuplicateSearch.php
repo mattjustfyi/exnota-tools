@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\DTOs\NotionDTO;
 use App\Helpers\NotionHelper;
 use App\Models\ToolDuplicateRequest;
 use Carbon\Carbon;
@@ -57,7 +58,7 @@ class DuplicateSearch implements ShouldQueue
     {
         $startedAt = Carbon::now();
         Log::debug('Duplicate search job started for request: ' . $this->toolDuplicateRequest->id . ' with cursor: ' . $this->nextCursor);
-        
+
         if (!$this->nextCursor) {
             $this->toolDuplicateRequest->update([
                 'search_started_at' => $startedAt,
@@ -86,7 +87,7 @@ class DuplicateSearch implements ShouldQueue
             Log::debug('Submitting query ' . ($queryCount + 1) . ' for request: ' . $this->toolDuplicateRequest->id);
             $result = $notion->databases()->query($database, $query);
             Log::debug('Received results for request: ' . $this->toolDuplicateRequest->id);
-            
+
             $pages = $result->pages;
             $pageDTOs = collect($pages)->map(function ($page) {
                 return NotionHelper::createNotionDTO($page);
