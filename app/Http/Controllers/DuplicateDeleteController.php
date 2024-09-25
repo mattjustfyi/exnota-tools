@@ -42,7 +42,7 @@ class DuplicateDeleteController extends Controller
         }
 
         // Remaining jobs with size 20
-        $remainingChunks = array_chunk($remainingList, 20);
+        $remainingChunks = array_chunk($remainingList, 10);
         foreach ($remainingChunks as $chunk) {
             $jobs[] = new DuplicateDelete($toolDuplicateRequest, $chunk);
         }
