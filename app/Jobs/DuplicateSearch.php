@@ -75,7 +75,7 @@ class DuplicateSearch implements ShouldQueue
         $allResults = collect($this->toolDuplicateRequest->search_results ?? []);
         $hasMore = true;
         $nextCursor = $this->nextCursor;
-        $maxQueries = $isFirstJob ? 1 : 6;
+        $maxQueries = $isFirstJob ? 1 : 3;
         $queryCount = 0;
 
         while ($hasMore && $queryCount < $maxQueries) {
