@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tool_duplicate_requests', function (Blueprint $table) {
-            //
+            $table->renameColumn('batch_id', 'delete_batch_id');
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('tool_duplicate_requests', function (Blueprint $table) {
-            //
+            $table->renameColumn('delete_batch_id', 'batch_id');
         });
     }
 };
