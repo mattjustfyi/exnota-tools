@@ -201,6 +201,9 @@ onUnmounted(() => {
                         Database: {{ notionObjectTitle }}
                     </p>
                     <p class="mt-2 text-gray-700">
+                        Total Rows: {{ toolDuplicateRequest.search_results ? toolDuplicateRequest.search_results.length : 0 }}
+                    </p>
+                    <p class="mt-2 text-gray-700">
                         Total Duplicates: {{ totalDuplicates }}
                     </p>
                     <p class="mt-2 text-gray-600">
