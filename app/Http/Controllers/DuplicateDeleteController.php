@@ -48,21 +48,21 @@ class DuplicateDeleteController extends Controller
         }
 
         $batch = Bus::batch($jobs)
-            ->before(function (Batch $batch) {
+            ->before(function (Batch $batch) use ($toolDuplicateRequest) {
                 // The batch has been created but no jobs have been added...
-                Log::debug('Batch created for request: ' . $batch->id);
-            })->progress(function (Batch $batch) {
+                Log::debug('Batch delete created for request: ' . $toolDuplicateRequest->id);
+            })->progress(function (Batch $batch) use ($toolDuplicateRequest) {
                 // A single job has completed successfully...
-                Log::debug('Batch progress for request: ' . $batch->id);
-            })->then(function (Batch $batch) {
+                Log::debug('Batch delete progress for request: ' . $toolDuplicateRequest->id);
+            })->then(function (Batch $batch) use ($toolDuplicateRequest) {
                 // All jobs completed successfully...
-                Log::debug('Batch completed for request: ' . $batch->id);
-            })->catch(function (Batch $batch, Throwable $e) {
+                Log::debug('Batch delete completed for request: ' . $toolDuplicateRequest->id);
+            })->catch(function (Batch $batch, Throwable $e) use ($toolDuplicateRequest) {
                 // First batch job failure detected...
-                Log::debug('Batch failed for request: ' . $batch->id);
+                Log::debug('Batch delete failed for request: ' . $toolDuplicateRequest->id);
             })->finally(function (Batch $batch) use ($toolDuplicateRequest) {
                 // The batch has finished executing...
-                Log::debug('Batch finished for request: ' . $batch->id);
+                Log::debug('Batch delete finished for request: ' . $toolDuplicateRequest->id);
 
                 $toolDuplicateRequest->delete_ended_at = now();
                 $toolDuplicateRequest->save();

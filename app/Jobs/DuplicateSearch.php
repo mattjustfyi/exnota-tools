@@ -94,60 +94,13 @@ class DuplicateSearch implements ShouldQueue
             ]);
 
 
-            // Create next job or, if no more results, determine duplicates
+            // Create next job, if needed
             if ($result->hasMore) {
                 self::dispatch($this->toolDuplicateRequest, $result->nextCursor)->onQueue('default');
-            } else {
-                // TODO: Add to batch 'finished' callback, along with setting search_ended_at
-                $this->processDuplicates();
             }
         });
 
         $durationInSeconds = round($startedAt->diffInSeconds(Carbon::now()), 1);
         Log::debug('Duplicate search job completed in ' . strval($durationInSeconds) . 's for request: ' . $this->toolDuplicateRequest->id);
-    }
-
-    /**
-     * Process the collected results to find duplicates.
-     */
-    private function processDuplicates(): void
-    {
-        $allResults = collect($this->toolDuplicateRequest->search_results);
-
-        // Group objects by title
-        $groupedByTitle = $allResults->groupBy(function ($object) {
-            return $object['title'];
-        });
-
-        // Filter out groups with only one item (no duplicates)
-        $duplicates = $groupedByTitle->filter(function ($group) {
-            return $group->count() > 1;
-        });
-
-        // Create the list of duplicate pairs
-        $duplicatePairs = $duplicates->map(function ($group) {
-            return $group->values()->all();
-        })->values()->all();
-
-        $duplicateResults = [];
-        foreach ($duplicatePairs as $pair) {
-            $oldest = null;
-            foreach ($pair as $item) {
-                if ($oldest === null || $item['created_date'] < $oldest['created_date']) {
-                    $oldest = $item;
-                }
-            }
-
-            $remainingDuplicates = array_values(array_filter($pair, function ($item) use ($oldest) {
-                return $item !== $oldest;
-            }));
-
-            array_push($duplicateResults, new DuplicateResultsDTO($oldest, $remainingDuplicates));
-        }
-
-        // Update the toolDuplicateRequest with the final duplicate results
-        $this->toolDuplicateRequest->update([
-            'search_results' => $duplicateResults,
-        ]);
     }
 }

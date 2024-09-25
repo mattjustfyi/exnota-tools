@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\DuplicateSearch;
+use App\Models\DuplicateResultsDTO;
 use App\Models\NotionObject;
 use App\Models\ToolDuplicateRequest;
 use Illuminate\Http\Request;
@@ -10,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Bus\Batch;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class DuplicateCreateController extends Controller
@@ -51,16 +53,31 @@ class DuplicateCreateController extends Controller
         $batch = Bus::batch([
             new DuplicateSearch($toolDuplicateRequest)
         ])
-        ->then(function (Batch $batch) {
-            // All jobs completed successfully...
-        })
-        ->catch(function (Batch $batch, Throwable $e) {
-            // First batch job failure detected...
-        })
-        ->finally(function (Batch $batch) {
-            // The batch has finished executing...
-        })
-        ->dispatch();
+            ->before(function (Batch $batch) use ($toolDuplicateRequest) {
+                // The batch has been created but no jobs have been added...
+                Log::debug('Batch search created for request: ' . $toolDuplicateRequest->id);
+            })->progress(function (Batch $batch) use ($toolDuplicateRequest) {
+                // A single job has completed successfully...
+                Log::debug('Batch search progress for request: ' . $toolDuplicateRequest->id);
+            })->then(function (Batch $batch) use ($toolDuplicateRequest) {
+                // All jobs completed successfully...
+                Log::debug('Batch search completed for request: ' . $toolDuplicateRequest->id);
+            })->catch(function (Batch $batch, Throwable $e) use ($toolDuplicateRequest) {
+                // First batch job failure detected...
+                Log::debug('Batch search failed for request: ' . $toolDuplicateRequest->id);
+            })->finally(function (Batch $batch) use ($toolDuplicateRequest) {
+                // The batch has finished executing...
+                Log::debug('Batch search finished for reqjuest: ' . $toolDuplicateRequest->id);
+
+                Log::debug('Processing duplicates for request: ' . $toolDuplicateRequest->id);
+                $this->processDuplicates($toolDuplicateRequest);
+                Log::debug('Finished processing duplicates for request: ' . $toolDuplicateRequest->id);
+
+                $toolDuplicateRequest->search_started_at = now();
+                $toolDuplicateRequest->save();
+            })
+            ->name('Delete duplicates for request: ' . $toolDuplicateRequest->id)
+            ->dispatch();
 
         $toolDuplicateRequest->update([
             'search_batch_id' => $batch->id
@@ -68,5 +85,49 @@ class DuplicateCreateController extends Controller
 
         // TODO: If user has already confirmed, instead redirect to /search
         return to_route('duplicates.request.confirm', ['toolDuplicateRequest' => $toolDuplicateRequest->id]);
+    }
+
+    /**
+     * Process the collected results to find duplicates.
+     */
+    private function processDuplicates(ToolDuplicateRequest $toolDuplicateRequest): void
+    {
+        $allResults = collect($toolDuplicateRequest->search_results);
+
+        // Group objects by title
+        $groupedByTitle = $allResults->groupBy(function ($object) {
+            return $object['title'];
+        });
+
+        // Filter out groups with only one item (no duplicates)
+        $duplicates = $groupedByTitle->filter(function ($group) {
+            return $group->count() > 1;
+        });
+
+        // Create the list of duplicate pairs
+        $duplicatePairs = $duplicates->map(function ($group) {
+            return $group->values()->all();
+        })->values()->all();
+
+        $duplicateResults = [];
+        foreach ($duplicatePairs as $pair) {
+            $oldest = null;
+            foreach ($pair as $item) {
+                if ($oldest === null || $item['created_date'] < $oldest['created_date']) {
+                    $oldest = $item;
+                }
+            }
+
+            $remainingDuplicates = array_values(array_filter($pair, function ($item) use ($oldest) {
+                return $item !== $oldest;
+            }));
+
+            array_push($duplicateResults, new DuplicateResultsDTO($oldest, $remainingDuplicates));
+        }
+
+        // Update the toolDuplicateRequest with the final duplicate results
+        $toolDuplicateRequest->update([
+            'search_results' => $duplicateResults,
+        ]);
     }
 }
