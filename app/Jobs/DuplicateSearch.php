@@ -38,7 +38,7 @@ class DuplicateSearch implements ShouldQueue
     {
         $this->toolDuplicateRequest = $toolDuplicateRequest;
         $this->nextCursor = $nextCursor;
-        Log::debug('Duplicate search job created for request: ' . $toolDuplicateRequest->id . ' with cursor: ' . $nextCursor);
+        Log::debug('Duplicate search job created for request: ' . $toolDuplicateRequest->id . ' with cursor: ' . $nextCursor . ' (Job ID: ' . $this->job->getJobId() . ')');
     }
 
     /**
@@ -57,7 +57,7 @@ class DuplicateSearch implements ShouldQueue
     public function handle(): void
     {
         $startedAt = Carbon::now();
-        Log::debug('Duplicate search job started for request: ' . $this->toolDuplicateRequest->id . ' with cursor: ' . $this->nextCursor);
+        Log::debug('Duplicate search job started for request: ' . $this->toolDuplicateRequest->id . ' with cursor: ' . $this->nextCursor . ' (Job ID: ' . $this->job->getJobId() . ')');
 
         if (!$this->nextCursor) {
             $this->toolDuplicateRequest->update([
@@ -84,9 +84,9 @@ class DuplicateSearch implements ShouldQueue
             }
 
             // Submit and get results
-            Log::debug('Submitting query ' . ($queryCount + 1) . ' for request: ' . $this->toolDuplicateRequest->id);
+            Log::debug('Submitting query ' . ($queryCount + 1) . ' for request: ' . $this->toolDuplicateRequest->id . ' (Job ID: ' . $this->job->getJobId() . ')');
             $result = $notion->databases()->query($database, $query);
-            Log::debug('Received results for request: ' . $this->toolDuplicateRequest->id);
+            Log::debug('Received results for request: ' . $this->toolDuplicateRequest->id . ' (Job ID: ' . $this->job->getJobId() . ')');
 
             $pages = $result->pages;
             $pageDTOs = collect($pages)->map(function ($page) {
@@ -105,7 +105,7 @@ class DuplicateSearch implements ShouldQueue
         ]);
 
         if ($hasMore) {
-            Log::debug('Dispatching new job for remaining results. Request: ' . $this->toolDuplicateRequest->id . ' Next cursor: ' . $nextCursor);
+            Log::debug('Dispatching new job for remaining results. Request: ' . $this->toolDuplicateRequest->id . ' Next cursor: ' . $nextCursor . ' (Job ID: ' . $this->job->getJobId() . ')');
             self::dispatch($this->toolDuplicateRequest, $nextCursor)->onQueue('default');
         } else {
             $this->processDuplicates();
@@ -115,7 +115,7 @@ class DuplicateSearch implements ShouldQueue
         }
 
         $durationInSeconds = round($startedAt->diffInSeconds(Carbon::now()), 1);
-        Log::debug('Duplicate search job batch completed in ' . strval($durationInSeconds) . 's for request: ' . $this->toolDuplicateRequest->id);
+        Log::debug('Duplicate search job batch completed in ' . strval($durationInSeconds) . 's for request: ' . $this->toolDuplicateRequest->id . ' (Job ID: ' . $this->job->getJobId() . ')');
     }
 
     /**
