@@ -15,7 +15,7 @@ class DuplicateRequestDeleteController extends Controller
 {
     public function delete(ToolDuplicateRequest $toolDuplicateRequest): RedirectResponse
     {
-        if ($toolDuplicateRequest->batch_id) {
+        if ($toolDuplicateRequest->delete_batch_id) {
             return redirect()->back()->with('error', 'Delete request already in progress.');
         }
 
@@ -70,7 +70,7 @@ class DuplicateRequestDeleteController extends Controller
             ->name('Delete duplicates for request: ' . $toolDuplicateRequest->id)
             ->onQueue(QueueConstants::DELETE_QUEUE_1)->dispatch();
 
-        $toolDuplicateRequest->batch_id = $batch->id;
+        $toolDuplicateRequest->delete_batch_id = $batch->id;
         $toolDuplicateRequest->save();
 
         return to_route('duplicates.request.confirm', ['toolDuplicateRequest' => $toolDuplicateRequest->id]);

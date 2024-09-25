@@ -45,11 +45,11 @@ const totalDuplicates = computed(() => {
 const refreshInterval = ref(null);
 
 const deleteInProgress = computed(() => {
-    return props.toolDuplicateRequest.batch_id && !props.toolDuplicateRequest.delete_ended_at;
+    return props.toolDuplicateRequest.delete_batch_id && !props.toolDuplicateRequest.delete_ended_at;
 });
 
 const deletionFinished = computed(() => {
-    return props.toolDuplicateRequest.batch_id && props.toolDuplicateRequest.delete_ended_at;
+    return props.toolDuplicateRequest.delete_batch_id && props.toolDuplicateRequest.delete_ended_at;
 });
 
 const undeleteablePages = computed(() => {
@@ -152,9 +152,9 @@ onUnmounted(() => {
                             </button>
                             <button v-if="!searchInProgress && sortedSearchResults.length > 0"
                                 @click="() => router.post(route('duplicates.delete-request', toolDuplicateRequest.id))"
-                                :disabled="!!toolDuplicateRequest.batch_id" :class="[
+                                :disabled="!!toolDuplicateRequest.delete_batch_id" :class="[
                                     'px-4 py-2 text-white rounded',
-                                    toolDuplicateRequest.batch_id ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-500 hover:bg-red-600'
+                                    toolDuplicateRequest.delete_batch_id ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-500 hover:bg-red-600'
                                 ]">
                                 Delete Duplicates
                             </button>
