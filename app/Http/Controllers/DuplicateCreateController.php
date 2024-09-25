@@ -8,6 +8,9 @@ use App\Models\ToolDuplicateRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Bus;
+use Illuminate\Bus\Batch;
+use Throwable;
 
 class DuplicateCreateController extends Controller
 {
@@ -45,7 +48,23 @@ class DuplicateCreateController extends Controller
             'notion_object_id' => $request->notion_object_id,
         ]);
 
-        DuplicateSearch::dispatch($toolDuplicateRequest);
+        $batch = Bus::batch([
+            new DuplicateSearch($toolDuplicateRequest)
+        ])
+        ->then(function (Batch $batch) {
+            // All jobs completed successfully...
+        })
+        ->catch(function (Batch $batch, Throwable $e) {
+            // First batch job failure detected...
+        })
+        ->finally(function (Batch $batch) {
+            // The batch has finished executing...
+        })
+        ->dispatch();
+
+        $toolDuplicateRequest->update([
+            'search_batch_id' => $batch->id
+        ]);
 
         // TODO: If user has already confirmed, instead redirect to /search
         return to_route('duplicates.request.confirm', ['toolDuplicateRequest' => $toolDuplicateRequest->id]);
