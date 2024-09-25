@@ -95,8 +95,8 @@ class DuplicateCreateController extends Controller
         $allResults = collect($toolDuplicateRequest->search_results);
 
         // Group objects by title
-        $groupedByTitle = $allResults->groupBy(function ($object) {
-            return $object['title'];
+        $groupedByTitle = $allResults->groupBy(function (NotionDTO $object) {
+            return $object->title;
         });
 
         // Filter out groups with only one item (no duplicates)
@@ -113,7 +113,7 @@ class DuplicateCreateController extends Controller
         foreach ($duplicatePairs as $pair) {
             $oldest = null;
             foreach ($pair as $item) {
-                if ($oldest === null || $item['created_date'] < $oldest['created_date']) {
+                if ($oldest === null || $item->created_date < $oldest->created_date) {
                     $oldest = $item;
                 }
             }
