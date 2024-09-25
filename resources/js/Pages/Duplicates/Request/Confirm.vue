@@ -26,8 +26,13 @@ const searchStatus = computed(() => {
 });
 
 const searchProgress = computed(() => {
-    // This is a placeholder. You might want to replace this with actual progress data if available
-    return 50;
+    if (!props.toolDuplicateRequest.search_results) {
+        return 0;
+    }
+    const count = props.toolDuplicateRequest.search_results.length;
+    // Using a logarithmic scale to slow down progress as count increases
+    // We'll cap it at 99% to indicate it's not fully complete until search_ended_at is set
+    return Math.min(Math.round((Math.log(count + 1) / Math.log(1000)) * 100), 99);
 });
 
 const searchAgain = () => {
