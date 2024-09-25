@@ -15,6 +15,21 @@ const searchInProgress = computed(() => {
     return !props.toolDuplicateRequest.search_ended_at;
 });
 
+const searchStatus = computed(() => {
+    if (!props.toolDuplicateRequest.search_started_at) {
+        return 'queued';
+    }
+    if (!props.toolDuplicateRequest.search_ended_at) {
+        return 'in_progress';
+    }
+    return 'completed';
+});
+
+const searchProgress = computed(() => {
+    // This is a placeholder. You might want to replace this with actual progress data if available
+    return 50;
+});
+
 const searchAgain = () => {
     router.post('/duplicates/request',
         { notion_object_id: props.toolDuplicateRequest.notion_object_id },
@@ -183,10 +198,15 @@ onUnmounted(() => {
                                 Queued
                             </p>
                         </div>
-                        <template v-else-if="searchInProgress.value">
-                            <div class="mt-4 flex justify-center items-center">
-                                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-                                <span class="ml-2 text-gray-600">Processing2...</span>
+                        <template v-else-if="searchInProgress">
+                            <div v-if="searchStatus === 'queued'" class="mt-4 text-center text-gray-600">
+                                Search queued
+                            </div>
+                            <div v-else-if="searchStatus === 'in_progress'" class="mt-4">
+                                <ProgressBar :progress="searchProgress" />
+                                <p class="mt-2 text-center text-gray-600">
+                                    Searching for duplicates...
+                                </p>
                             </div>
                         </template>
                         <template v-else-if="deletionFinished">
