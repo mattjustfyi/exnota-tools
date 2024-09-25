@@ -9,10 +9,10 @@ const props = defineProps({
         type: Object,
         required: true
     },
-    searchInProgress: {
-        type: Boolean,
-        required: true
-    },
+});
+
+const searchInProgress = computed(() => {
+    return props.toolDuplicateRequest.search_batch_id && !props.toolDuplicateRequest.search_ended_at;
 });
 
 const searchAgain = () => {
@@ -91,7 +91,7 @@ const deletionStatus = computed(() => {
 });
 
 const shouldRefresh = computed(() => {
-    return deleteInProgress.value || props.searchInProgress;
+    return deleteInProgress.value || searchInProgress.value;
 });
 
 const startPeriodicRefresh = () => {
@@ -144,13 +144,13 @@ onUnmounted(() => {
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-medium text-gray-900">Search Results</h3>
                         <div>
-                            <button v-if="!searchInProgress" @click="searchAgain" :disabled="deleteInProgress" :class="[
+                            <button v-if="!searchInProgress.value" @click="searchAgain" :disabled="deleteInProgress" :class="[
                                 'px-4 py-2 text-white rounded mr-2',
                                 deleteInProgress ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
                             ]">
                                 Search again
                             </button>
-                            <button v-if="!searchInProgress && sortedSearchResults.length > 0"
+                            <button v-if="!searchInProgress.value && sortedSearchResults.length > 0"
                                 @click="() => router.post(route('duplicates.delete-request', toolDuplicateRequest.id))"
                                 :disabled="!!toolDuplicateRequest.delete_batch_id" :class="[
                                     'px-4 py-2 text-white rounded',
@@ -183,7 +183,7 @@ onUnmounted(() => {
                                 Queued
                             </p>
                         </div>
-                        <template v-else-if="searchInProgress">
+                        <template v-else-if="searchInProgress.value">
                             <div class="mt-4 flex justify-center items-center">
                                 <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
                                 <span class="ml-2 text-gray-600">Processing2...</span>
