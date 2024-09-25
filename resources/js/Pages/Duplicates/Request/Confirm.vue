@@ -214,7 +214,10 @@ onUnmounted(() => {
                             <div v-else-if="searchStatus === 'in_progress'" class="mt-4">
                                 <ProgressBar :progress="searchProgress" />
                                 <p class="mt-2 text-center text-gray-600">
-                                    Searching for duplicates... ({{ searchResultsCount }} found so far)
+                                    Searching for duplicates...
+                                    <template v-if="searchResultsCount > 0">
+                                        ({{ searchResultsCount }} found so far)
+                                    </template>
                                 </p>
                             </div>
                         </template>
