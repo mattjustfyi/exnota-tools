@@ -168,9 +168,9 @@ onUnmounted(() => {
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-medium text-gray-900">Search Results</h3>
                         <div>
-                            <button v-if="!searchInProgress.value" @click="searchAgain" :disabled="deleteInProgress" :class="[
+                            <button @click="searchAgain" :disabled="searchInProgress || deleteInProgress" :class="[
                                 'px-4 py-2 text-white rounded mr-2',
-                                deleteInProgress ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
+                                searchInProgress || deleteInProgress ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
                             ]">
                                 Search again
                             </button>
