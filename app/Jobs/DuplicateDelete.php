@@ -110,6 +110,11 @@ class DuplicateDelete implements ShouldQueue
                 Log::debug('Deleting page: ' . $pageId . ' (Job ID: ' . $this->job->getJobId() . ')');
                 $notion->pages()->delete($page);
                 $deletedPageIds[] = $pageId;
+
+                // TODO: REmove this after testing
+                Log::debug('Waiting at ' . Carbon::now()->toDateTimeString() . ' (Job ID: ' . $this->job->getJobId() . ')');
+                usleep(300000); // 300ms
+                Log::debug('Resuming at ' . Carbon::now()->toDateTimeString() . ' (Job ID: ' . $this->job->getJobId() . ')');
             } catch (\Exception $e) {
                 $errorPageIds[] = $pageId;
                 if ($e instanceof \Notion\Exceptions\ApiException) {
