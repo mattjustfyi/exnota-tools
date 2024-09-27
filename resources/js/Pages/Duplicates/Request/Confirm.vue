@@ -146,7 +146,7 @@ const shouldRefresh = computed(() => {
 const startPeriodicRefresh = () => {
     refreshInterval.value = setInterval(() => {
         router.reload();
-    }, 5000);
+    }, 6000);
 };
 
 const stopPeriodicRefresh = () => {
