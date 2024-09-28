@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\SyncStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -15,7 +16,8 @@ class Workspace extends Model
         'authData',
         'user_avatar',
         'workspace_name',
-        'workspace_icon'
+        'workspace_icon',
+        'sync_status'
     ];
 
     /**
@@ -47,6 +49,7 @@ class Workspace extends Model
      */
     protected $casts = [
         'authData' => 'json',
+        'sync_status' => SyncStatus::class,
     ];
 
     /**
@@ -58,5 +61,6 @@ class Workspace extends Model
         'user_avatar' => null,
         'workspace_name' => null,
         'workspace_icon' => null,
+        'sync_status' => SyncStatus::QUEUED,
     ];
 }
