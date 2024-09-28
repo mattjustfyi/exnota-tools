@@ -61,6 +61,6 @@ class Workspace extends Model
         'user_avatar' => null,
         'workspace_name' => null,
         'workspace_icon' => null,
-        'sync_status' => SyncStatus::QUEUED,
+        'sync_status' => SyncStatus::COMPLETE,
     ];
 }
