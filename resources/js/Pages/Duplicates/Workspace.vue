@@ -3,6 +3,8 @@ import { Head, router, Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { ref, watch, onMounted, onUnmounted, computed } from 'vue';
 
+console.log('Script setup started');
+
 const props = defineProps({
     workspace: {
         type: Object,
@@ -14,37 +16,47 @@ const props = defineProps({
     }
 });
 
+console.log('Props:', props);
+
 const refreshInterval = ref(null);
 const selectedDatabase = ref(null);
 
 const selectDatabase = (database) => {
+    console.log('selectDatabase called with:', database);
     selectedDatabase.value = database;
     console.log('Selected database:', database);
     callDuplicateCreateController(database.id);
 };
 
 const callDuplicateCreateController = (notionObjectId) => {
+    console.log('callDuplicateCreateController called with:', notionObjectId);
     router.post('/duplicates/request', { notion_object_id: notionObjectId });
 };
 
 const fetchUserData = () => {
+    console.log('fetchUserData called');
     router.post(`/test/workspace/${props.workspace.id}/refresh`);
 };
 
 const startPeriodicRefresh = () => {
+    console.log('startPeriodicRefresh called');
     refreshInterval.value = setInterval(() => {
+        console.log('Periodic refresh triggered');
         router.reload();
     }, 2000);
 };
 
 const stopPeriodicRefresh = () => {
+    console.log('stopPeriodicRefresh called');
     if (refreshInterval.value) {
         clearInterval(refreshInterval.value);
         refreshInterval.value = null;
+        console.log('Periodic refresh stopped');
     }
 };
 
 const sortedNotionObjects = computed(() => {
+    console.log('sortedNotionObjects computed property called');
     if (props.workspace.notion_objects) {
         return [...props.workspace.notion_objects].sort((a, b) => {
             const dateA = new Date(a.data.createdTime.date);
@@ -56,6 +68,7 @@ const sortedNotionObjects = computed(() => {
 });
 
 watch(() => props.workspace.sync_status, (newStatus) => {
+    console.log('watch callback triggered. New sync_status:', newStatus);
     if (newStatus === 'queued' || newStatus === 'in_progress') {
         startPeriodicRefresh();
     } else {
@@ -64,14 +77,18 @@ watch(() => props.workspace.sync_status, (newStatus) => {
 });
 
 onMounted(() => {
+    console.log('onMounted hook called');
     if (props.workspace.sync_status === 'queued' || props.workspace.sync_status === 'in_progress') {
         startPeriodicRefresh();
     }
 });
 
 onUnmounted(() => {
+    console.log('onUnmounted hook called');
     stopPeriodicRefresh();
 });
+
+console.log('Script setup completed');
 </script>
 
 <template>
