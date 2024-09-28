@@ -35,8 +35,11 @@ fi
 
 # Start the queue worker. Use `queue:listen` for development as it listens for
 # code changes. It's much slower, so not recommended for production.
-echo "Starting queue worker..."
-./vendor/bin/sail debug queue:listen -vvv --queue=default,delete-1 --timeout=60
+#
+# See supervised_worker.conf for production settings.
+
+# echo "Starting queue worker..."
+# ./vendor/bin/sail debug queue:listen -vvv --queue=default,delete-1 --timeout=60
 
 # Keep the script running
 while true; do
