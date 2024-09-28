@@ -119,10 +119,15 @@ console.log('Script setup completed');
                     <p class="mt-4 text-gray-600">This is the workspace page. You can add more content and functionality
                         here.
                     </p>
-                    <button @click="fetchUserData"
-                        class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                        Refresh Workspace
-                    </button>
+                    <div class="mt-4 flex items-center">
+                        <button @click="fetchUserData"
+                            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                            Refresh Workspace
+                        </button>
+                        <p v-if="props.workspace.sync_status === 'failed'" class="ml-4 text-red-500">
+                            Sync failed. Please try again.
+                        </p>
+                    </div>
 
                     <div class="mt-8">
                         <h4 class="text-lg font-medium text-gray-900">Databases:</h4>
