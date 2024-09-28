@@ -28,6 +28,7 @@ class ToolDuplicateRequest extends Model
         'delete_batch_id',
         'search_batch_id',
         'search_results',
+        'search_failed',
     ];
 
     protected $casts = [
@@ -35,6 +36,7 @@ class ToolDuplicateRequest extends Model
         'search_ended_at' => 'datetime',
         'delete_started_at' => 'datetime',
         'delete_ended_at' => 'datetime',
+        'search_failed' => 'boolean',
     ];
 
     protected function duplicates(): Attribute
