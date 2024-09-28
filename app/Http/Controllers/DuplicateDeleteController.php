@@ -34,14 +34,14 @@ class DuplicateDeleteController extends Controller
         $jobs = [];
         $remainingList = $deleteList;
 
-        // First 4 jobs with size 5, so users get feedback faster.
-        for ($i = 0; $i < 4; $i++) {
+        // Create initial jobs with size 5, up to 4 jobs or until we run out of items
+        while (count($jobs) < 4 && !empty($remainingList)) {
             $chunk = array_slice($remainingList, 0, 5);
             $remainingList = array_slice($remainingList, 5);
             $jobs[] = new DuplicateDelete($toolDuplicateRequest, $chunk);
         }
 
-        // Remaining jobs with size 20
+        // Remaining jobs with size 10
         $remainingChunks = array_chunk($remainingList, 10);
         foreach ($remainingChunks as $chunk) {
             $jobs[] = new DuplicateDelete($toolDuplicateRequest, $chunk);
