@@ -8,14 +8,6 @@ const props = defineProps({
         type: Object,
         required: true
     },
-    refreshInProgress: {
-        type: Boolean,
-        required: true
-    },
-    showResults: {
-        type: Boolean,
-        required: true
-    },
     existing_duplicate_requests: {
         type: Object,
         required: true
@@ -63,8 +55,8 @@ const sortedNotionObjects = computed(() => {
     return [];
 });
 
-watch(() => props.refreshInProgress, (newValue) => {
-    if (newValue) {
+watch(() => props.workspace.sync_status, (newStatus) => {
+    if (newStatus === 'queued' || newStatus === 'in_progress') {
         startPeriodicRefresh();
     } else {
         stopPeriodicRefresh();
@@ -72,7 +64,7 @@ watch(() => props.refreshInProgress, (newValue) => {
 });
 
 onMounted(() => {
-    if (props.refreshInProgress) {
+    if (props.workspace.sync_status === 'queued' || props.workspace.sync_status === 'in_progress') {
         startPeriodicRefresh();
     }
 });
@@ -107,10 +99,11 @@ onUnmounted(() => {
 
                     <div class="mt-8">
                         <h4 class="text-lg font-medium text-gray-900">Databases:</h4>
-                        <div v-if="refreshInProgress" class="mt-4 flex justify-center items-center">
+                        <div v-if="['queued', 'in_progress'].includes(props.workspace.sync_status)"
+                            class="mt-4 flex justify-center items-center">
                             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
                         </div>
-                        <template v-if="showResults">
+                        <template v-if="['complete', 'failed'].includes(props.workspace.sync_status)">
                             <p v-if="sortedNotionObjects.length" class="mt-4 font-semibold">
                                 Databases found: {{ sortedNotionObjects.length }}
                             </p>
@@ -131,7 +124,7 @@ onUnmounted(() => {
                                     </button>
                                 </li>
                             </ul>
-                            <p v-else-if="!refreshInProgress" class="mt-4 text-gray-600">No Notion Objects available for
+                            <p v-else class="mt-4 text-gray-600">No Notion Objects available for
                                 this workspace.</p>
                         </template>
                     </div>
