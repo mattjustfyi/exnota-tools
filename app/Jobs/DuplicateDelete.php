@@ -76,6 +76,9 @@ class DuplicateDelete implements ShouldQueue
         $deletedPageIds = [];
         $errorPageIds = [];
         foreach ($pageIds as $pageId) {
+            // TODO: Re-introduce this when we have decided on if we need a delay
+            // between each delete request (see further below)
+            // 
             // // Back off to handle temporary issues, such as rate limiting and
             // // "Unsaved transactions: Unrecognized error."
             // if ($this->job->attempts() === 1) {
