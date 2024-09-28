@@ -107,8 +107,11 @@ class DuplicateDelete implements ShouldQueue
                 /** @psalm-var PageJson $body */
                 try {
                     Log::debug('Deleting page: ' . $pageId . ' (Job ID: ' . $this->job->getJobId() . ')');
+                    $startTime = microtime(true);
                     $body = Http::sendRequest($request, $config);
-                    Log::debug('Deleted page: ' . $pageId . ' (Job ID: ' . $this->job->getJobId() . ')');
+                    $endTime = microtime(true);
+                    $duration = round(($endTime - $startTime) * 1000, 2); // Convert to milliseconds
+                    Log::debug('Deleted page: ' . $pageId . ' (Job ID: ' . $this->job->getJobId() . ') - Time taken: ' . $duration . 'ms');
                 } catch (\Exception $e) {
                     if (
                         $e instanceof \Notion\Exceptions\ApiException &&
