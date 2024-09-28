@@ -68,6 +68,8 @@ class DuplicateDeleteController extends Controller
                 $toolDuplicateRequest->save();
             })
             ->name('Delete duplicates for request: ' . $toolDuplicateRequest->id)
+            // Prevent a job failure from stopping the batch
+            ->allowFailures()
             ->onQueue(QueueConstants::DELETE_QUEUE_1)->dispatch();
 
         $toolDuplicateRequest->delete_batch_id = $batch->id;
