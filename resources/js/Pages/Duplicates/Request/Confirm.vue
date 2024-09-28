@@ -4,12 +4,16 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import { computed, ref, watch, onMounted, onUnmounted } from 'vue';
 import ProgressBar from '@/Components/ProgressBar.vue';
 
+console.log('Component setup started');
+
 const props = defineProps({
     toolDuplicateRequest: {
         type: Object,
         required: true
     },
 });
+
+console.log('Props received:', props.toolDuplicateRequest);
 
 const searchInProgress = computed(() => {
     return !props.toolDuplicateRequest.search_ended_at;
@@ -42,6 +46,7 @@ const searchResultsCount = computed(() => {
 const isSearchButtonDisabled = ref(false);
 
 const searchAgain = () => {
+    console.log('searchAgain called');
     isSearchButtonDisabled.value = true;
     router.post('/duplicates/request',
         { notion_object_id: props.toolDuplicateRequest.notion_object_id },
@@ -53,6 +58,7 @@ const searchAgain = () => {
 };
 
 watch(() => props.toolDuplicateRequest.search_ended_at, (newValue) => {
+    console.log('search_ended_at changed:', newValue);
     if (newValue) {
         isSearchButtonDisabled.value = false;
     }
@@ -136,12 +142,15 @@ const shouldRefresh = computed(() => {
 });
 
 const startPeriodicRefresh = () => {
+    console.log('Starting periodic refresh');
     refreshInterval.value = setInterval(() => {
+        console.log('Reloading page');
         router.reload();
     }, 6000);
 };
 
 const stopPeriodicRefresh = () => {
+    console.log('Stopping periodic refresh');
     if (refreshInterval.value) {
         clearInterval(refreshInterval.value);
         refreshInterval.value = null;
@@ -149,6 +158,7 @@ const stopPeriodicRefresh = () => {
 };
 
 watch(() => shouldRefresh.value, (newValue) => {
+    console.log('shouldRefresh changed:', newValue);
     if (newValue) {
         startPeriodicRefresh();
     } else {
@@ -157,12 +167,14 @@ watch(() => shouldRefresh.value, (newValue) => {
 });
 
 onMounted(() => {
+    console.log('Component mounted');
     if (shouldRefresh.value) {
         startPeriodicRefresh();
     }
 });
 
 onUnmounted(() => {
+    console.log('Component unmounted');
     stopPeriodicRefresh();
 });
 
