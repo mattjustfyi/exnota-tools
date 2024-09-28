@@ -75,20 +75,17 @@ class DuplicateDelete implements ShouldQueue
         $errorPageIds = [];
         foreach ($pageIds as $pageId) {
 
-            // TODO: Re-introduce this when we have decided on if we need a delay
-            // between each delete request (see further below)
-            // 
-            // // Back off to handle temporary issues, such as rate limiting and
-            // // "Unsaved transactions: Unrecognized error."
-            // if ($this->job->attempts() === 1) {
-            //     usleep(10000); // 10ms
-            // } elseif ($this->job->attempts() === 2) {
-            //     usleep(50000); // 50ms
-            // } elseif ($this->job->attempts() === 3) {
-            //     usleep(200000); // 200ms
-            // } elseif ($this->job->attempts() === 4) {
-            //     usleep(500000); // 500ms
-            // }
+            // Back off to handle temporary issues, such as rate limiting and
+            // "Unsaved transactions: Unrecognized error."
+            if ($this->job->attempts() === 1) {
+                usleep(200000); // 200ms
+            } elseif ($this->job->attempts() === 2) {
+                usleep(400000); // 400ms
+            } elseif ($this->job->attempts() === 3) {
+                usleep(1000000); // 1000ms
+            } elseif ($this->job->attempts() === 4) {
+                usleep(2000000); // 2000ms
+            }
 
             try {
                 if ($this->batch()->cancelled()) {
@@ -128,13 +125,7 @@ class DuplicateDelete implements ShouldQueue
                 }
 
                 $result = Page::fromArray($body);
-
                 $deletedPageIds[] = $pageId;
-
-                // TODO: REmove this after testing
-                // Log::debug('Waiting at ' . Carbon::now()->format('Y-m-d H:i:s.u') . ' (Job ID: ' . $this->job->getJobId() . ')');
-                // usleep(1000000); // 300ms
-                // Log::debug('Resuming at ' . Carbon::now()->format('Y-m-d H:i:s.u') . ' (Job ID: ' . $this->job->getJobId() . ')');
             } catch (\Exception $e) {
                 $errorPageIds[] = $pageId;
                 if ($e instanceof \Notion\Exceptions\ApiException) {
