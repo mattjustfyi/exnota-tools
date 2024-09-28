@@ -14,8 +14,8 @@ return new class extends Migration
     {
         Schema::table('workspaces', function (Blueprint $table) {
             $table->enum('sync_status', array_column(SyncStatus::cases(), 'value'))
-                  ->default(SyncStatus::QUEUED->value)
-                  ->after('workspace_icon');
+                ->default(SyncStatus::COMPLETE->value)
+                ->after('workspace_icon');
         });
     }
 
