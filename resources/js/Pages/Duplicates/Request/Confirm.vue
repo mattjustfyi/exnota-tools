@@ -9,18 +9,10 @@ const props = defineProps({
         type: Object,
         required: true
     },
-    numIncompleteSearchJobs: {
-        type: Number,
-        required: true
-    },
-    numFailedSearchJobs: {
-        type: Number,
-        required: true
-    },
 });
 
 const searchInProgress = computed(() => {
-    return props.numIncompleteSearchJobs > 0;
+    return !props.toolDuplicateRequest.search_ended_at;
 });
 
 const searchStatus = computed(() => {
@@ -53,7 +45,7 @@ const searchAgain = () => {
     isSearchButtonDisabled.value = true;
     router.post('/duplicates/request',
         { notion_object_id: props.toolDuplicateRequest.notion_object_id },
-        { 
+        {
             replace: true,
             preserveState: false,
             preserveScroll: false,
@@ -193,10 +185,11 @@ onUnmounted(() => {
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-medium text-gray-900">Search Results</h3>
                         <div>
-                            <button @click="searchAgain" :disabled="isSearchButtonDisabled || searchInProgress || deleteInProgress" :class="[
-                                'px-4 py-2 text-white rounded mr-2',
-                                isSearchButtonDisabled || searchInProgress || deleteInProgress ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
-                            ]">
+                            <button @click="searchAgain"
+                                :disabled="isSearchButtonDisabled || searchInProgress || deleteInProgress" :class="[
+                                    'px-4 py-2 text-white rounded mr-2',
+                                    isSearchButtonDisabled || searchInProgress || deleteInProgress ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
+                                ]">
                                 Search again
                             </button>
                             <button v-if="!searchInProgress.value && sortedDuplicates.length > 0"
@@ -213,7 +206,8 @@ onUnmounted(() => {
                         Database: {{ notionObjectTitle }}
                     </p>
                     <p class="mt-2 text-gray-700">
-                        Total Rows: {{ toolDuplicateRequest.search_results ? toolDuplicateRequest.search_results.length : 0 }}
+                        Total Rows: {{ toolDuplicateRequest.search_results ? toolDuplicateRequest.search_results.length
+                            : 0 }}
                     </p>
                     <p class="mt-2 text-gray-700">
                         Total Duplicates: {{ totalDuplicates }}
@@ -227,7 +221,8 @@ onUnmounted(() => {
 
                     <div class="mt-8">
                         <h4 class="text-lg font-medium text-gray-900">Search Results:</h4>
-                        <div v-if="props.numFailedSearchJobs > 0" class="mt-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
+                        <div v-if="props.toolDuplicateRequest.search_failed"
+                            class="mt-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
                             <p class="font-bold">Error</p>
                             <p>Searching failed. Check that Exnota still has access to the database and try again.</p>
                         </div>

@@ -16,6 +16,7 @@ use Notion\Databases\Query;
 use Notion\Notion;
 use App\Models\DuplicateResultsDTO;
 use Illuminate\Foundation\Queue\Queueable;
+use Throwable;
 
 class DuplicateSearch implements ShouldQueue
 {
@@ -161,6 +162,17 @@ class DuplicateSearch implements ShouldQueue
         // Update the toolDuplicateRequest with the final duplicate results
         $this->toolDuplicateRequest->update([
             'duplicates' => $duplicateResults,
+        ]);
+    }
+
+    /**
+     * Handle a job failure.
+     */
+    public function failed(?Throwable $exception): void
+    {
+        $this->toolDuplicateRequest->update([
+            'search_ended_at' => now(),
+            'search_failed' => true,
         ]);
     }
 }

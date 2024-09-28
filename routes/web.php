@@ -77,24 +77,8 @@ Route::middleware([
     Route::get('/duplicates/request/{toolDuplicateRequest}/confirm', function (ToolDuplicateRequest $toolDuplicateRequest) {
         $toolDuplicateRequest->loadMissing('notionObject');
 
-        // Couldn't get back slashes escaping properly, so subtituted with wildcards.
-        $numIncompleteSearchJobs = DB::table('jobs')
-            ->whereRaw('payload ~ ?', '"displayName":"App.{2}Jobs.{2}DuplicateSearch"')
-            ->whereRaw('payload ~ ?', ';s:[0-9]+:.{1}"App.{2}Models.{2}ToolDuplicateRequest.{1}";s:[0-9]+:.{1}"id.{1}";i:' . strval($toolDuplicateRequest->id) . ';')
-            ->count();
-
-        // Couldn't get back slashes escaping properly, so subtituted with wildcards.
-        $numFailedSearchJobs = DB::table('failed_jobs')
-            ->whereRaw('payload ~ ?', '"displayName":"App.{2}Jobs.{2}DuplicateSearch"')
-            ->whereRaw('payload ~ ?', ';s:[0-9]+:.{1}"App.{2}Models.{2}ToolDuplicateRequest.{1}";s:[0-9]+:.{1}"id.{1}";i:' . strval($toolDuplicateRequest->id) . ';')
-            ->count();
-
-        // TODO: Add error info for failed deletion jobs.
-
         return Inertia::render('Duplicates/Request/Confirm', [
             'toolDuplicateRequest' => $toolDuplicateRequest,
-            'numIncompleteSearchJobs' => $numIncompleteSearchJobs,
-            'numFailedSearchJobs' => $numFailedSearchJobs,
         ]);
     })->name('duplicates.request.confirm')->middleware('can:view,toolDuplicateRequest');
 });
