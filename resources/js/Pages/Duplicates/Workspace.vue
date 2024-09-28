@@ -39,16 +39,23 @@ const fetchUserData = () => {
 };
 
 const startPeriodicRefresh = () => {
+    if (refreshInterval.value) {
+        console.log('Periodic refresh already started. Returning.');
+        return;
+    }
     console.log('startPeriodicRefresh called');
-    refreshInterval.value = setInterval(() => {
-        console.log('Periodic refresh triggered');
+    const val = setInterval(() => {
+        // console.log('Periodic refresh triggered');
         router.reload();
     }, 2000);
+    refreshInterval.value = val;
+    console.log('Periodic refresh started with refreshInterval.value:', refreshInterval.value, 'and val:', val);
 };
 
 const stopPeriodicRefresh = () => {
     console.log('stopPeriodicRefresh called');
     if (refreshInterval.value) {
+        console.log('Clearing refresh interval: refreshInterval.value:', refreshInterval.value);
         clearInterval(refreshInterval.value);
         refreshInterval.value = null;
         console.log('Periodic refresh stopped');
@@ -56,7 +63,7 @@ const stopPeriodicRefresh = () => {
 };
 
 const sortedNotionObjects = computed(() => {
-    console.log('sortedNotionObjects computed property called');
+    // console.log('sortedNotionObjects computed property called');
     if (props.workspace.notion_objects) {
         return [...props.workspace.notion_objects].sort((a, b) => {
             const dateA = new Date(a.data.createdTime.date);
@@ -70,15 +77,18 @@ const sortedNotionObjects = computed(() => {
 watch(() => props.workspace.sync_status, (newStatus) => {
     console.log('watch callback triggered. New sync_status:', newStatus);
     if (newStatus === 'queued' || newStatus === 'in_progress') {
+        console.log('Starting periodic refresh');
         startPeriodicRefresh();
     } else {
+        console.log('Stopping periodic refresh');
         stopPeriodicRefresh();
     }
 });
 
 onMounted(() => {
-    console.log('onMounted hook called');
+    console.log('onMounted hook called with sync_status value:', props.workspace.sync_status);
     if (props.workspace.sync_status === 'queued' || props.workspace.sync_status === 'in_progress') {
+        console.log('Starting periodic refresh');
         startPeriodicRefresh();
     }
 });
