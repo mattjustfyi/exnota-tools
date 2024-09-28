@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Enums\NotionObjectType;
+use App\Enums\SyncStatus;
 use App\Helpers\NotionHelper;
 use App\Models\Workspace;
 use App\Models\NotionObject;
@@ -43,6 +44,7 @@ class WorkspaceRefresh implements ShouldQueue
     public function handle(): void
     {
         Log::debug('Workspace refresh job started for workspace: ' . $this->workspace->id);
+        $this->workspace->update(['sync_status' => SyncStatus::IN_PROGRESS]);
 
         try {
             // Create Notion client
@@ -102,9 +104,11 @@ class WorkspaceRefresh implements ShouldQueue
             }
         } catch (\Exception $e) {
             Log::error('Error in workspace refresh job for workspace ' . $this->workspace->id . ': ' . $e->getMessage());
+            $this->workspace->update(['sync_status' => SyncStatus::FAILED]);
             throw $e;
         }
 
+        $this->workspace->update(['sync_status' => SyncStatus::COMPLETE]);
         Log::debug('Workspace refresh job completed for workspace: ' . $this->workspace->id);
     }
 }
