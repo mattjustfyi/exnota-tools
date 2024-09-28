@@ -69,13 +69,12 @@ class DuplicateDelete implements ShouldQueue
 
         $notionObject = $this->toolDuplicateRequest->notionObject;
         $workspace = $notionObject->workspace;
-
-        // $notion = Notion::create($workspace->authData['access_token']);
         $config = Configuration::create($workspace->authData['access_token']);
 
         $deletedPageIds = [];
         $errorPageIds = [];
         foreach ($pageIds as $pageId) {
+
             // TODO: Re-introduce this when we have decided on if we need a delay
             // between each delete request (see further below)
             // 
@@ -133,9 +132,9 @@ class DuplicateDelete implements ShouldQueue
                 $deletedPageIds[] = $pageId;
 
                 // TODO: REmove this after testing
-                Log::debug('Waiting at ' . Carbon::now()->format('Y-m-d H:i:s.u') . ' (Job ID: ' . $this->job->getJobId() . ')');
-                usleep(1000000); // 300ms
-                Log::debug('Resuming at ' . Carbon::now()->format('Y-m-d H:i:s.u') . ' (Job ID: ' . $this->job->getJobId() . ')');
+                // Log::debug('Waiting at ' . Carbon::now()->format('Y-m-d H:i:s.u') . ' (Job ID: ' . $this->job->getJobId() . ')');
+                // usleep(1000000); // 300ms
+                // Log::debug('Resuming at ' . Carbon::now()->format('Y-m-d H:i:s.u') . ' (Job ID: ' . $this->job->getJobId() . ')');
             } catch (\Exception $e) {
                 $errorPageIds[] = $pageId;
                 if ($e instanceof \Notion\Exceptions\ApiException) {
