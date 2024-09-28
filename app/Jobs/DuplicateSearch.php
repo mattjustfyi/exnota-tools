@@ -19,7 +19,7 @@ use Illuminate\Foundation\Queue\Queueable;
 
 class DuplicateSearch implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Queueable;
 
     protected $toolDuplicateRequest;
     protected $nextCursor;

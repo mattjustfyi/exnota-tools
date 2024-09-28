@@ -6,17 +6,16 @@ use App\Models\ToolDuplicateRequest;
 use Carbon\Carbon;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Notion\Notion;
+use Notion\Configuration;
+use Notion\Infrastructure\Http;
+use Notion\Pages\Page;
 
 class DuplicateDelete implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, Batchable;
+    use Queueable, Batchable;
 
     protected $toolDuplicateRequest;
     protected $notion_ids;
@@ -71,22 +70,23 @@ class DuplicateDelete implements ShouldQueue
         $notionObject = $this->toolDuplicateRequest->notionObject;
         $workspace = $notionObject->workspace;
 
-        $notion = Notion::create($workspace->authData['access_token']);
+        // $notion = Notion::create($workspace->authData['access_token']);
+        $config = Configuration::create($workspace->authData['access_token']);
 
         $deletedPageIds = [];
         $errorPageIds = [];
         foreach ($pageIds as $pageId) {
-            // Back off to handle temporary issues, such as rate limiting and
-            // "Unsaved transactions: Unrecognized error."
-            if ($this->job->attempts() === 1) {
-                usleep(10000); // 10ms
-            } elseif ($this->job->attempts() === 2) {
-                usleep(50000); // 50ms
-            } elseif ($this->job->attempts() === 3) {
-                usleep(200000); // 200ms
-            } elseif ($this->job->attempts() === 4) {
-                usleep(500000); // 500ms
-            }
+            // // Back off to handle temporary issues, such as rate limiting and
+            // // "Unsaved transactions: Unrecognized error."
+            // if ($this->job->attempts() === 1) {
+            //     usleep(10000); // 10ms
+            // } elseif ($this->job->attempts() === 2) {
+            //     usleep(50000); // 50ms
+            // } elseif ($this->job->attempts() === 3) {
+            //     usleep(200000); // 200ms
+            // } elseif ($this->job->attempts() === 4) {
+            //     usleep(500000); // 500ms
+            // }
 
             try {
                 if ($this->batch()->cancelled()) {
@@ -94,27 +94,42 @@ class DuplicateDelete implements ShouldQueue
                     break;
                 }
 
-                Log::debug('Fetching page: ' . $pageId . ' (Job ID: ' . $this->job->getJobId() . ')');
-                $page = $notion->pages()->find($pageId);
+                $data = json_encode([
+                    "archived" => true,
+                ]);
 
-                // Notion API will return an error if trying to archive an
-                // already archived page: "Can't edit block that is archived. You must unarchive the block before editing."
-                if ($page->archived) {
-                    // Still flag as deleted to track that it was (probably)
-                    // done in a previous attempt at this job.
-                    Log::debug('Skipping already-deleted page: ' . $pageId . ' (Job ID: ' . $this->job->getJobId() . ')');
-                    $deletedPageIds[] = $pageId;
-                    continue;
+                $url = "https://api.notion.com/v1/pages/{$pageId}";
+                $request = Http::createRequest($url, $config)
+                    ->withMethod("PATCH")
+                    ->withHeader("Content-Type", "application/json");
+                $request->getBody()->write($data);
+
+                /** @psalm-var PageJson $body */
+                try {
+                    Log::debug('Deleting page: ' . $pageId . ' (Job ID: ' . $this->job->getJobId() . ')');
+                    $body = Http::sendRequest($request, $config);
+                    Log::debug('Deleted page: ' . $pageId . ' (Job ID: ' . $this->job->getJobId() . ')');
+                } catch (\Exception $e) {
+                    if (
+                        $e instanceof \Notion\Exceptions\ApiException &&
+                        $e->notionCode === 'validation_error' &&
+                        $e->getMessage() === "Can't edit block that is archived. You must unarchive the block before editing."
+                    ) {
+                        Log::debug('Skipping already-deleted page: ' . $pageId . ' (Job ID: ' . $this->job->getJobId() . ')');
+                        $deletedPageIds[] = $pageId;
+                        continue;
+                    }
+                    throw $e;
                 }
 
-                Log::debug('Deleting page: ' . $pageId . ' (Job ID: ' . $this->job->getJobId() . ')');
-                $notion->pages()->delete($page);
+                $result = Page::fromArray($body);
+
                 $deletedPageIds[] = $pageId;
 
                 // TODO: REmove this after testing
-                Log::debug('Waiting at ' . Carbon::now()->toDateTimeString() . ' (Job ID: ' . $this->job->getJobId() . ')');
-                usleep(300000); // 300ms
-                Log::debug('Resuming at ' . Carbon::now()->toDateTimeString() . ' (Job ID: ' . $this->job->getJobId() . ')');
+                Log::debug('Waiting at ' . Carbon::now()->format('Y-m-d H:i:s.u') . ' (Job ID: ' . $this->job->getJobId() . ')');
+                usleep(1000000); // 300ms
+                Log::debug('Resuming at ' . Carbon::now()->format('Y-m-d H:i:s.u') . ' (Job ID: ' . $this->job->getJobId() . ')');
             } catch (\Exception $e) {
                 $errorPageIds[] = $pageId;
                 if ($e instanceof \Notion\Exceptions\ApiException) {

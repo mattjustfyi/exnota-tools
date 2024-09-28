@@ -6,11 +6,8 @@ use App\Enums\NotionObjectType;
 use App\Helpers\NotionHelper;
 use App\Models\Workspace;
 use App\Models\NotionObject;
-use Illuminate\Bus\Queueable;
+use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Notion\Databases\Database;
 use Notion\Notion;
@@ -20,7 +17,7 @@ use Notion\Search\SortDirection;
 
 class WorkspaceRefresh implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Queueable;
 
     protected $workspace;
 
