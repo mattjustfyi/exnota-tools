@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tool_duplicate_requests', function (Blueprint $table) {
-            //
+            $table->boolean('search_failed')->default(false)->after('search_results');
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('tool_duplicate_requests', function (Blueprint $table) {
-            //
+            $table->dropColumn('search_failed');
         });
     }
 };
