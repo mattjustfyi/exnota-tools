@@ -15,11 +15,11 @@ class WorkspaceRefreshController extends Controller
      * @param  Workspace  $workspace
      * @return RedirectResponse
      */
-    public function refresh(Workspace $workspace): RedirectResponse
+    public function refresh(Workspace $workspace)
     {
         $workspace->update(['sync_status' => SyncStatus::QUEUED]);
         WorkspaceRefresh::dispatch($workspace);
 
-        return redirect()->route('duplicates.workspace', ['workspace' => $workspace->id]);
+        return to_route('duplicates.workspace', ['workspace' => $workspace->id]);
     }
 }

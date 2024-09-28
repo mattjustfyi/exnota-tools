@@ -15,6 +15,7 @@ use Notion\Notion;
 use Notion\Pages\Page;
 use Notion\Search\Query;
 use Notion\Search\SortDirection;
+use Throwable;
 
 class WorkspaceRefresh implements ShouldQueue
 {
@@ -104,11 +105,18 @@ class WorkspaceRefresh implements ShouldQueue
             }
         } catch (\Exception $e) {
             Log::error('Error in workspace refresh job for workspace ' . $this->workspace->id . ': ' . $e->getMessage());
-            $this->workspace->update(['sync_status' => SyncStatus::FAILED]);
             throw $e;
         }
 
         $this->workspace->update(['sync_status' => SyncStatus::COMPLETE]);
         Log::debug('Workspace refresh job completed for workspace: ' . $this->workspace->id);
+    }
+
+    /**
+     * Handle a job failure.
+     */
+    public function failed(?Throwable $exception): void
+    {
+        $this->workspace->update(['sync_status' => SyncStatus::FAILED]);
     }
 }
