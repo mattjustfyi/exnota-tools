@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('jsonb', function (Blueprint $table) {
-            //
+        Schema::table('tool_duplicate_requests', function (Blueprint $table) {
+            $table->jsonb('duplicates')->change();
+            $table->jsonb('delete_results')->change();
+            $table->jsonb('delete_list')->change();
+            $table->jsonb('delete_retry_list')->change();
+            $table->jsonb('search_results')->change();
         });
     }
 
@@ -21,8 +25,12 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('jsonb', function (Blueprint $table) {
-            //
+        Schema::table('tool_duplicate_requests', function (Blueprint $table) {
+            $table->json('duplicates')->change();
+            $table->json('delete_results')->change();
+            $table->json('delete_list')->change();
+            $table->json('delete_retry_list')->change();
+            $table->json('search_results')->change();
         });
     }
 };

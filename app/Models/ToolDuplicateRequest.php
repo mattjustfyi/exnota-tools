@@ -39,6 +39,11 @@ class ToolDuplicateRequest extends Model
         'delete_ended_at' => 'datetime',
         'search_failed' => 'boolean',
         'delete_cancelled' => 'boolean',
+        'duplicates' => 'array',
+        'delete_results' => 'array',
+        'delete_list' => 'array',
+        'delete_retry_list' => 'array',
+        'search_results' => 'array',
     ];
 
     protected function duplicates(): Attribute
