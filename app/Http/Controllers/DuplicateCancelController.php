@@ -29,6 +29,11 @@ class DuplicateCancelController extends Controller
 
         $batch->cancel();
 
+
+        if ($toolDuplicateRequest->delete_cancelled) {
+            return redirect()->back()->with('warning', 'Delete request has already been cancelled.');
+        }
+
         $toolDuplicateRequest->delete_ended_at = now();
         $toolDuplicateRequest->delete_cancelled = true;
         $toolDuplicateRequest->save();
