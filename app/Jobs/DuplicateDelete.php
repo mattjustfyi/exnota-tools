@@ -173,25 +173,12 @@ class DuplicateDelete implements ShouldQueue
                 // IDs were not saved in delete_results. I assume this is due to a 
                 // race condition, and indeed in the logs another job finished at
                 // essentially the same time.
-                //
-                // I've added logs below to help debug in the future, if it persists.
                 $requestId = $this->toolDuplicateRequest->id;
                 $request = ToolDuplicateRequest::where('id', $requestId)->lockForUpdate()->first();
                 $existingDeleteResults = $request->delete_results;
-
-                Log::debug('Merging deleted page IDs for request: ' . $requestId, [
-                    'existingDeletedPageIds' => $existingDeleteResults,
-                    'deletedPageIds' => $deletedPageIds,
-                    'jobId' => $this->job->getJobId()
-                ]);
-
                 $mergedDeletedPageIds = $existingDeleteResults ?? [];
                 $mergedDeletedPageIds = array_merge($mergedDeletedPageIds, $deletedPageIds);
 
-                Log::debug('Merged deleted page IDs for request: ' . $requestId, [
-                    'mergedDeletedPageIds' => $mergedDeletedPageIds,
-                    'jobId' => $this->job->getJobId()
-                ]);
                 $request->update([
                     'delete_results' => $mergedDeletedPageIds,
                 ]);
