@@ -54,10 +54,16 @@ class DuplicateDelete implements ShouldQueue
     {
         $startedAt = Carbon::now();
         DB::transaction(function () use ($startedAt) {
-            if (!$this->toolDuplicateRequest->refresh()->delete_started_at) {
-                $this->toolDuplicateRequest->update([
-                    'delete_started_at' => $startedAt,
-                ]);
+            $toolDuplicateRequestId = $this->toolDuplicateRequest->id;
+            $deleteStartedAt = DB::table('tool_duplicate_requests')
+                ->where('id', $toolDuplicateRequestId)
+                ->lockForUpdate()
+                ->value('delete_started_at');
+
+            if (!$deleteStartedAt) {
+                DB::table('tool_duplicate_requests')
+                    ->where('id', $toolDuplicateRequestId)
+                    ->update(['delete_started_at' => $startedAt]);
             }
         });
 
@@ -157,11 +163,29 @@ class DuplicateDelete implements ShouldQueue
         }
 
         DB::transaction(function () use ($deletedPageIds) {
-            $existingDeletedPageIds = $this->toolDuplicateRequest->refresh()->delete_results;
+            // Encountered a bug where a job completed successfully but the page
+            // IDs were not saved in delete_results. I assume this is due to a 
+            // race condition, and indeed in the logs another job finished at
+            // essentially the same time.
+            //
+            // I've added logs below to help debug in the future, if it persists.
+            $existingDeletedPageIds = DB::table('tool_duplicate_requests')
+                ->where('id', $this->toolDuplicateRequest->id)
+                ->lockForUpdate()
+                ->value('delete_results');
+            Log::debug('Merging deleted page IDs for request: ' . $this->toolDuplicateRequest->id, [
+                'existingDeletedPageIds' => $existingDeletedPageIds,
+                'deletedPageIds' => $deletedPageIds,
+                'jobId' => $this->job->getJobId()
+            ]);
 
             $mergedDeletedPageIds = $existingDeletedPageIds ?? [];
             $mergedDeletedPageIds = array_merge($mergedDeletedPageIds, $deletedPageIds);
 
+            Log::debug('Merged deleted page IDs for request: ' . $this->toolDuplicateRequest->id, [
+                'mergedDeletedPageIds' => $mergedDeletedPageIds,
+                'jobId' => $this->job->getJobId()
+            ]);
             $this->toolDuplicateRequest->update([
                 'delete_results' => $mergedDeletedPageIds,
             ]);
