@@ -217,13 +217,18 @@ onUnmounted(() => {
                             </button>
                             <button v-if="!searchInProgress.value && sortedDuplicates.length > 0"
                                 @click="deleteInProgress ? cancelDeletion() : startDeletion()" 
-                                :disabled="toolDuplicateRequest.delete_ended_at !== null"
+                                :disabled="toolDuplicateRequest.delete_ended_at !== null || toolDuplicateRequest.delete_cancelled"
                                 :class="[
                                     'px-4 py-2 text-white rounded',
-                                    toolDuplicateRequest.delete_ended_at !== null ? 'bg-gray-400 cursor-not-allowed' :
+                                    toolDuplicateRequest.delete_ended_at !== null || toolDuplicateRequest.delete_cancelled ? 'bg-gray-400 cursor-not-allowed' :
                                     deleteInProgress ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-red-500 hover:bg-red-600'
                                 ]">
-                                {{ deleteInProgress ? 'Cancel Deletion' : (toolDuplicateRequest.delete_ended_at !== null ? 'Deletion Completed' : 'Delete Duplicates') }}
+                                {{ 
+                                    deleteInProgress ? 'Cancel Deletion' : 
+                                    toolDuplicateRequest.delete_cancelled ? 'Delete Cancelled' :
+                                    toolDuplicateRequest.delete_ended_at !== null ? 'Deletion Completed' : 
+                                    'Delete Duplicates' 
+                                }}
                             </button>
                         </div>
                     </div>
