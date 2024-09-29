@@ -1,5 +1,5 @@
 <script setup>
-import { Head, router, useRoute } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { computed, ref, watch, onMounted, onUnmounted } from 'vue';
 import ProgressBar from '@/Components/ProgressBar.vue';
@@ -138,11 +138,11 @@ const deletionStatus = computed(() => {
 });
 
 const startDeletion = () => {
-    router.post(route('duplicates.delete-request', toolDuplicateRequest.id));
+    router.post(route('duplicates.delete-request', props.toolDuplicateRequest.id));
 };
 
 const cancelDeletion = () => {
-    router.post(route('duplicates.cancel', toolDuplicateRequest.id), {}, {
+    router.post(route('duplicates.cancel-request', props.toolDuplicateRequest.id), {}, {
         preserveState: true,
         preserveScroll: true,
     });
@@ -216,8 +216,7 @@ onUnmounted(() => {
                                 Search again
                             </button>
                             <button v-if="!searchInProgress.value && sortedDuplicates.length > 0"
-                                @click="deleteInProgress ? cancelDeletion() : startDeletion()"
-                                :class="[
+                                @click="deleteInProgress ? cancelDeletion() : startDeletion()" :class="[
                                     'px-4 py-2 text-white rounded',
                                     deleteInProgress ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-red-500 hover:bg-red-600'
                                 ]">
