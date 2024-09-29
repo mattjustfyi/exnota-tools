@@ -3,6 +3,7 @@
 use App\Http\Controllers\DuplicatesController;
 use App\Http\Controllers\DuplicateCreateController;
 use App\Http\Controllers\DuplicateDeleteController;
+use App\Http\Controllers\DuplicateCancelController;
 use App\Http\Controllers\NotionAuthSaveController;
 use App\Http\Controllers\WorkspaceController;
 use App\Http\Controllers\WorkspaceRefreshController;
@@ -81,4 +82,8 @@ Route::middleware([
             'toolDuplicateRequest' => $toolDuplicateRequest,
         ]);
     })->name('duplicates.request.confirm')->middleware('can:view,toolDuplicateRequest');
+
+    Route::post('/duplicates/request/{toolDuplicateRequest}/cancel', [DuplicateCancelController::class, 'cancel'])
+        ->name('duplicates.cancel-request')
+        ->middleware('can:update,toolDuplicateRequest');
 });
