@@ -52,6 +52,11 @@ class DuplicateDelete implements ShouldQueue
      */
     public function handle(): void
     {
+        if ($this->batch()->cancelled()) {
+            Log::debug('Duplicate delete batch cancelled for request: ' . $this->toolDuplicateRequest->id . ' (Job ID: ' . $this->job->getJobId() . ')');
+            return;
+        }
+
         $startedAt = Carbon::now();
         DB::transaction(function () use ($startedAt) {
             $toolDuplicateRequestId = $this->toolDuplicateRequest->id;
