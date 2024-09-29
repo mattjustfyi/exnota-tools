@@ -78,21 +78,25 @@ Route::middleware([
     Route::get('/duplicates/request/{toolDuplicateRequest}/confirm', function (ToolDuplicateRequest $toolDuplicateRequest) {
         $toolDuplicateRequest->loadMissing('notionObject');
 
-        $search_results_count = count($toolDuplicateRequest->search_results);
+        $search_results_count = is_array($toolDuplicateRequest->search_results) ? count($toolDuplicateRequest->search_results) : 0;
         $duplicates_count = 0;
-        foreach ($toolDuplicateRequest->duplicates as $duplicate) {
-            $duplicates_count += count($duplicate->delete);
+        if (is_array($toolDuplicateRequest->duplicates)) {
+            foreach ($toolDuplicateRequest->duplicates as $duplicate) {
+                $duplicates_count += is_array($duplicate->delete) ? count($duplicate->delete) : 0;
+            }
         }
-        $sorted_duplicates = $toolDuplicateRequest->duplicates;
+        $sorted_duplicates = is_array($toolDuplicateRequest->duplicates) ? $toolDuplicateRequest->duplicates : [];
         usort($sorted_duplicates, function ($a, $b) {
-            return count($b->delete) - count($a->delete);
+            return (is_array($b->delete) ? count($b->delete) : 0) - (is_array($a->delete) ? count($a->delete) : 0);
         });
         $duplicates_sample = array_slice($sorted_duplicates, 0, 5);
 
-        $delete_list_count = count($toolDuplicateRequest->delete_list);
-        $delete_results_count = count($toolDuplicateRequest->delete_results);
+        $delete_list_count = is_array($toolDuplicateRequest->delete_list) ? count($toolDuplicateRequest->delete_list) : 0;
+        $delete_results_count = is_array($toolDuplicateRequest->delete_results) ? count($toolDuplicateRequest->delete_results) : 0;
 
-        $not_deleted_ids = array_diff($toolDuplicateRequest->delete_list, $toolDuplicateRequest->delete_results);
+        $not_deleted_ids = is_array($toolDuplicateRequest->delete_list) && is_array($toolDuplicateRequest->delete_results)
+            ? array_diff($toolDuplicateRequest->delete_list, $toolDuplicateRequest->delete_results)
+            : [];
         $not_deleted_ids_count = count($not_deleted_ids);
 
         return Inertia::render('Duplicates/Request/Confirm', [
