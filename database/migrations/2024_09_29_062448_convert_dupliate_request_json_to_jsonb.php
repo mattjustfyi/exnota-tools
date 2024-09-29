@@ -12,19 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tool_duplicate_requests', function (Blueprint $table) {
-            // Update null values to empty JSON arrays
-            DB::statement("UPDATE tool_duplicate_requests SET duplicates = '[]' WHERE duplicates IS NULL");
-            DB::statement("UPDATE tool_duplicate_requests SET delete_results = '[]' WHERE delete_results IS NULL");
-            DB::statement("UPDATE tool_duplicate_requests SET delete_list = '[]' WHERE delete_list IS NULL");
-            DB::statement("UPDATE tool_duplicate_requests SET delete_retry_list = '[]' WHERE delete_retry_list IS NULL");
-            DB::statement("UPDATE tool_duplicate_requests SET search_results = '[]' WHERE search_results IS NULL");
-
             // Change column types to jsonb
-            $table->jsonb('duplicates')->nullable(false)->change();
-            $table->jsonb('delete_results')->nullable(false)->change();
-            $table->jsonb('delete_list')->nullable(false)->change();
-            $table->jsonb('delete_retry_list')->nullable(false)->change();
-            $table->jsonb('search_results')->nullable(false)->change();
+            $table->jsonb('duplicates')->nullable(true)->change();
+            $table->jsonb('delete_results')->nullable(true)->change();
+            $table->jsonb('delete_list')->nullable(true)->change();
+            $table->jsonb('delete_retry_list')->nullable(true)->change();
+            $table->jsonb('search_results')->nullable(true)->change();
         });
     }
 
