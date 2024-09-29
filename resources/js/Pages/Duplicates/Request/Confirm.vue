@@ -1,5 +1,5 @@
 <script setup>
-import { Head, router } from '@inertiajs/vue3';
+import { Head, router, useRoute } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { computed, ref, watch, onMounted, onUnmounted } from 'vue';
 import ProgressBar from '@/Components/ProgressBar.vue';
@@ -137,6 +137,17 @@ const deletionStatus = computed(() => {
     };
 });
 
+const startDeletion = () => {
+    router.post(route('duplicates.delete-request', toolDuplicateRequest.id));
+};
+
+const cancelDeletion = () => {
+    router.post(route('duplicates.cancel', toolDuplicateRequest.id), {}, {
+        preserveState: true,
+        preserveScroll: true,
+    });
+};
+
 const shouldRefresh = computed(() => {
     return deleteInProgress.value || searchInProgress.value;
 });
@@ -205,12 +216,12 @@ onUnmounted(() => {
                                 Search again
                             </button>
                             <button v-if="!searchInProgress.value && sortedDuplicates.length > 0"
-                                @click="() => router.post(route('duplicates.delete-request', toolDuplicateRequest.id))"
-                                :disabled="!!toolDuplicateRequest.delete_batch_id" :class="[
+                                @click="deleteInProgress ? cancelDeletion() : startDeletion()"
+                                :class="[
                                     'px-4 py-2 text-white rounded',
-                                    toolDuplicateRequest.delete_batch_id ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-500 hover:bg-red-600'
+                                    deleteInProgress ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-red-500 hover:bg-red-600'
                                 ]">
-                                Delete Duplicates
+                                {{ deleteInProgress ? 'Cancel Deletion' : 'Delete Duplicates' }}
                             </button>
                         </div>
                     </div>
