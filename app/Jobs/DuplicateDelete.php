@@ -169,24 +169,24 @@ class DuplicateDelete implements ShouldQueue
             // essentially the same time.
             //
             // I've added logs below to help debug in the future, if it persists.
-            $existingDeletedPageIds = DB::table('tool_duplicate_requests')
-                ->where('id', $this->toolDuplicateRequest->id)
-                ->lockForUpdate()
-                ->value('delete_results');
-            Log::debug('Merging deleted page IDs for request: ' . $this->toolDuplicateRequest->id, [
-                'existingDeletedPageIds' => $existingDeletedPageIds,
+            $requestId = $this->toolDuplicateRequest->id;
+            $request = ToolDuplicateRequest::where('id', $requestId)->lockForUpdate()->first();
+            $existingDeleteResults = $request->delete_results;
+
+            Log::debug('Merging deleted page IDs for request: ' . $requestId, [
+                'existingDeletedPageIds' => $existingDeleteResults,
                 'deletedPageIds' => $deletedPageIds,
                 'jobId' => $this->job->getJobId()
             ]);
 
-            $mergedDeletedPageIds = $existingDeletedPageIds ?? [];
+            $mergedDeletedPageIds = $existingDeleteResults ?? [];
             $mergedDeletedPageIds = array_merge($mergedDeletedPageIds, $deletedPageIds);
 
-            Log::debug('Merged deleted page IDs for request: ' . $this->toolDuplicateRequest->id, [
+            Log::debug('Merged deleted page IDs for request: ' . $requestId, [
                 'mergedDeletedPageIds' => $mergedDeletedPageIds,
                 'jobId' => $this->job->getJobId()
             ]);
-            $this->toolDuplicateRequest->update([
+            $request->update([
                 'delete_results' => $mergedDeletedPageIds,
             ]);
         });
