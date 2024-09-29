@@ -19,6 +19,10 @@ class DuplicateCancelController extends Controller
 
         if (!$batch) {
             Log::warning('Batch not found for delete_batch_id: ' . $toolDuplicateRequest->delete_batch_id);
+            if (is_null($toolDuplicateRequest->delete_ended_at)) {
+                $toolDuplicateRequest->delete_ended_at = now();
+            }
+            $toolDuplicateRequest->delete_cancelled = true;
             $toolDuplicateRequest->save();
             return redirect()->back()->with('warning', 'Delete request not found. It may have already completed.');
         }
