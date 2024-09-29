@@ -21,3 +21,4 @@ yarn-error.log
 .aider*
 !.aider.conf.yml
 .DS_Store
+.DS_Store
