@@ -78,8 +78,34 @@ Route::middleware([
     Route::get('/duplicates/request/{toolDuplicateRequest}/confirm', function (ToolDuplicateRequest $toolDuplicateRequest) {
         $toolDuplicateRequest->loadMissing('notionObject');
 
+        $search_results_count = count($toolDuplicateRequest->search_results);
+        $duplicates_count = 0;
+        foreach ($toolDuplicateRequest->duplicates as $duplicate) {
+            $duplicates_count += count($duplicate->delete);
+        }
+        $sorted_duplicates = $toolDuplicateRequest->duplicates;
+        usort($sorted_duplicates, function ($a, $b) {
+            return count($b->delete) - count($a->delete);
+        });
+        $duplicates_sample = array_slice($sorted_duplicates, 0, 5);
+
+        $delete_list_count = count($toolDuplicateRequest->delete_list);
+        $delete_results_count = count($toolDuplicateRequest->delete_results);
+
+        $not_deleted_ids = array_diff($toolDuplicateRequest->delete_list, $toolDuplicateRequest->delete_results);
+        $not_deleted_ids_count = count($not_deleted_ids);
+
         return Inertia::render('Duplicates/Request/Confirm', [
             'toolDuplicateRequest' => $toolDuplicateRequest,
+            'search_results_count' => $search_results_count,
+            // The number of duplicates in the search results
+            'duplicates_count' => $duplicates_count,
+            // The total number of pages to delete
+            'delete_list_count' => $delete_list_count,
+            // The number of pages that have been deleted
+            'delete_results_count' => $delete_results_count,
+            'duplicates_sample' => $duplicates_sample,
+            'not_deleted_ids_count' => $not_deleted_ids_count,
         ]);
     })->name('duplicates.request.confirm')->middleware('can:view,toolDuplicateRequest');
 

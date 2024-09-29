@@ -32,6 +32,20 @@ class ToolDuplicateRequest extends Model
         'delete_cancelled',
     ];
 
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        // These fields can be very large, so hide from serialization.
+        'duplicates',
+        'delete_results',
+        'delete_list',
+        'delete_retry_list',
+        'search_results',
+    ];
+
     protected $casts = [
         'search_started_at' => 'datetime',
         'search_ended_at' => 'datetime',

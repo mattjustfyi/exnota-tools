@@ -11,6 +11,30 @@ const props = defineProps({
         type: Object,
         required: true
     },
+    search_results_count: {
+        type: Number,
+        required: true
+    },
+    duplicates_count: {
+        type: Number,
+        required: true
+    },
+    delete_list_count: {
+        type: Number,
+        required: true
+    },
+    delete_results_count: {
+        type: Number,
+        required: true
+    },
+    duplicates_sample: {
+        type: Array,
+        required: true
+    },
+    not_deleted_ids_count: {
+        type: Number,
+        required: true
+    }
 });
 
 console.log('Props received:', props.toolDuplicateRequest);
@@ -30,17 +54,13 @@ const searchStatus = computed(() => {
 });
 
 const searchProgress = computed(() => {
-    if (!props.toolDuplicateRequest.search_results) {
+    if (!props.search_results_count) {
         return 0;
     }
-    const count = props.toolDuplicateRequest.search_results.length;
+    const count = props.search_results_count;
     // Using a logarithmic scale up to 10,000 results
     // We'll cap it at 99% to indicate it's not fully complete until search_ended_at is set
     return Math.min(Math.round((Math.log(count + 1) / Math.log(10000)) * 100), 99);
-});
-
-const searchResultsCount = computed(() => {
-    return props.toolDuplicateRequest.search_results ? props.toolDuplicateRequest.search_results.length : 0;
 });
 
 const isSearchButtonDisabled = ref(false);
@@ -70,23 +90,8 @@ const truncateTitle = (title, maxLength = 50) => {
     return title.slice(0, maxLength) + '...';
 };
 
-const sortedDuplicates = computed(() => {
-    if (props.toolDuplicateRequest.duplicates && Array.isArray(props.toolDuplicateRequest.duplicates)) {
-        return [...props.toolDuplicateRequest.duplicates].sort((a, b) => b.delete.length - a.delete.length);
-    }
-    return [];
-});
-
 const notionObjectTitle = computed(() => {
     return truncateTitle(props.toolDuplicateRequest.notion_object?.name || '');
-});
-
-const totalDuplicates = computed(() => {
-    return sortedDuplicates.value.reduce((total, result) => total + result.delete.length, 0);
-});
-
-const totalDeleted = computed(() => {
-    return props.toolDuplicateRequest.delete_results ? props.toolDuplicateRequest.delete_results.length : 0;
 });
 
 const refreshInterval = ref(null);
@@ -99,41 +104,22 @@ const deletionFinished = computed(() => {
     return props.toolDuplicateRequest.delete_batch_id && props.toolDuplicateRequest.delete_ended_at;
 });
 
-const undeleteablePages = computed(() => {
-    if (!props.toolDuplicateRequest.delete_list || !props.toolDuplicateRequest.delete_results || !props.toolDuplicateRequest.duplicates) {
-        return [];
-    }
-
-    const deleteSet = new Set(props.toolDuplicateRequest.delete_list);
-    const deletedSet = new Set(props.toolDuplicateRequest.delete_results);
-
-    const undeleteableIds = [...deleteSet].filter(id => !deletedSet.has(id));
-
-    return props.toolDuplicateRequest.duplicates.flatMap(result =>
-        result.delete.filter(page => undeleteableIds.includes(page.notion_id))
-            .map(page => ({
-                name: page.title,
-                url: page.url
-            }))
-    );
-});
-
 const deleteProgress = computed(() => {
-    if (!props.toolDuplicateRequest.delete_list || !props.toolDuplicateRequest.delete_results) {
+    if (!props.delete_list_count || !props.delete_results_count) {
         return 0;
     }
-    const totalItems = props.toolDuplicateRequest.delete_list.length;
-    const deletedItems = props.toolDuplicateRequest.delete_results.length;
+    const totalItems = props.delete_list_count;
+    const deletedItems = props.delete_results_count;
     return totalItems > 0 ? (deletedItems / totalItems) * 100 : 0;
 });
 
 const deletionStatus = computed(() => {
-    if (!props.toolDuplicateRequest.delete_list || !props.toolDuplicateRequest.delete_results) {
+    if (!props.delete_list_count || !props.delete_results_count) {
         return { deletedItems: 0, totalItems: 0 };
     }
     return {
-        deletedItems: props.toolDuplicateRequest.delete_results.length,
-        totalItems: props.toolDuplicateRequest.delete_list.length
+        deletedItems: props.delete_results_count,
+        totalItems: props.delete_list_count
     };
 });
 
@@ -215,19 +201,19 @@ onUnmounted(() => {
                                 ]">
                                 Search again
                             </button>
-                            <button v-if="!searchInProgress.value && sortedDuplicates.length > 0"
-                                @click="deleteInProgress ? cancelDeletion() : startDeletion()" 
+                            <button v-if="!searchInProgress.value && props.duplicates_count > 0"
+                                @click="deleteInProgress ? cancelDeletion() : startDeletion()"
                                 :disabled="toolDuplicateRequest.delete_ended_at !== null || toolDuplicateRequest.delete_cancelled"
                                 :class="[
                                     'px-4 py-2 text-white rounded',
                                     toolDuplicateRequest.delete_ended_at !== null || toolDuplicateRequest.delete_cancelled ? 'bg-gray-400 cursor-not-allowed' :
-                                    deleteInProgress ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-red-500 hover:bg-red-600'
+                                        deleteInProgress ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-red-500 hover:bg-red-600'
                                 ]">
-                                {{ 
-                                    deleteInProgress ? 'Cancel Deletion' : 
-                                    toolDuplicateRequest.delete_cancelled ? 'Delete Cancelled' :
-                                    toolDuplicateRequest.delete_ended_at !== null ? 'Deletion Completed' : 
-                                    'Delete Duplicates' 
+                                {{
+                                    deleteInProgress ? 'Cancel Deletion' :
+                                        toolDuplicateRequest.delete_cancelled ? 'Delete Cancelled' :
+                                            toolDuplicateRequest.delete_ended_at !== null ? 'Deletion Completed' :
+                                                'Delete Duplicates'
                                 }}
                             </button>
                         </div>
@@ -236,14 +222,13 @@ onUnmounted(() => {
                         Database: {{ notionObjectTitle }}
                     </p>
                     <p class="mt-2 text-gray-700">
-                        Total Rows: {{ toolDuplicateRequest.search_results ? toolDuplicateRequest.search_results.length
-                            : 0 }}
+                        Total Rows: {{ props.search_results_count }}
                     </p>
                     <p class="mt-2 text-gray-700">
-                        Total Duplicates: {{ totalDuplicates }}
+                        Total Duplicates: {{ props.duplicates_count }}
                     </p>
                     <p class="mt-2 text-gray-700">
-                        Total Deleted: {{ totalDeleted }}
+                        Total Deleted: {{ props.delete_results_count }}
                     </p>
                     <p class="mt-2 text-gray-600">
                         Searched At: {{ new Date(toolDuplicateRequest.search_started_at).toLocaleString() }}
@@ -275,26 +260,22 @@ onUnmounted(() => {
                                 <ProgressBar :progress="searchProgress" />
                                 <p class="mt-2 text-center text-gray-600">
                                     Searching for duplicates...
-                                    <template v-if="searchResultsCount > 0">
-                                        (scanned {{ searchResultsCount }} rows so far)
+                                    <template v-if="props.search_results_count > 0">
+                                        (scanned {{ props.search_results_count }} rows so far)
                                     </template>
                                 </p>
                             </div>
                         </template>
                         <template v-else-if="deletionFinished">
                             <h4 class="text-lg font-medium text-gray-900 mt-4">Pages that could not be deleted:</h4>
-                            <ul v-if="undeleteablePages.length" class="mt-4 space-y-4">
-                                <li v-for="(page, index) in undeleteablePages" :key="index" class="border-b pb-4">
-                                    <p class="font-semibold">{{ truncateTitle(page.name || '') }}</p>
-                                    <a :href="page.url" target="_blank"
-                                        class="text-sm text-blue-600 hover:underline">View in Notion</a>
-                                </li>
-                            </ul>
+                            <p v-if="props.not_deleted_ids_count > 0" class="mt-4 text-gray-600">
+                                {{ props.not_deleted_ids_count }} pages were not deleted. Search again for more details.
+                            </p>
                             <p v-else class="mt-4 text-gray-600">All pages were successfully deleted.</p>
                         </template>
                         <template v-else>
-                            <ul v-if="sortedDuplicates.length" class="mt-4 space-y-4">
-                                <li v-for="(result, index) in sortedDuplicates.slice(0, 5)" :key="index"
+                            <ul v-if="props.duplicates_sample.length" class="mt-4 space-y-4">
+                                <li v-for="(result, index) in props.duplicates_sample" :key="index"
                                     class="border-b pb-4">
                                     <p class="font-semibold">{{ truncateTitle(result.keep.title || '') }}</p>
                                     <p class="text-sm text-gray-600">Number of duplicates to delete: {{
