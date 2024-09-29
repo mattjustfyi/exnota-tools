@@ -26,6 +26,7 @@ class DuplicateCancelController extends Controller
         $batch->cancel();
 
         $toolDuplicateRequest->delete_ended_at = now();
+        $toolDuplicateRequest->delete_cancelled = true;
         $toolDuplicateRequest->save();
 
         Log::info('Delete request cancelled for ToolDuplicateRequest ID: ' . $toolDuplicateRequest->id);
