@@ -162,34 +162,36 @@ class DuplicateDelete implements ShouldQueue
             }
         }
 
-        DB::transaction(function () use ($deletedPageIds) {
-            // Encountered a bug where a job completed successfully but the page
-            // IDs were not saved in delete_results. I assume this is due to a 
-            // race condition, and indeed in the logs another job finished at
-            // essentially the same time.
-            //
-            // I've added logs below to help debug in the future, if it persists.
-            $requestId = $this->toolDuplicateRequest->id;
-            $request = ToolDuplicateRequest::where('id', $requestId)->lockForUpdate()->first();
-            $existingDeleteResults = $request->delete_results;
+        if (!empty($deletedPageIds)) {
+            DB::transaction(function () use ($deletedPageIds) {
+                // Encountered a bug where a job completed successfully but the page
+                // IDs were not saved in delete_results. I assume this is due to a 
+                // race condition, and indeed in the logs another job finished at
+                // essentially the same time.
+                //
+                // I've added logs below to help debug in the future, if it persists.
+                $requestId = $this->toolDuplicateRequest->id;
+                $request = ToolDuplicateRequest::where('id', $requestId)->lockForUpdate()->first();
+                $existingDeleteResults = $request->delete_results;
 
-            Log::debug('Merging deleted page IDs for request: ' . $requestId, [
-                'existingDeletedPageIds' => $existingDeleteResults,
-                'deletedPageIds' => $deletedPageIds,
-                'jobId' => $this->job->getJobId()
-            ]);
+                Log::debug('Merging deleted page IDs for request: ' . $requestId, [
+                    'existingDeletedPageIds' => $existingDeleteResults,
+                    'deletedPageIds' => $deletedPageIds,
+                    'jobId' => $this->job->getJobId()
+                ]);
 
-            $mergedDeletedPageIds = $existingDeleteResults ?? [];
-            $mergedDeletedPageIds = array_merge($mergedDeletedPageIds, $deletedPageIds);
+                $mergedDeletedPageIds = $existingDeleteResults ?? [];
+                $mergedDeletedPageIds = array_merge($mergedDeletedPageIds, $deletedPageIds);
 
-            Log::debug('Merged deleted page IDs for request: ' . $requestId, [
-                'mergedDeletedPageIds' => $mergedDeletedPageIds,
-                'jobId' => $this->job->getJobId()
-            ]);
-            $request->update([
-                'delete_results' => $mergedDeletedPageIds,
-            ]);
-        });
+                Log::debug('Merged deleted page IDs for request: ' . $requestId, [
+                    'mergedDeletedPageIds' => $mergedDeletedPageIds,
+                    'jobId' => $this->job->getJobId()
+                ]);
+                $request->update([
+                    'delete_results' => $mergedDeletedPageIds,
+                ]);
+            });
+        }
 
         $durationInSeconds = round($startedAt->diffInSeconds(Carbon::now()), 1);
         if (!empty($errorPageIds)) {
