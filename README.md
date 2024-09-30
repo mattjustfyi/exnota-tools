@@ -13,6 +13,7 @@
       - [Prod](#prod)
     - [Troubleshooting](#troubleshooting)
       - [Web: Inertia route opens in iframe](#web-inertia-route-opens-in-iframe)
+    - [Laravel Model: BadMethodCallException \[...\] Method \[nethodName in model\] does not exist](#laravel-model-badmethodcallexception--method-nethodname-in-model-does-not-exist)
       - [DBeaver: Column has dot and on hover says `read-only no corresponding table column`](#dbeaver-column-has-dot-and-on-hover-says-read-only-no-corresponding-table-column)
       - [Error: `SQLSTATE[08006] [7] could not translate host name "pgsql" to address: nodename nor servname provided`](#error-sqlstate08006-7-could-not-translate-host-name-pgsql-to-address-nodename-nor-servname-provided)
       - [Error: `Page Expired` on public URL](#error-page-expired-on-public-url)
@@ -216,6 +217,10 @@ Manually start workers in debug mode:
 #### Web: Inertia route opens in iframe
 
 Make sure the endpoint returns a proper Intertia response, e.g. `Inertia::render` ([link](https://github.com/inertiajs/inertia/issues/586#issuecomment-810270558)).
+
+### Laravel Model: BadMethodCallException [...] Method [nethodName in model] does not exist
+
+The file might be cached. Try adding a log statement and see if that busts the cache. This seemed to fix the issues I had once.
 
 #### DBeaver: Column has dot and on hover says `read-only no corresponding table column`
 

@@ -68,15 +68,15 @@ class ToolDuplicateRequest extends Model
 
     protected function duplicates(): Attribute
     {
-        return $this->getDuplicatesAttribute('duplicates');
+        return $this->getDupeDTOAttribute('duplicates');
     }
 
     protected function duplicatesSample(): Attribute
     {
-        return $this->getDuplicatesAttribute('duplicates_sample');
+        return $this->getDupeDTOAttribute('duplicates_sample');
     }
 
-    private function getDuplicatesAttribute(string $attributeName): Attribute
+    private function getDupeDTOAttribute(string $attributeName)
     {
         return Attribute::make(
             get: function (?string $value) {

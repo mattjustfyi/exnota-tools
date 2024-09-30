@@ -163,9 +163,16 @@ class DuplicateSearch implements ShouldQueue
         }
 
         // Update the toolDuplicateRequest with the final duplicate results
+        $sortedDuplicates = is_array($duplicateResults) ? $duplicateResults : [];
+        usort($sortedDuplicates, function ($a, $b) {
+            return (is_array($b->delete) ? count($b->delete) : 0) - (is_array($a->delete) ? count($a->delete) : 0);
+        });
+        $duplicatesSample = array_slice($sortedDuplicates, 0, 5);
+
         $this->toolDuplicateRequest->update([
             'duplicates' => $duplicateResults,
             'duplicates_count' => $duplicatesCount,
+            'duplicates_sample' => $duplicatesSample,
         ]);
     }
 

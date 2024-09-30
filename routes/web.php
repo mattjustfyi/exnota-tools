@@ -78,16 +78,8 @@ Route::middleware([
     Route::get('/duplicates/request/{toolDuplicateRequest}/confirm', function (ToolDuplicateRequest $toolDuplicateRequest) {
         $toolDuplicateRequest->loadMissing('notionObject');
 
-        // TODO: Get sample more performantly
-        $sorted_duplicates = is_array($toolDuplicateRequest->duplicates) ? $toolDuplicateRequest->duplicates : [];
-        usort($sorted_duplicates, function ($a, $b) {
-            return (is_array($b->delete) ? count($b->delete) : 0) - (is_array($a->delete) ? count($a->delete) : 0);
-        });
-        $duplicates_sample = array_slice($sorted_duplicates, 0, 5);
-
         return Inertia::render('Duplicates/Request/Confirm', [
             'toolDuplicateRequest' => $toolDuplicateRequest,
-            'duplicates_sample' => $duplicates_sample,
         ]);
     })->name('duplicates.request.confirm')->middleware('can:view,toolDuplicateRequest');
 

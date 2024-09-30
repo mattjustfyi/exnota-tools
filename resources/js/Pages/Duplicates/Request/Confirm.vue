@@ -11,10 +11,6 @@ const props = defineProps({
         type: Object,
         required: true
     },
-    duplicates_sample: {
-        type: Array,
-        required: true
-    },
 });
 
 const searchResultsCount = computed(() => {
@@ -35,6 +31,10 @@ const deleteResultsCount = computed(() => {
 
 const notDeletedCount = computed(() => {
     return props.toolDuplicateRequest.not_deleted_count ?? 0;
+});
+
+const duplicatesSample = computed(() => {
+    return props.toolDuplicateRequest.duplicates_sample ?? [];
 });
 
 console.log('Props received:', props.toolDuplicateRequest);
@@ -274,9 +274,8 @@ onUnmounted(() => {
                             <p v-else class="mt-4 text-gray-600">All pages were successfully deleted.</p>
                         </template>
                         <template v-else>
-                            <ul v-if="props.duplicates_sample.length" class="mt-4 space-y-4">
-                                <li v-for="(result, index) in props.duplicates_sample" :key="index"
-                                    class="border-b pb-4">
+                            <ul v-if="duplicatesSample.length" class="mt-4 space-y-4">
+                                <li v-for="(result, index) in duplicatesSample" :key="index" class="border-b pb-4">
                                     <p class="font-semibold">{{ truncateTitle(result.keep.title || '') }}</p>
                                     <p class="text-sm text-gray-600">Number of duplicates to delete: {{
                                         result.delete.length }}</p>
