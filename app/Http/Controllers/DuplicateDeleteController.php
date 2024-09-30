@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Constants\QueueConstants;
 use App\Jobs\DuplicateDelete;
+use App\Models\NotionObject;
 use App\Models\ToolDuplicateRequest;
 use Illuminate\Bus\Batch;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -48,6 +51,38 @@ class DuplicateDeleteController extends Controller
             $jobs[] = new DuplicateDelete($toolDuplicateRequest, $chunk);
         }
 
+        // Check if user has delete jobs already in a queue. If so, add to the
+        // same queue.
+        $workspaces = Auth::user()->workspaces;
+        $notionObjects = NotionObject::whereIn('workspace_id', $workspaces->pluck('id'))->get();
+        $deletionsInProgress = ToolDuplicateRequest::whereIn('notion_object_id', $notionObjects->pluck('id'))
+            ->whereNotNull('delete_batch_id')
+            ->whereNull('delete_ended_at')
+            ->orderBy('delete_started_at', 'desc')
+            ->get();
+
+        $queue = null;
+        foreach ($deletionsInProgress as $deletion) {
+            $batch = Bus::findBatch($deletion->delete_batch_id);
+            if ($batch && $batch->finished() === false) {
+                if ($batch->queue === QueueConstants::DELETE_QUEUE_1) {
+                    $queue = QueueConstants::DELETE_QUEUE_1;
+                } else {
+                    $queue = QueueConstants::DELETE_QUEUE_2;
+                }
+                break;
+            }
+        }
+
+        // If user has no jobs in a queue, find the queue with the least jobs
+        // remaining.
+        if (!$queue) {
+            $queue1Size = DB::table('jobs')->where('queue', QueueConstants::DELETE_QUEUE_1)->count();
+            $queue2Size = DB::table('jobs')->where('queue', QueueConstants::DELETE_QUEUE_2)->count();
+            $queue = $queue1Size <= $queue2Size ? QueueConstants::DELETE_QUEUE_1 : QueueConstants::DELETE_QUEUE_2;
+        }
+
+
         $batch = Bus::batch($jobs)
             ->before(function (Batch $batch) use ($toolDuplicateRequest) {
                 // The batch has been created but no jobs have been added...
@@ -78,7 +113,7 @@ class DuplicateDeleteController extends Controller
             ->name('Delete duplicates for request: ' . $toolDuplicateRequest->id)
             // Prevent a job failure from stopping the batch
             ->allowFailures()
-            ->onQueue(QueueConstants::DELETE_QUEUE_1)->dispatch();
+            ->onQueue($queue)->dispatch();
 
         $toolDuplicateRequest->delete_batch_id = $batch->id;
         $toolDuplicateRequest->save();
