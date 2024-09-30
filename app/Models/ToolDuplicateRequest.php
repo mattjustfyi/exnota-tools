@@ -18,12 +18,15 @@ class ToolDuplicateRequest extends Model
     protected $fillable = [
         'notion_object_id',
         'duplicates',
+        'duplicates_count',
         'search_started_at',
         'search_ended_at',
         'delete_started_at',
         'delete_ended_at',
         'delete_results',
+        'delete_results_count',
         'delete_list',
+        'delete_list_count',
         'delete_retry_list',
         'delete_batch_id',
         'search_batch_id',
@@ -55,6 +58,9 @@ class ToolDuplicateRequest extends Model
         'search_failed' => 'boolean',
         'delete_cancelled' => 'boolean',
         'search_results_count' => 'integer',
+        'duplicates_count' => 'integer',
+        'delete_list_count' => 'integer',
+        'delete_results_count' => 'integer',
     ];
 
     protected function duplicates(): Attribute
