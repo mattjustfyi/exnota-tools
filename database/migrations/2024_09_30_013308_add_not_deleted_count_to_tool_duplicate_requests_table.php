@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tool_duplicate_requests', function (Blueprint $table) {
-            $table->integer('not_deleted_count')->after('delete_results_count')->default(0);
+            $table->integer('not_deleted_count')->after('delete_results_count')->nullable();
         });
     }
 
