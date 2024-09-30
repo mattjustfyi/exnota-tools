@@ -85,6 +85,10 @@ class DuplicateDelete implements ShouldQueue
         $deletedPageIds = [];
         $errorPageIds = [];
         foreach ($pageIds as $pageId) {
+            if ($this->batch()->cancelled()) {
+                Log::debug('Duplicate delete batch cancelled for request: ' . $this->toolDuplicateRequest->id . ' (Job ID: ' . $this->job->getJobId() . ')');
+                break;
+            }
 
             // Back off to handle temporary issues, such as rate limiting and
             // "Unsaved transactions: Unrecognized error."
@@ -99,10 +103,6 @@ class DuplicateDelete implements ShouldQueue
             }
 
             try {
-                if ($this->batch()->cancelled()) {
-                    Log::debug('Duplicate delete batch cancelled for request: ' . $this->toolDuplicateRequest->id . ' (Job ID: ' . $this->job->getJobId() . ')');
-                    break;
-                }
 
                 $data = json_encode([
                     "archived" => true,
