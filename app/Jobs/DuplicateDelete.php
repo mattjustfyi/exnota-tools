@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Queue\Middleware\SkipIfBatchCancelled;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Notion\Configuration;
@@ -45,6 +46,16 @@ class DuplicateDelete implements ShouldQueue
     public function backoff(): array
     {
         return [2, 10, 20];
+    }
+
+    /**
+     * Get the middleware the job should pass through.
+     *
+     * @return array<int, object>
+     */
+    public function middleware(): array
+    {
+        return [new SkipIfBatchCancelled];
     }
 
     /**
