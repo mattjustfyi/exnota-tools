@@ -18,6 +18,7 @@ class ToolDuplicateRequest extends Model
     protected $fillable = [
         'notion_object_id',
         'duplicates',
+        'duplicates_sample',
         'duplicates_count',
         'search_started_at',
         'search_ended_at',
@@ -67,6 +68,16 @@ class ToolDuplicateRequest extends Model
 
     protected function duplicates(): Attribute
     {
+        return $this->getDuplicatesAttribute('duplicates');
+    }
+
+    protected function duplicatesSample(): Attribute
+    {
+        return $this->getDuplicatesAttribute('duplicates_sample');
+    }
+
+    private function getDuplicatesAttribute(string $attributeName): Attribute
+    {
         return Attribute::make(
             get: function (?string $value) {
                 if (!$value) {
@@ -101,7 +112,7 @@ class ToolDuplicateRequest extends Model
 
                 return $duplicateResultsDTOs;
             },
-            set: function (array $value) {
+            set: function (array $value) use ($attributeName) {
                 $duplicateResultsDTOs = array_map(function (DuplicateResultsDTO $entry) {
                     $keep = new NotionDTO(
                         $entry->keep->notion_id,
