@@ -28,6 +28,7 @@ class ToolDuplicateRequest extends Model
         'delete_batch_id',
         'search_batch_id',
         'search_results',
+        'search_results_count',
         'search_failed',
         'delete_cancelled',
     ];
@@ -53,6 +54,7 @@ class ToolDuplicateRequest extends Model
         'delete_ended_at' => 'datetime',
         'search_failed' => 'boolean',
         'delete_cancelled' => 'boolean',
+        'search_results_count' => 'integer',
     ];
 
     protected function duplicates(): Attribute
