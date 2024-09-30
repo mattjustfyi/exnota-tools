@@ -103,9 +103,7 @@ class DuplicateDelete implements ShouldQueue
 
             // Back off to handle temporary issues, such as rate limiting and
             // "Unsaved transactions: Unrecognized error."
-            if ($this->job->attempts() === 1) {
-                usleep(200000); // 200ms
-            } elseif ($this->job->attempts() === 2) {
+            if ($this->job->attempts() === 2) {
                 usleep(400000); // 400ms
             } elseif ($this->job->attempts() === 3) {
                 usleep(1000000); // 1000ms
@@ -126,14 +124,19 @@ class DuplicateDelete implements ShouldQueue
                 $request->getBody()->write($data);
 
                 /** @psalm-var PageJson $body */
+                Log::debug('Deleting page: ' . $pageId . ' (Job ID: ' . $this->job->getJobId() . ')');
+                $startTime = microtime(true);
                 try {
-                    Log::debug('Deleting page: ' . $pageId . ' (Job ID: ' . $this->job->getJobId() . ')');
-                    $startTime = microtime(true);
                     $body = Http::sendRequest($request, $config);
+
                     $endTime = microtime(true);
                     $duration = round(($endTime - $startTime) * 1000, 2); // Convert to milliseconds
-                    Log::debug('Deleted page: ' . $pageId . ' (Job ID: ' . $this->job->getJobId() . ') - Time taken: ' . $duration . 'ms');
+                    Log::debug('Deleting page succeeded', ['pageId' => $pageId, 'jobId' => $this->job->getJobId(), 'duration' => $duration]);
                 } catch (\Exception $e) {
+                    $endTime = microtime(true);
+                    $duration = round(($endTime - $startTime) * 1000, 2); // Convert to milliseconds
+                    Log::debug('Deleting page errored', ['pageId' => $pageId, 'jobId' => $this->job->getJobId(), 'duration' => $duration]);
+
                     if (
                         $e instanceof \Notion\Exceptions\ApiException &&
                         $e->notionCode === 'validation_error' &&
