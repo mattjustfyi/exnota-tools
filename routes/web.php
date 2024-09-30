@@ -85,15 +85,9 @@ Route::middleware([
         });
         $duplicates_sample = array_slice($sorted_duplicates, 0, 5);
 
-        $not_deleted_ids = is_array($toolDuplicateRequest->delete_list) && is_array($toolDuplicateRequest->delete_results)
-            ? array_diff($toolDuplicateRequest->delete_list, $toolDuplicateRequest->delete_results)
-            : [];
-        $not_deleted_ids_count = count($not_deleted_ids);
-
         return Inertia::render('Duplicates/Request/Confirm', [
             'toolDuplicateRequest' => $toolDuplicateRequest,
             'duplicates_sample' => $duplicates_sample,
-            'not_deleted_ids_count' => $not_deleted_ids_count,
         ]);
     })->name('duplicates.request.confirm')->middleware('can:view,toolDuplicateRequest');
 

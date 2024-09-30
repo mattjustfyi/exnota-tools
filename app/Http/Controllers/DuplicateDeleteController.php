@@ -65,6 +65,13 @@ class DuplicateDeleteController extends Controller
                 // The batch has finished executing...
                 Log::debug('Batch delete finished for request: ' . $toolDuplicateRequest->id);
 
+                $toolDuplicateRequest->refresh();
+                $not_deleted_ids = is_array($toolDuplicateRequest->delete_list) && is_array($toolDuplicateRequest->delete_results)
+                    ? array_diff($toolDuplicateRequest->delete_list, $toolDuplicateRequest->delete_results)
+                    : [];
+                $not_deleted_count = count($not_deleted_ids);
+
+                $toolDuplicateRequest->not_deleted_count = $not_deleted_count;
                 $toolDuplicateRequest->delete_ended_at = now();
                 $toolDuplicateRequest->save();
             })

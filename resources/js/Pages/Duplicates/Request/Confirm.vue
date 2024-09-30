@@ -15,10 +15,6 @@ const props = defineProps({
         type: Array,
         required: true
     },
-    not_deleted_ids_count: {
-        type: Number,
-        required: true
-    }
 });
 
 const searchResultsCount = computed(() => {
@@ -35,6 +31,10 @@ const deleteListCount = computed(() => {
 
 const deleteResultsCount = computed(() => {
     return props.toolDuplicateRequest.delete_results_count ?? 0;
+});
+
+const notDeletedCount = computed(() => {
+    return props.toolDuplicateRequest.not_deleted_count ?? 0;
 });
 
 console.log('Props received:', props.toolDuplicateRequest);
@@ -268,8 +268,8 @@ onUnmounted(() => {
                         </template>
                         <template v-else-if="deletionFinished">
                             <h4 class="text-lg font-medium text-gray-900 mt-4">Pages that could not be deleted:</h4>
-                            <p v-if="props.not_deleted_ids_count > 0" class="mt-4 text-gray-600">
-                                {{ props.not_deleted_ids_count }} pages were not deleted. Search again for more details.
+                            <p v-if="notDeletedCount > 0" class="mt-4 text-gray-600">
+                                {{ notDeletedCount }} pages were not deleted. Search again for more details.
                             </p>
                             <p v-else class="mt-4 text-gray-600">All pages were successfully deleted.</p>
                         </template>
