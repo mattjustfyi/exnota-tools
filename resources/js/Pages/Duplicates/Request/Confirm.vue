@@ -11,10 +11,6 @@ const props = defineProps({
         type: Object,
         required: true
     },
-    search_results_count: {
-        type: Number,
-        required: true
-    },
     duplicates_count: {
         type: Number,
         required: true
@@ -37,6 +33,10 @@ const props = defineProps({
     }
 });
 
+const searchResultsCount = computed(() => {
+    return props.toolDuplicateRequest.search_results_count ?? 0;
+});
+
 console.log('Props received:', props.toolDuplicateRequest);
 
 const searchInProgress = computed(() => {
@@ -54,10 +54,10 @@ const searchStatus = computed(() => {
 });
 
 const searchProgress = computed(() => {
-    if (!props.search_results_count) {
+    if (!searchResultsCount.value) {
         return 0;
     }
-    const count = props.search_results_count;
+    const count = searchResultsCount.value;
     // Using a logarithmic scale up to 10,000 results
     // We'll cap it at 99% to indicate it's not fully complete until search_ended_at is set
     return Math.min(Math.round((Math.log(count + 1) / Math.log(10000)) * 100), 99);
@@ -222,7 +222,7 @@ onUnmounted(() => {
                         Database: {{ notionObjectTitle }}
                     </p>
                     <p class="mt-2 text-gray-700">
-                        Total Rows: {{ props.search_results_count }}
+                        Total Rows: {{ searchResultsCount }}
                     </p>
                     <p class="mt-2 text-gray-700">
                         Total Duplicates: {{ props.duplicates_count }}
@@ -260,8 +260,8 @@ onUnmounted(() => {
                                 <ProgressBar :progress="searchProgress" />
                                 <p class="mt-2 text-center text-gray-600">
                                     Searching for duplicates...
-                                    <template v-if="props.search_results_count > 0">
-                                        (scanned {{ props.search_results_count }} rows so far)
+                                    <template v-if="searchResultsCount > 0">
+                                        (scanned {{ searchResultsCount }} rows so far)
                                     </template>
                                 </p>
                             </div>

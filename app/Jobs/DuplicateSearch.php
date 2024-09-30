@@ -105,6 +105,7 @@ class DuplicateSearch implements ShouldQueue
 
         $this->toolDuplicateRequest->update([
             'search_results' => $allResults->toArray(),
+            'search_results_count' => count($allResults),
         ]);
 
         if ($hasMore) {

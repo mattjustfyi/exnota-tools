@@ -78,7 +78,6 @@ Route::middleware([
     Route::get('/duplicates/request/{toolDuplicateRequest}/confirm', function (ToolDuplicateRequest $toolDuplicateRequest) {
         $toolDuplicateRequest->loadMissing('notionObject');
 
-        $search_results_count = is_array($toolDuplicateRequest->search_results) ? count($toolDuplicateRequest->search_results) : 0;
         $duplicates_count = 0;
         if (is_array($toolDuplicateRequest->duplicates)) {
             foreach ($toolDuplicateRequest->duplicates as $duplicate) {
@@ -101,7 +100,6 @@ Route::middleware([
 
         return Inertia::render('Duplicates/Request/Confirm', [
             'toolDuplicateRequest' => $toolDuplicateRequest,
-            'search_results_count' => $search_results_count,
             // The number of duplicates in the search results
             'duplicates_count' => $duplicates_count,
             // The total number of pages to delete
