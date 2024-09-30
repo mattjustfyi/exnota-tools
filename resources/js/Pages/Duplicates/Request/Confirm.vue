@@ -11,10 +11,6 @@ const props = defineProps({
         type: Object,
         required: true
     },
-    duplicates_count: {
-        type: Number,
-        required: true
-    },
     delete_list_count: {
         type: Number,
         required: true
@@ -35,6 +31,10 @@ const props = defineProps({
 
 const searchResultsCount = computed(() => {
     return props.toolDuplicateRequest.search_results_count ?? 0;
+});
+
+const duplicatesCount = computed(() => {
+    return props.toolDuplicateRequest.duplicates_count ?? 0;
 });
 
 console.log('Props received:', props.toolDuplicateRequest);
@@ -201,7 +201,7 @@ onUnmounted(() => {
                                 ]">
                                 Search again
                             </button>
-                            <button v-if="!searchInProgress.value && props.duplicates_count > 0"
+                            <button v-if="!searchInProgress.value && duplicatesCount > 0"
                                 @click="deleteInProgress ? cancelDeletion() : startDeletion()"
                                 :disabled="toolDuplicateRequest.delete_ended_at !== null || toolDuplicateRequest.delete_cancelled"
                                 :class="[
@@ -225,7 +225,7 @@ onUnmounted(() => {
                         Total Rows: {{ searchResultsCount }}
                     </p>
                     <p class="mt-2 text-gray-700">
-                        Total Duplicates: {{ props.duplicates_count }}
+                        Total Duplicates: {{ duplicatesCount }}
                     </p>
                     <p class="mt-2 text-gray-700">
                         Total Deleted: {{ props.delete_results_count }}

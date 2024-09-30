@@ -163,6 +163,7 @@ class DuplicateSearch implements ShouldQueue
         // Update the toolDuplicateRequest with the final duplicate results
         $this->toolDuplicateRequest->update([
             'duplicates' => $duplicateResults,
+            'duplicates_count' => count($duplicateResults),
         ]);
     }
 

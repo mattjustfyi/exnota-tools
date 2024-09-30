@@ -78,12 +78,7 @@ Route::middleware([
     Route::get('/duplicates/request/{toolDuplicateRequest}/confirm', function (ToolDuplicateRequest $toolDuplicateRequest) {
         $toolDuplicateRequest->loadMissing('notionObject');
 
-        $duplicates_count = 0;
-        if (is_array($toolDuplicateRequest->duplicates)) {
-            foreach ($toolDuplicateRequest->duplicates as $duplicate) {
-                $duplicates_count += is_array($duplicate->delete) ? count($duplicate->delete) : 0;
-            }
-        }
+        // TODO: Get sample more performantly
         $sorted_duplicates = is_array($toolDuplicateRequest->duplicates) ? $toolDuplicateRequest->duplicates : [];
         usort($sorted_duplicates, function ($a, $b) {
             return (is_array($b->delete) ? count($b->delete) : 0) - (is_array($a->delete) ? count($a->delete) : 0);
@@ -100,8 +95,6 @@ Route::middleware([
 
         return Inertia::render('Duplicates/Request/Confirm', [
             'toolDuplicateRequest' => $toolDuplicateRequest,
-            // The number of duplicates in the search results
-            'duplicates_count' => $duplicates_count,
             // The total number of pages to delete
             'delete_list_count' => $delete_list_count,
             // The number of pages that have been deleted
