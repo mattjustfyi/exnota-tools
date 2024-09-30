@@ -11,10 +11,6 @@ const props = defineProps({
         type: Object,
         required: true
     },
-    delete_results_count: {
-        type: Number,
-        required: true
-    },
     duplicates_sample: {
         type: Array,
         required: true
@@ -35,6 +31,10 @@ const duplicatesCount = computed(() => {
 
 const deleteListCount = computed(() => {
     return props.toolDuplicateRequest.delete_list_count ?? 0;
+});
+
+const deleteResultsCount = computed(() => {
+    return props.toolDuplicateRequest.delete_results_count ?? 0;
 });
 
 console.log('Props received:', props.toolDuplicateRequest);
@@ -105,20 +105,20 @@ const deletionFinished = computed(() => {
 });
 
 const deleteProgress = computed(() => {
-    if (!deleteListCount.value || !props.delete_results_count) {
+    if (!deleteListCount.value || !deleteResultsCount.value) {
         return 0;
     }
     const totalItems = deleteListCount.value;
-    const deletedItems = props.delete_results_count;
+    const deletedItems = deleteResultsCount.value;
     return totalItems > 0 ? (deletedItems / totalItems) * 100 : 0;
 });
 
 const deletionStatus = computed(() => {
-    if (!deleteListCount.value || !props.delete_results_count) {
+    if (!deleteListCount.value || !deleteResultsCount.value) {
         return { deletedItems: 0, totalItems: 0 };
     }
     return {
-        deletedItems: props.delete_results_count,
+        deletedItems: deleteResultsCount.value,
         totalItems: deleteListCount.value
     };
 });
@@ -228,7 +228,7 @@ onUnmounted(() => {
                         Total Duplicates: {{ duplicatesCount }}
                     </p>
                     <p class="mt-2 text-gray-700">
-                        Total Deleted: {{ props.delete_results_count }}
+                        Total Deleted: {{ deleteResultsCount }}
                     </p>
                     <p class="mt-2 text-gray-600">
                         Searched At: {{ new Date(toolDuplicateRequest.search_started_at).toLocaleString() }}

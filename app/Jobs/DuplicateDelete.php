@@ -181,6 +181,7 @@ class DuplicateDelete implements ShouldQueue
 
                 $request->update([
                     'delete_results' => $mergedDeletedPageIds,
+                    'delete_results_count' => count($mergedDeletedPageIds),
                 ]);
             });
         }
