@@ -85,7 +85,6 @@ Route::middleware([
         });
         $duplicates_sample = array_slice($sorted_duplicates, 0, 5);
 
-        $delete_list_count = is_array($toolDuplicateRequest->delete_list) ? count($toolDuplicateRequest->delete_list) : 0;
         $delete_results_count = is_array($toolDuplicateRequest->delete_results) ? count($toolDuplicateRequest->delete_results) : 0;
 
         $not_deleted_ids = is_array($toolDuplicateRequest->delete_list) && is_array($toolDuplicateRequest->delete_results)
@@ -95,8 +94,6 @@ Route::middleware([
 
         return Inertia::render('Duplicates/Request/Confirm', [
             'toolDuplicateRequest' => $toolDuplicateRequest,
-            // The total number of pages to delete
-            'delete_list_count' => $delete_list_count,
             // The number of pages that have been deleted
             'delete_results_count' => $delete_results_count,
             'duplicates_sample' => $duplicates_sample,

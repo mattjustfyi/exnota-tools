@@ -11,10 +11,6 @@ const props = defineProps({
         type: Object,
         required: true
     },
-    delete_list_count: {
-        type: Number,
-        required: true
-    },
     delete_results_count: {
         type: Number,
         required: true
@@ -35,6 +31,10 @@ const searchResultsCount = computed(() => {
 
 const duplicatesCount = computed(() => {
     return props.toolDuplicateRequest.duplicates_count ?? 0;
+});
+
+const deleteListCount = computed(() => {
+    return props.toolDuplicateRequest.delete_list_count ?? 0;
 });
 
 console.log('Props received:', props.toolDuplicateRequest);
@@ -105,21 +105,21 @@ const deletionFinished = computed(() => {
 });
 
 const deleteProgress = computed(() => {
-    if (!props.delete_list_count || !props.delete_results_count) {
+    if (!deleteListCount.value || !props.delete_results_count) {
         return 0;
     }
-    const totalItems = props.delete_list_count;
+    const totalItems = deleteListCount.value;
     const deletedItems = props.delete_results_count;
     return totalItems > 0 ? (deletedItems / totalItems) * 100 : 0;
 });
 
 const deletionStatus = computed(() => {
-    if (!props.delete_list_count || !props.delete_results_count) {
+    if (!deleteListCount.value || !props.delete_results_count) {
         return { deletedItems: 0, totalItems: 0 };
     }
     return {
         deletedItems: props.delete_results_count,
-        totalItems: props.delete_list_count
+        totalItems: deleteListCount.value
     };
 });
 

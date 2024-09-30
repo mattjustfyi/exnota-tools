@@ -29,6 +29,7 @@ class DuplicateDeleteController extends Controller
         }
 
         $toolDuplicateRequest->delete_list = $deleteList;
+        $toolDuplicateRequest->delete_list_count = count($deleteList);
         $toolDuplicateRequest->save();
 
         $jobs = [];

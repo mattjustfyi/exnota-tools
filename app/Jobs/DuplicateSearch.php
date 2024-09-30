@@ -145,6 +145,7 @@ class DuplicateSearch implements ShouldQueue
         })->values()->all();
 
         $duplicateResults = [];
+        $duplicatesCount = 0;
         foreach ($duplicatePairs as $pair) {
             $oldest = null;
             foreach ($pair as $item) {
@@ -158,12 +159,13 @@ class DuplicateSearch implements ShouldQueue
             }));
 
             array_push($duplicateResults, new DuplicateResultsDTO($oldest, $remainingDuplicates));
+            $duplicatesCount += count($remainingDuplicates);
         }
 
         // Update the toolDuplicateRequest with the final duplicate results
         $this->toolDuplicateRequest->update([
             'duplicates' => $duplicateResults,
-            'duplicates_count' => count($duplicateResults),
+            'duplicates_count' => $duplicatesCount,
         ]);
     }
 
