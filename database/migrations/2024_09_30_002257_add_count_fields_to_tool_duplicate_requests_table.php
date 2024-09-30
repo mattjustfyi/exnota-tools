@@ -12,7 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tool_duplicate_requests', function (Blueprint $table) {
-            //
+            $table->after('duplicates', function (Blueprint $table) {
+                $table->integer('duplicates_count')->nullable();
+            });
+            $table->after('delete_list', function (Blueprint $table) {
+                $table->integer('delete_list_count')->nullable();
+            });
+            $table->after('delete_results', function (Blueprint $table) {
+                $table->integer('delete_results_count')->nullable();
+            });
         });
     }
 
@@ -22,7 +30,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('tool_duplicate_requests', function (Blueprint $table) {
-            //
+            $table->dropColumn('duplicates_count');
+            $table->dropColumn('delete_list_count');
+            $table->dropColumn('delete_results_count');
         });
     }
 };
