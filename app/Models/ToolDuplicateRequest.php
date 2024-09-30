@@ -25,6 +25,7 @@ class ToolDuplicateRequest extends Model
         'delete_ended_at',
         'delete_results',
         'delete_results_count',
+        'not_deleted_count',
         'delete_list',
         'delete_list_count',
         'delete_retry_list',
@@ -61,6 +62,7 @@ class ToolDuplicateRequest extends Model
         'duplicates_count' => 'integer',
         'delete_list_count' => 'integer',
         'delete_results_count' => 'integer',
+        'not_deleted_count' => 'integer',
     ];
 
     protected function duplicates(): Attribute
