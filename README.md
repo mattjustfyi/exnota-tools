@@ -7,6 +7,7 @@
   - [Local development](#local-development)
     - [Running](#running)
     - [Workers](#workers)
+    - [Redis](#redis)
     - [Setup](#setup)
     - [Database UI](#database-ui)
       - [Local](#local)
@@ -156,6 +157,22 @@ Manually start workers in debug mode:
 # See supervised-worker.conf
 ./vendor/bin/sail debug queue:listen -vvv --queue=default --timeout=120
 ./vendor/bin/sail debug queue:listen -vvv --queue=delete-1 --timeout=120
+```
+
+### Redis
+
+Use CLI
+
+```bash
+docker exec -it exnota-tools-redis redis-cli
+
+127.0.0.1:6379> auth <REDIS_PASSWORD>
+# The cache is in 'database 1'. See this line in database.php:
+#   'database' => env('REDIS_CACHE_DB', '1'),
+127.0.0.1:6379> select 1
+
+# Assorted commands
+127.0.0.1:6379> keys *
 ```
 
 ### Setup

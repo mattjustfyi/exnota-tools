@@ -101,6 +101,19 @@ services:
                 - '${DB_USERNAME}'
             retries: 3
             timeout: 5s
+
+    # Redis Server for Cache
+    redis-cache:
+        image: redis:7.4.0
+        container_name: exnota-tools-redis
+        restart: always
+        ports:
+            - "6379:6379"
+        command: redis-server --appendonly yes --requirepass "${REDIS_PASSWORD}"
+        volumes:
+            - ./data/redis:/data
+        networks:
+            - sail
 networks:
     sail:
         driver: bridge

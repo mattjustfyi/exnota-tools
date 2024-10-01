@@ -2,12 +2,14 @@
 
 namespace App\Jobs;
 
+use App\Constants\CacheKey;
 use App\Models\ToolDuplicateRequest;
 use Carbon\Carbon;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Middleware\SkipIfBatchCancelled;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Notion\Configuration;
@@ -103,11 +105,19 @@ class DuplicateDelete implements ShouldQueue
 
             // Back off to handle temporary issues, such as rate limiting and
             // "Unsaved transactions: Unrecognized error."
-            if ($this->job->attempts() === 2) {
+            $delay = Cache::get(CacheKey::DUPLICATE_DELETE_DELAY);
+            if ($delay) {
+                Log::debug('Delaying duplicate delete job by ' . $delay . 'ms, from cache (Job ID: ' . $this->job->getJobId() . ')');
+                $delay = (int)$delay; // Convert delay from string to integer
+                usleep($delay * 1000); // Convert to microseconds
+            } else if ($this->job->attempts() === 2) {
+                Log::debug('Delaying duplicate delete job by 400ms (Job ID: ' . $this->job->getJobId() . ')');
                 usleep(400000); // 400ms
             } elseif ($this->job->attempts() === 3) {
+                Log::debug('Delaying duplicate delete job by 1000ms (Job ID: ' . $this->job->getJobId() . ')');
                 usleep(1000000); // 1000ms
             } elseif ($this->job->attempts() === 4) {
+                Log::debug('Delaying duplicate delete job by 2000ms (Job ID: ' . $this->job->getJobId() . ')');
                 usleep(2000000); // 2000ms
             }
 
