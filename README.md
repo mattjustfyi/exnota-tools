@@ -27,7 +27,7 @@
     - [Troubleshooting assorted old](#troubleshooting-assorted-old)
       - [Error: At least one invalid signature was encountered, or "no space left on device"](#error-at-least-one-invalid-signature-was-encountered-or-no-space-left-on-device)
   - [Maintenance](#maintenance)
-    - [Check PHP settings](#check-php-settings)
+    - [Check PHP settings (incl. php.ini)](#check-php-settings-incl-phpini)
     - [Environment variables](#environment-variables)
     - [Checking local logs](#checking-local-logs)
     - [Checking prod logs](#checking-prod-logs)
@@ -173,6 +173,10 @@ docker exec -it exnota-tools-redis redis-cli
 
 # Assorted commands
 127.0.0.1:6379> keys *
+
+# Set/clear delay
+set db_duplicate_delete-delay 10000
+del db_duplicate_delete-delay
 ```
 
 ### Setup
@@ -270,13 +274,21 @@ Reference: <https://laravel.com/docs/11.x/csrf#csrf-excluding-uris>
 1. In `docker-compose-yml`, comment out `laravel.local` and uncomment `laravel.prod`
 2. Run
 
-  ```bash
-  # "--force-recreate" fixes network issues that may arise, probably due to
-  # using docker-compose directly here and via Sail other times.
-  docker-compose up --build --force-recreate
-  ```  
+    ```bash
+    # "--force-recreate" fixes network issues that may arise, probably due to
+    # using docker-compose directly here and via Sail other times.
+    docker-compose up --build --force-recreate
+    ```  
   
-3. Access via <http://localhost:8000/duplicates>
+3. Start workers
+
+    ```bash
+    docker exec -it exnota-tools-prod php /var/www/html/artisan queue:work -vvv --queue=default --timeout=120 --max-time=3600
+    docker exec -it exnota-tools-prod php /var/www/html/artisan queue:work -vvv --queue=delete-1 --timeout=120 --max-time=3600
+    docker exec -it exnota-tools-prod php /var/www/html/artisan queue:work -vvv --queue=delete-2 --timeout=120 --max-time=3600
+    ```
+
+4. Access via <http://localhost:8000/duplicates>
 
 ## Initial prod setup
 
@@ -325,7 +337,16 @@ Reference: <https://laravel.com/docs/11.x/csrf#csrf-excluding-uris>
     dokku ps:set exnota-tools restart-policy unless-stopped
     ```
 
-2. Add Dokku as git remote
+2. Create redis
+
+    ```bash
+    dokku plugin:install https://github.com/dokku/dokku-redis.git redis
+    dokku redis:create exnota-tools-redis --image-version 7.4.0 --password <REDIS_PASSWORD>
+    dokku redis:link exnota-tools-redis exnota-tools
+    dokku config:set exnota-tools --no-restart CACHE_STORE=redis REDIS_HOST=dokku-redis-exnota-tools-redis REDIS_PASSWORD=<REDIS_PASSWORD>
+    ```
+
+3. Add Dokku as git remote
 
     ```bash
     # `exnota-tools` is the remote branch name, matching the app name
@@ -338,7 +359,7 @@ Reference: <https://laravel.com/docs/11.x/csrf#csrf-excluding-uris>
     dokku builder:set exnota-tools build-dir app/backend
     ``` -->
 
-3. Set builder type to Docker
+4. Set builder type to Docker
 
     ```bash
     dokku builder:set exnota-tools selected dockerfile
@@ -348,7 +369,7 @@ Reference: <https://laravel.com/docs/11.x/csrf#csrf-excluding-uris>
     <!-- # Set multi-stage build target
     dokku docker-options:add exnota-tools build "--target prod" -->
 
-4. Add domain (assuming its DNS config already points to VPS IP)
+5. Add domain (assuming its DNS config already points to VPS IP)
 
    ```bash
    dokku domains:add exnota-tools tools.exnota.com
@@ -368,7 +389,7 @@ Reference: <https://laravel.com/docs/11.x/csrf#csrf-excluding-uris>
     dokku ports:add exnota-tools http:80:8080
     ``` -->
 
-5. Setup lets encrypt
+6. Setup lets encrypt
 
     ```bash
     dokku letsencrypt:set exnota-tools email email@mattschultz.info
@@ -396,7 +417,7 @@ Reference: <https://laravel.com/docs/11.x/csrf#csrf-excluding-uris>
     scp -r root@195.201.33.178:/home/dokku/exnota-tools/letsencrypt/certs exnota-tools-letsencrypt-backup
     ```
 
-6. Setup environment variables from .env
+7. Setup environment variables from .env
 
    - Get `DB_HOST` from `dokku postgres:info exnota-tools-db` under `Dsn` between `@` and `:`
    - Get `APP_KEY` by:
@@ -462,7 +483,7 @@ Use `df -h` before/after to check how much space this is freeing up.
 
 ## Maintenance
 
-### Check PHP settings
+### Check PHP settings (incl. php.ini)
 
 ```bash
 php artisan tinker
