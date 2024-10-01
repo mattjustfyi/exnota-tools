@@ -164,7 +164,12 @@ Manually start workers in debug mode:
 Use CLI
 
 ```bash
+# Via Docker
 docker exec -it exnota-tools-redis redis-cli
+
+# Via Dokku
+dokku config:get exnota-tools REDIS_PASSWORD
+dokku redis:enter exnota-tools-redis redis-cli
 
 127.0.0.1:6379> auth <REDIS_PASSWORD>
 # The cache is in 'database 1'. See this line in database.php:
