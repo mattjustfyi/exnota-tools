@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Constants\CacheKey;
+use App\Models\ToolDuplicateRequest;
 use Illuminate\Support\Facades\Redis;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
