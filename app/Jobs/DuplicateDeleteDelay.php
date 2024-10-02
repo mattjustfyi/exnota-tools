@@ -14,17 +14,22 @@ class DuplicateDeleteDelay
     {
         $delay = 0;
 
-        if ($toolDuplicateRequest->delete_list_count > 500) {
-            $delay = max($delay, 5000);
+        $deleteListCountMin = Redis::get(CacheKey::DUPLICATE_DELETE_LIST_COUNT_MIN) ?? 500;
+        $deleteListCountDelay = Redis::get(CacheKey::DUPLICATE_DELETE_LIST_COUNT_DELAY) ?? 5000;
+        $errorLookbackMinutes = Redis::get(CacheKey::DUPLICATE_DELETE_ERROR_LOOKBACK_MINUTES) ?? 10;
+        $errorFoundDelay = Redis::get(CacheKey::DUPLICATE_DELETE_ERROR_DELAY) ?? 10000;
+
+        if ($toolDuplicateRequest->delete_list_count > $deleteListCountMin) {
+            $delay = max($delay, $deleteListCountDelay);
         }
 
         $now = Carbon::now();
-        $tenMinutesAgo = $now->subMinutes(10)->timestamp;
+        $lookbackTime = $now->subMinutes($errorLookbackMinutes)->timestamp;
 
-        $errorCount = Redis::zcount(CacheKey::getDuplicateDeleteErrorKey($workspaceId), $tenMinutesAgo, '+inf');
+        $errorCount = Redis::zcount(CacheKey::getDuplicateDeleteErrorKey($workspaceId), $lookbackTime, '+inf');
 
         if ($errorCount >= 1) {
-            $delay = max($delay, 10000);
+            $delay = max($delay, $errorFoundDelay);
         }
 
         return $delay;
