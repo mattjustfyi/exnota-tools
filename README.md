@@ -155,8 +155,8 @@ Manually start workers in debug mode:
 
 ```bash
 # See supervised-worker.conf
-./vendor/bin/sail debug queue:listen -vvv --queue=default --timeout=120
-./vendor/bin/sail debug queue:listen -vvv --queue=delete-1 --timeout=120
+./vendor/bin/sail debug queue:listen -vvv --queue=default --timeout=180
+./vendor/bin/sail debug queue:listen -vvv --queue=delete-1 --timeout=180
 ```
 
 ### Redis
@@ -288,9 +288,9 @@ Reference: <https://laravel.com/docs/11.x/csrf#csrf-excluding-uris>
 3. Start workers
 
     ```bash
-    docker exec -it exnota-tools-prod php /var/www/html/artisan queue:work -vvv --queue=default --timeout=120 --max-time=3600
-    docker exec -it exnota-tools-prod php /var/www/html/artisan queue:work -vvv --queue=delete-1 --timeout=120 --max-time=3600
-    docker exec -it exnota-tools-prod php /var/www/html/artisan queue:work -vvv --queue=delete-2 --timeout=120 --max-time=3600
+    docker exec -it exnota-tools-prod php /var/www/html/artisan queue:work -vvv --queue=default --timeout=180 --max-time=3600
+    docker exec -it exnota-tools-prod php /var/www/html/artisan queue:work -vvv --queue=delete-1 --timeout=180 --max-time=3600
+    docker exec -it exnota-tools-prod php /var/www/html/artisan queue:work -vvv --queue=delete-2 --timeout=180 --max-time=3600
     ```
 
 4. Access via <http://localhost:8000/duplicates>
