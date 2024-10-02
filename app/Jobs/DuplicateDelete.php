@@ -16,6 +16,7 @@ use Notion\Configuration;
 use Notion\Infrastructure\Http;
 use Notion\Pages\Page;
 use Illuminate\Support\Facades\Redis;
+use App\Jobs\DuplicateDeleteDelay;
 
 class DuplicateDelete implements ShouldQueue
 {
@@ -104,22 +105,11 @@ class DuplicateDelete implements ShouldQueue
                 break;
             }
 
-            // Back off to handle temporary issues, such as rate limiting and
-            // "Unsaved transactions: Unrecognized error."
-            $delay = Cache::get(CacheKey::DUPLICATE_DELETE_DELAY);
-            if ($delay) {
-                Log::debug('Delaying duplicate delete job by ' . $delay . 'ms, from cache (Job ID: ' . $this->job->getJobId() . ')');
-                $delay = (int)$delay; // Convert delay from string to integer
+            // Calculate delay based on recent success/error ratio
+            $delay = DuplicateDeleteDelay::getDelay();
+            if ($delay > 0) {
+                Log::debug('Delaying duplicate delete job by ' . $delay . 'ms (Job ID: ' . $this->job->getJobId() . ')');
                 usleep($delay * 1000); // Convert to microseconds
-            } else if ($this->job->attempts() === 2) {
-                Log::debug('Delaying duplicate delete job by 400ms (Job ID: ' . $this->job->getJobId() . ')');
-                usleep(400000); // 400ms
-            } elseif ($this->job->attempts() === 3) {
-                Log::debug('Delaying duplicate delete job by 1000ms (Job ID: ' . $this->job->getJobId() . ')');
-                usleep(1000000); // 1000ms
-            } elseif ($this->job->attempts() === 4) {
-                Log::debug('Delaying duplicate delete job by 2000ms (Job ID: ' . $this->job->getJobId() . ')');
-                usleep(2000000); // 2000ms
             }
 
             try {
