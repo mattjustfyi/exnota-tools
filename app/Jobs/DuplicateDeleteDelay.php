@@ -16,10 +16,14 @@ class DuplicateDeleteDelay
         }
 
         $now = Carbon::now();
-        $twoMinutesAgo = $now->subMinutes(2)->timestamp;
+        $tenMinutesAgo = $now->subMinutes(10)->timestamp;
 
-        $successCount = Redis::zcount(CacheKey::getDuplicateDeleteSuccessKey($workspaceId), $twoMinutesAgo, '+inf');
-        $errorCount = Redis::zcount(CacheKey::getDuplicateDeleteErrorKey($workspaceId), $twoMinutesAgo, '+inf');
+        $successCount = Redis::zcount(CacheKey::getDuplicateDeleteSuccessKey($workspaceId), $tenMinutesAgo, '+inf');
+        $errorCount = Redis::zcount(CacheKey::getDuplicateDeleteErrorKey($workspaceId), $tenMinutesAgo, '+inf');
+
+        if ($errorCount >= 1) {
+            return 10000;
+        }
 
         $totalCount = $successCount + $errorCount;
 
