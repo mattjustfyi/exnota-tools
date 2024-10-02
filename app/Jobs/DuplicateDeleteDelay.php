@@ -3,29 +3,19 @@
 namespace App\Jobs;
 
 use App\Constants\CacheKey;
-use App\Constants\QueueConstants;
 use Illuminate\Support\Facades\Redis;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class DuplicateDeleteDelay
 {
-    public static function getDelay(string $queue): int
+    public static function getDelay(int $workspaceId): int
     {
         $now = Carbon::now();
         $twoMinutesAgo = $now->subMinutes(2)->timestamp;
 
-        $successCount = 0;
-        $errorCount = 0;
-        if ($queue === QueueConstants::DELETE_QUEUE_1) {
-            $successCount = Redis::zcount(CacheKey::DUPLICATE_DELETE_QUEUE_1_SUCCESS, $twoMinutesAgo, '+inf');
-            $errorCount = Redis::zcount(CacheKey::DUPLICATE_DELETE_QUEUE_1_ERROR, $twoMinutesAgo, '+inf');
-        } elseif ($queue === QueueConstants::DELETE_QUEUE_2) {
-            $successCount = Redis::zcount(CacheKey::DUPLICATE_DELETE_QUEUE_2_SUCCESS, $twoMinutesAgo, '+inf');
-            $errorCount = Redis::zcount(CacheKey::DUPLICATE_DELETE_QUEUE_2_ERROR, $twoMinutesAgo, '+inf');
-        } else {
-            throw new \InvalidArgumentException('Invalid queue');
-        }
+        $successCount = Redis::zcount(CacheKey::getDuplicateDeleteSuccessKey($workspaceId), $twoMinutesAgo, '+inf');
+        $errorCount = Redis::zcount(CacheKey::getDuplicateDeleteErrorKey($workspaceId), $twoMinutesAgo, '+inf');
 
         $totalCount = $successCount + $errorCount;
 
@@ -35,7 +25,7 @@ class DuplicateDeleteDelay
 
         $errorRatio = $errorCount / $totalCount;
 
-        Log::debug("Error ratio for $queue: " . number_format($errorRatio * 100, 1) . '% (' . $errorCount . '/' . $totalCount . ')');
+        Log::debug("Error ratio for workspace $workspaceId: " . number_format($errorRatio * 100, 1) . '% (' . $errorCount . '/' . $totalCount . ')');
         if ($errorRatio >= 0.04) {
             return 8000;
         } elseif ($errorRatio >= 0.01) {
@@ -45,29 +35,15 @@ class DuplicateDeleteDelay
         }
     }
 
-    public static function logSuccess(string $queue): void
+    public static function logSuccess(int $workspaceId): void
     {
         $now = Carbon::now()->timestamp;
-
-        if ($queue === QueueConstants::DELETE_QUEUE_1) {
-            Redis::zadd(CacheKey::DUPLICATE_DELETE_QUEUE_1_SUCCESS, $now, $now);
-        } elseif ($queue === QueueConstants::DELETE_QUEUE_2) {
-            Redis::zadd(CacheKey::DUPLICATE_DELETE_QUEUE_2_SUCCESS, $now, $now);
-        } else {
-            throw new \InvalidArgumentException('Invalid queue');
-        }
+        Redis::zadd(CacheKey::getDuplicateDeleteSuccessKey($workspaceId), $now, $now);
     }
 
-    public static function logError(string $queue): void
+    public static function logError(int $workspaceId): void
     {
         $now = Carbon::now()->timestamp;
-
-        if ($queue === QueueConstants::DELETE_QUEUE_1) {
-            Redis::zadd(CacheKey::DUPLICATE_DELETE_QUEUE_1_ERROR, $now, $now);
-        } elseif ($queue === QueueConstants::DELETE_QUEUE_2) {
-            Redis::zadd(CacheKey::DUPLICATE_DELETE_QUEUE_2_ERROR, $now, $now);
-        } else {
-            throw new \InvalidArgumentException('Invalid queue');
-        }
+        Redis::zadd(CacheKey::getDuplicateDeleteErrorKey($workspaceId), $now, $now);
     }
 }
