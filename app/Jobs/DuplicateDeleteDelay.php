@@ -9,8 +9,12 @@ use Illuminate\Support\Facades\Log;
 
 class DuplicateDeleteDelay
 {
-    public static function getDelay(int $workspaceId): int
+    public static function getDelay(int $workspaceId, ToolDuplicateRequest $toolDuplicateRequest): int
     {
+        if ($toolDuplicateRequest->delete_list_count > 500) {
+            return 5000;
+        }
+
         $now = Carbon::now();
         $twoMinutesAgo = $now->subMinutes(2)->timestamp;
 
