@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Log;
 use Notion\Configuration;
 use Notion\Infrastructure\Http;
 use Notion\Pages\Page;
+use Illuminate\Support\Facades\Redis;
 
 class DuplicateDelete implements ShouldQueue
 {
@@ -139,10 +140,16 @@ class DuplicateDelete implements ShouldQueue
                 try {
                     $body = Http::sendRequest($request, $config);
 
+                    // Save success to cache
+                    $timestamp = now()->timestamp;
+                    Redis::zadd(CacheKey::DUPLICATE_DELETE_SUCCESS, $timestamp, $timestamp);
+
+                    // Log duration
                     $endTime = microtime(true);
                     $duration = round(($endTime - $startTime) * 1000, 2); // Convert to milliseconds
                     Log::debug('Deleting page succeeded', ['pageId' => $pageId, 'jobId' => $this->job->getJobId(), 'duration' => $duration]);
                 } catch (\Exception $e) {
+                    // Log duration
                     $endTime = microtime(true);
                     $duration = round(($endTime - $startTime) * 1000, 2); // Convert to milliseconds
                     Log::debug('Deleting page errored', ['pageId' => $pageId, 'jobId' => $this->job->getJobId(), 'duration' => $duration]);
@@ -156,6 +163,10 @@ class DuplicateDelete implements ShouldQueue
                         $deletedPageIds[] = $pageId;
                         continue;
                     }
+
+                    // Save error to cache
+                    $timestamp = now()->timestamp;
+                    Redis::zadd(CacheKey::DUPLICATE_DELETE_ERROR, $timestamp, $timestamp);
                     throw $e;
                 }
 
