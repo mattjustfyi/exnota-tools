@@ -47,7 +47,7 @@ const startPeriodicRefresh = () => {
     const val = setInterval(() => {
         // console.log('Periodic refresh triggered');
         router.reload();
-    }, 2000);
+    }, 4000);
     refreshInterval.value = val;
     console.log('Periodic refresh started with refreshInterval.value:', refreshInterval.value, 'and val:', val);
 };

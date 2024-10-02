@@ -106,7 +106,7 @@ class DuplicateDelete implements ShouldQueue
             }
 
             // Calculate delay based on recent success/error ratio
-            $delay = DuplicateDeleteDelay::getDelay();
+            $delay = DuplicateDeleteDelay::getDelay($this->job->getQueue());
             if ($delay > 0) {
                 Log::debug('Delaying duplicate delete job by ' . $delay . 'ms (Job ID: ' . $this->job->getJobId() . ')');
                 usleep($delay * 1000); // Convert to microseconds
@@ -131,8 +131,7 @@ class DuplicateDelete implements ShouldQueue
                     $body = Http::sendRequest($request, $config);
 
                     // Save success to cache
-                    $timestamp = now()->timestamp;
-                    Redis::zadd(CacheKey::DUPLICATE_DELETE_SUCCESS, $timestamp, $timestamp);
+                    DuplicateDeleteDelay::logSuccess($this->job->getQueue());
 
                     // Log duration
                     $endTime = microtime(true);
@@ -155,8 +154,7 @@ class DuplicateDelete implements ShouldQueue
                     }
 
                     // Save error to cache
-                    $timestamp = now()->timestamp;
-                    Redis::zadd(CacheKey::DUPLICATE_DELETE_ERROR, $timestamp, $timestamp);
+                    DuplicateDeleteDelay::logError($this->job->getQueue());
                     throw $e;
                 }
 
