@@ -105,11 +105,11 @@ class DuplicateDelete implements ShouldQueue
                 break;
             }
 
-            // Calculate delay based on recent success/error ratio and delete_list_count
-            $delay = DuplicateDeleteDelay::getDelay($workspace->id, $this->toolDuplicateRequest);
-            if ($delay > 0) {
-                Log::debug('Delaying duplicate delete job by ' . $delay . 'ms (Job ID: ' . $this->job->getJobId() . ', delete_list_count: ' . $this->toolDuplicateRequest->delete_list_count . ')');
-                usleep($delay * 1000); // Convert to microseconds
+            // Calculate delay in seconds based on recent success/error ratio and delete_list_count
+            $delaySeconds = DuplicateDeleteDelay::getDelaySeconds($workspace->id, $this->toolDuplicateRequest);
+            if ($delaySeconds > 0) {
+                Log::debug('Delaying duplicate delete job by ' . $delaySeconds . 's (Job ID: ' . $this->job->getJobId() . ', delete_list_count: ' . $this->toolDuplicateRequest->delete_list_count . ')');
+                sleep($delaySeconds);
             }
 
             try {

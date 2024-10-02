@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 
 class DuplicateDeleteDelay
 {
-    public static function getDelay(int $workspaceId, ToolDuplicateRequest $toolDuplicateRequest): int
+    public static function getDelaySeconds(int $workspaceId, ToolDuplicateRequest $toolDuplicateRequest): int
     {
         $delay = 0;
 
