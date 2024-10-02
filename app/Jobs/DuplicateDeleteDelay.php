@@ -14,10 +14,10 @@ class DuplicateDeleteDelay
     {
         $delay = 0;
 
-        $deleteListCountMin = Redis::get(CacheKey::DUPLICATE_DELETE_LIST_COUNT_MIN) ?? 500;
-        $deleteListCountDelay = Redis::get(CacheKey::DUPLICATE_DELETE_LIST_COUNT_DELAY) ?? 5000;
-        $errorLookbackMinutes = Redis::get(CacheKey::DUPLICATE_DELETE_ERROR_LOOKBACK_MINUTES) ?? 10;
-        $errorFoundDelay = Redis::get(CacheKey::DUPLICATE_DELETE_ERROR_DELAY) ?? 10000;
+        $deleteListCountMin = Redis::get(CacheKey::DUPLICATE_DELETE_DELAY_SIZE_MINIMUM) ?? 500;
+        $deleteListCountDelay = Redis::get(CacheKey::DUPLICATE_DELETE_DELAY_SIZE_DELAY) ?? 5000;
+        $errorLookbackMinutes = Redis::get(CacheKey::DUPLICATE_DELETE_DELAY_ERROR_LOOKBACK_MINUTES) ?? 10;
+        $errorFoundDelay = Redis::get(CacheKey::DUPLICATE_DELETE_DELAY_ERROR_DELAY) ?? 10000;
 
         if ($toolDuplicateRequest->delete_list_count > $deleteListCountMin) {
             $delay = max($delay, $deleteListCountDelay);
