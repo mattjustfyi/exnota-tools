@@ -18,6 +18,7 @@ class DuplicateDeleteDelay
         $deleteListCountDelaySeconds = Redis::get(CacheKey::DUPLICATE_DELETE_DELAY_SIZE_DELAY_SECONDS) ?? 5;
         $errorLookbackMinutes = Redis::get(CacheKey::DUPLICATE_DELETE_DELAY_ERROR_LOOKBACK_MINUTES) ?? 10;
         $errorFoundDelaySeconds = Redis::get(CacheKey::DUPLICATE_DELETE_DELAY_ERROR_DELAY_SECONDS) ?? 10;
+        $errorLookbackCount = Redis::get(CacheKey::DUPLICATE_DELETE_DELAY_ERROR_LOOKBACK_COUNT) ?? 3;
 
         if ($toolDuplicateRequest->delete_list_count > $deleteListCountMin) {
             $delay = max($delay, $deleteListCountDelaySeconds);
@@ -28,7 +29,7 @@ class DuplicateDeleteDelay
 
         $errorCount = Redis::zcount(CacheKey::getDuplicateDeleteErrorKey($workspaceId), $lookbackTime, '+inf');
 
-        if ($errorCount >= 1) {
+        if ($errorCount >= $errorLookbackCount) {
             $delay = max($delay, $errorFoundDelaySeconds);
         }
 
