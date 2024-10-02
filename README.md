@@ -349,6 +349,8 @@ Reference: <https://laravel.com/docs/11.x/csrf#csrf-excluding-uris>
     dokku redis:create exnota-tools-redis --image-version 7.4.0 --password <REDIS_PASSWORD>
     dokku redis:link exnota-tools-redis exnota-tools
     dokku config:set exnota-tools --no-restart CACHE_STORE=redis REDIS_HOST=dokku-redis-exnota-tools-redis REDIS_PASSWORD=<REDIS_PASSWORD>
+    # Expose to outside
+    dokku redis:expose exnota-tools-redis 127.0.0.1:6379
     ```
 
 3. Add Dokku as git remote
