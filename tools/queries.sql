@@ -6,7 +6,6 @@ SELECT id, created_at, updated_at, notion_object_id,
   search_started_at, search_ended_at, delete_started_at, delete_ended_at,
 --  delete_results, delete_list,
   delete_batch_id,
---  delete_retry_list,
   search_batch_id,
 --  search_results,
   search_failed, delete_cancelled
