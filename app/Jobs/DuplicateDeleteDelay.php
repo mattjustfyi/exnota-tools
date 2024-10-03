@@ -14,6 +14,8 @@ class DuplicateDeleteDelay
     {
         $delay = 0;
 
+        // These are saved as strings, but with PHP's numeric strings, it will
+        // automatically convert them to integers when used in a numeric context.
         $deleteListCountMin = Redis::get(CacheKey::DUPLICATE_DELETE_DELAY_SIZE_MINIMUM_COUNT) ?? 500;
         $deleteListCountDelaySeconds = Redis::get(CacheKey::DUPLICATE_DELETE_DELAY_SIZE_DELAY_SECONDS) ?? 5;
         $errorLookbackMinutes = Redis::get(CacheKey::DUPLICATE_DELETE_DELAY_ERROR_LOOKBACK_MINUTES) ?? 10;
