@@ -48,7 +48,6 @@ class ToolDuplicateRequest extends Model
         'duplicates',
         'delete_results',
         'delete_list',
-        'delete_retry_list',
         'search_results',
     ];
 
@@ -155,10 +154,6 @@ class ToolDuplicateRequest extends Model
         return $this->getJsonArrayAttribute('delete_list');
     }
 
-    protected function deleteRetryList(): Attribute
-    {
-        return $this->getJsonArrayAttribute('delete_retry_list');
-    }
 
     private function getJsonArrayAttribute(string $attributeName)
     {
