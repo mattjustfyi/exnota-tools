@@ -94,6 +94,30 @@ const notionObjectTitle = computed(() => {
     return truncateTitle(props.toolDuplicateRequest.notion_object?.name || '');
 });
 
+const formatSearchedAt = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInHours = (now - date) / (1000 * 60 * 60);
+
+    if (diffInHours < 24) {
+        if (diffInHours < 1) {
+            const minutes = Math.floor((now - date) / (1000 * 60));
+            return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
+        } else {
+            const hours = Math.floor(diffInHours);
+            return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+        }
+    } else {
+        return date.toLocaleString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric', 
+            hour: '2-digit', 
+            minute: '2-digit'
+        });
+    }
+};
+
 const refreshInterval = ref(null);
 
 const deleteInProgress = computed(() => {
@@ -245,13 +269,7 @@ onUnmounted(() => {
                             </div>
                             <div>
                                 <p class="text-sm text-gray-500">Searched At</p>
-                                <p class="text-2xl font-bold text-primary">{{ new Date(toolDuplicateRequest.search_started_at).toLocaleString('en-US', { 
-                                    year: 'numeric', 
-                                    month: 'short', 
-                                    day: 'numeric', 
-                                    hour: '2-digit', 
-                                    minute: '2-digit'
-                                }) }}</p>
+                                <p class="text-2xl font-bold text-primary">{{ formatSearchedAt(toolDuplicateRequest.search_started_at) }}</p>
                             </div>
                         </div>
 
