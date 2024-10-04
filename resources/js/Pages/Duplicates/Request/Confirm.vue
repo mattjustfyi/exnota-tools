@@ -118,6 +118,19 @@ const formatSearchedAt = (dateString) => {
     }
 };
 
+const formatExactDateTime = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        timeZoneName: 'short'
+    });
+};
+
 const refreshInterval = ref(null);
 
 const deleteInProgress = computed(() => {
@@ -269,7 +282,9 @@ onUnmounted(() => {
                             </div>
                             <div>
                                 <p class="text-sm text-gray-500">Searched At</p>
-                                <p class="text-2xl font-bold text-primary">{{ formatSearchedAt(toolDuplicateRequest.search_started_at) }}</p>
+                                <p class="text-2xl font-bold text-primary" :title="formatExactDateTime(toolDuplicateRequest.search_started_at)">
+                                    {{ formatSearchedAt(toolDuplicateRequest.search_started_at) }}
+                                </p>
                             </div>
                         </div>
 
