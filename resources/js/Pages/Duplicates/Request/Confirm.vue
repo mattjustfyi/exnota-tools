@@ -287,8 +287,6 @@ onUnmounted(() => {
                             </p>
                         </div>
 
-                        <hr class="border-t border-gray-300 my-6">
-
                         <!-- Search Results Section -->
                         <div class="mb-6">
                             <div class="flex justify-end mb-4">
