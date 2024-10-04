@@ -182,22 +182,33 @@ onUnmounted(() => {
 
         <Head title="Confirm Duplicate Request" />
 
-        <div class="py-12">
+        <div class="py-12 bg-background">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
+                <div class="bg-background overflow-hidden p-6">
+                    <!-- Database Overview Section -->
+                    <div class="mb-8 bg-secondary rounded-xl p-6 shadow-md">
+                        <h3 class="text-xl font-bold text-primary mb-4">Database Overview</h3>
+                        <div class="flex items-center justify-between">
+                            <p class="text-primary font-medium">View your database progress</p>
+                            <div class="w-1/2">
+                                <ProgressBar :progress="76" />
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Database Section -->
-                    <div class="mb-8 pb-8 border-b border-gray-200">
+                    <div class="mb-8 bg-secondary rounded-xl p-6 shadow-md">
                         <div class="flex justify-between items-center">
                             <div>
-                                <h3 class="text-lg font-medium text-gray-900">Database Information</h3>
-                                <p class="mt-2 text-gray-800 font-semibold">
+                                <h3 class="text-xl font-bold text-primary mb-2">Database Information</h3>
+                                <p class="text-primary font-medium">
                                     Database: {{ notionObjectTitle }}
                                 </p>
                             </div>
                             <button @click="searchAgain"
                                 :disabled="isSearchButtonDisabled || searchInProgress || deleteInProgress" :class="[
-                                    'px-4 py-2 text-white rounded',
-                                    isSearchButtonDisabled || searchInProgress || deleteInProgress ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
+                                    'px-4 py-2 text-secondary rounded-lg',
+                                    isSearchButtonDisabled || searchInProgress || deleteInProgress ? 'bg-accent cursor-not-allowed' : 'bg-primary hover:bg-accent'
                                 ]">
                                 Search again
                             </button>
@@ -205,16 +216,16 @@ onUnmounted(() => {
                     </div>
 
                     <!-- Results Section -->
-                    <div>
+                    <div class="bg-secondary rounded-xl p-6 shadow-md">
                         <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-lg font-medium text-gray-900">Search Results</h3>
+                            <h3 class="text-xl font-bold text-primary">Search Results</h3>
                             <button v-if="!searchInProgress.value && duplicatesCount > 0"
                                 @click="deleteInProgress ? cancelDeletion() : startDeletion()"
                                 :disabled="toolDuplicateRequest.delete_ended_at !== null || toolDuplicateRequest.delete_cancelled"
                                 :class="[
-                                    'px-4 py-2 text-white rounded',
-                                    toolDuplicateRequest.delete_ended_at !== null || toolDuplicateRequest.delete_cancelled ? 'bg-gray-400 cursor-not-allowed' :
-                                        deleteInProgress ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-red-500 hover:bg-red-600'
+                                    'px-4 py-2 text-secondary rounded-lg',
+                                    toolDuplicateRequest.delete_ended_at !== null || toolDuplicateRequest.delete_cancelled ? 'bg-accent cursor-not-allowed' :
+                                        deleteInProgress ? 'bg-accent hover:bg-primary' : 'bg-primary hover:bg-accent'
                                 ]">
                                 {{
                                     deleteInProgress ? 'Cancel Deletion' :
@@ -224,21 +235,21 @@ onUnmounted(() => {
                                 }}
                             </button>
                         </div>
-                        <p class="mt-2 text-gray-700">
+                        <p class="mt-2 text-primary">
                             Total Rows: {{ searchResultsCount }}
                         </p>
-                        <p class="mt-2 text-gray-700">
+                        <p class="mt-2 text-primary">
                             Total Duplicates: {{ duplicatesCount }}
                         </p>
-                        <p class="mt-2 text-gray-700">
+                        <p class="mt-2 text-primary">
                             Total Deleted: {{ deleteResultsCount }}
                         </p>
-                        <p class="mt-2 text-gray-600">
+                        <p class="mt-2 text-accent">
                             Searched At: {{ new Date(toolDuplicateRequest.search_started_at).toLocaleString() }}
                         </p>
 
                         <div class="mt-8">
-                            <h4 class="text-lg font-medium text-gray-900">Search Results:</h4>
+                            <h4 class="text-lg font-bold text-primary">Search Results:</h4>
                             <div v-if="props.toolDuplicateRequest.search_failed"
                                 class="mt-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
                                 <p class="font-bold">Error</p>

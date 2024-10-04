@@ -23,6 +23,9 @@ export default {
                 'accent': '#808080',
                 'background': '#F5F5F5',
             },
+            borderRadius: {
+                'xl': '1rem',
+            },
         },
     },
 
