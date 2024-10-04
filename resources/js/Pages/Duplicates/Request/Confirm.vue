@@ -264,8 +264,8 @@ onUnmounted(() => {
                         </div>
                     </div>
 
-                    <!-- Results Section -->
-                    <div class="bg-secondary rounded-xl p-6 shadow-md">
+                    <!-- Search Results Section -->
+                    <div class="bg-secondary rounded-xl p-6 shadow-md mb-6">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-xl font-bold text-primary">Search Results</h3>
                             <button v-if="uiState !== 'SEARCH_IN_PROGRESS' && duplicatesCount > 0"
@@ -284,7 +284,7 @@ onUnmounted(() => {
                                 }}
                             </button>
                         </div>
-                        <div class="grid grid-cols-4 gap-4 mt-4">
+                        <div class="grid grid-cols-3 gap-4 mt-4">
                             <div>
                                 <p class="text-sm text-gray-500">Total Rows</p>
                                 <p class="text-2xl font-bold text-primary">{{ searchResultsCount }}</p>
@@ -292,10 +292,6 @@ onUnmounted(() => {
                             <div>
                                 <p class="text-sm text-gray-500">Total Duplicates</p>
                                 <p class="text-2xl font-bold text-primary">{{ duplicatesCount }}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Total Deleted</p>
-                                <p class="text-2xl font-bold text-primary">{{ deleteResultsCount }}</p>
                             </div>
                             <div class="relative">
                                 <p class="text-sm text-gray-500">Searched At</p>
@@ -321,15 +317,25 @@ onUnmounted(() => {
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="mt-8">
+                    <!-- Deletion Results Section -->
+                    <div class="bg-secondary rounded-xl p-6 shadow-md">
+                        <h3 class="text-xl font-bold text-primary mb-4">Deletion Results</h3>
+                        <div class="grid grid-cols-1 gap-4 mt-4">
+                            <div>
+                                <p class="text-sm text-gray-500">Total Deleted</p>
+                                <p class="text-2xl font-bold text-primary">{{ deleteResultsCount }}</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
                             <div v-if="props.toolDuplicateRequest.search_failed"
                                 class="mt-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
                                 <p class="font-bold">Error</p>
-                                <p>Searching failed. Check that Exnota still has access to the database and try again.
-                                </p>
+                                <p>Searching failed. Check that Exnota still has access to the database and try again.</p>
                             </div>
-                            <div v-else-if="uiState === 'SEARCH_IN_PROGRESS'" class="mt-4">
+                            <div v-else-if="uiState === 'SEARCH_IN_PROGRESS'">
                                 <div v-if="searchStatus === 'queued'" class="text-center text-gray-600">
                                     Search queued
                                 </div>
@@ -343,29 +349,25 @@ onUnmounted(() => {
                                     </p>
                                 </div>
                             </div>
-                            <div v-else-if="uiState === 'SEARCH_COMPLETE'" class="mt-4">
+                            <div v-else-if="uiState === 'SEARCH_COMPLETE'">
                                 <ul v-if="duplicatesSample.length" class="space-y-4">
                                     <li v-for="(result, index) in duplicatesSample" :key="index" class="border-b pb-4">
                                         <p class="font-semibold">{{ truncateTitle(result.keep.title || '') }}</p>
-                                        <p class="text-sm text-gray-600">Number of duplicates to delete: {{
-                                            result.delete.length }}</p>
+                                        <p class="text-sm text-gray-600">Number of duplicates to delete: {{ result.delete.length }}</p>
                                     </li>
                                 </ul>
                                 <p v-else class="text-gray-600">No search results available.</p>
                             </div>
-                            <div v-else-if="uiState === 'DELETE_IN_PROGRESS'" class="mt-4">
+                            <div v-else-if="uiState === 'DELETE_IN_PROGRESS'">
                                 <ProgressBar :progress="deleteProgress" />
                                 <p v-if="toolDuplicateRequest.delete_started_at" class="mt-2 text-center text-gray-600">
-                                    Deleting duplicates... {{ deletionStatus.deletedItems }} of {{
-                                        deletionStatus.totalItems
-                                    }}
-                                    completed
+                                    Deleting duplicates... {{ deletionStatus.deletedItems }} of {{ deletionStatus.totalItems }} completed
                                 </p>
                                 <p v-else class="mt-2 text-center text-gray-600">
                                     Queued for deletion
                                 </p>
                             </div>
-                            <div v-else-if="uiState === 'DELETE_COMPLETE'" class="mt-4">
+                            <div v-else-if="uiState === 'DELETE_COMPLETE'">
                                 <p v-if="notDeletedCount > 0" class="mt-2 text-gray-600">
                                     {{ notDeletedCount }} pages were not deleted. Search again for more details.
                                 </p>
