@@ -238,58 +238,57 @@ onUnmounted(() => {
                         </p>
 
                         <div class="mt-8">
-                        <h4 class="text-lg font-medium text-gray-900">Search Results:</h4>
-                        <div v-if="props.toolDuplicateRequest.search_failed"
-                            class="mt-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
-                            <p class="font-bold">Error</p>
-                            <p>Searching failed. Check that Exnota still has access to the database and try again.</p>
-                        </div>
-                        <div v-else-if="deleteInProgress" class="mt-4">
-                            <ProgressBar :progress="deleteProgress" />
-                            <p v-if="toolDuplicateRequest.delete_started_at" class="mt-2 text-center text-gray-600">
-                                Deleting duplicates... {{ deletionStatus.deletedItems }} of {{ deletionStatus.totalItems
-                                }}
-                                completed
-                            </p>
-                            <p v-else class="mt-2 text-center text-gray-600">
-                                Queued
-                            </p>
-                        </div>
-                        <template v-else-if="searchInProgress">
-                            <div v-if="searchStatus === 'queued'" class="mt-4 text-center text-gray-600">
-                                Search queued
-                            </div>
-                            <div v-else-if="searchStatus === 'in_progress'" class="mt-4">
-                                <ProgressBar :progress="searchProgress" />
-                                <p class="mt-2 text-center text-gray-600">
-                                    Searching for duplicates...
-                                    <template v-if="searchResultsCount > 0">
-                                        (scanned {{ searchResultsCount }} rows so far)
-                                    </template>
+                            <h4 class="text-lg font-medium text-gray-900">Search Results:</h4>
+                            <div v-if="props.toolDuplicateRequest.search_failed"
+                                class="mt-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
+                                <p class="font-bold">Error</p>
+                                <p>Searching failed. Check that Exnota still has access to the database and try again.
                                 </p>
                             </div>
-                        </template>
-                        <template v-else-if="deletionFinished">
-                            <h4 class="text-lg font-medium text-gray-900 mt-4">Pages that could not be deleted:</h4>
-                            <p v-if="notDeletedCount > 0" class="mt-4 text-gray-600">
-                                {{ notDeletedCount }} pages were not deleted. Search again for more details.
-                            </p>
-                            <p v-else class="mt-4 text-gray-600">All pages were successfully deleted.</p>
-                        </template>
-                        <template v-else>
-                            <ul v-if="duplicatesSample.length" class="mt-4 space-y-4">
-                                <li v-for="(result, index) in duplicatesSample" :key="index" class="border-b pb-4">
-                                    <p class="font-semibold">{{ truncateTitle(result.keep.title || '') }}</p>
-                                    <p class="text-sm text-gray-600">Number of duplicates to delete: {{
-                                        result.delete.length }}</p>
-                                </li>
-                            </ul>
-                            <p v-else class="mt-4 text-gray-600">No search results available.</p>
-                        </template>
-                    </div>
-                </div>
-            </div>
-        </div>
+                            <div v-else-if="deleteInProgress" class="mt-4">
+                                <ProgressBar :progress="deleteProgress" />
+                                <p v-if="toolDuplicateRequest.delete_started_at" class="mt-2 text-center text-gray-600">
+                                    Deleting duplicates... {{ deletionStatus.deletedItems }} of {{
+                                        deletionStatus.totalItems
+                                    }}
+                                    completed
+                                </p>
+                                <p v-else class="mt-2 text-center text-gray-600">
+                                    Queued
+                                </p>
+                            </div>
+                            <template v-else-if="searchInProgress">
+                                <div v-if="searchStatus === 'queued'" class="mt-4 text-center text-gray-600">
+                                    Search queued
+                                </div>
+                                <div v-else-if="searchStatus === 'in_progress'" class="mt-4">
+                                    <ProgressBar :progress="searchProgress" />
+                                    <p class="mt-2 text-center text-gray-600">
+                                        Searching for duplicates...
+                                        <template v-if="searchResultsCount > 0">
+                                            (scanned {{ searchResultsCount }} rows so far)
+                                        </template>
+                                    </p>
+                                </div>
+                            </template>
+                            <template v-else-if="deletionFinished">
+                                <h4 class="text-lg font-medium text-gray-900 mt-4">Pages that could not be deleted:</h4>
+                                <p v-if="notDeletedCount > 0" class="mt-4 text-gray-600">
+                                    {{ notDeletedCount }} pages were not deleted. Search again for more details.
+                                </p>
+                                <p v-else class="mt-4 text-gray-600">All pages were successfully deleted.</p>
+                            </template>
+                            <template v-else>
+                                <ul v-if="duplicatesSample.length" class="mt-4 space-y-4">
+                                    <li v-for="(result, index) in duplicatesSample" :key="index" class="border-b pb-4">
+                                        <p class="font-semibold">{{ truncateTitle(result.keep.title || '') }}</p>
+                                        <p class="text-sm text-gray-600">Number of duplicates to delete: {{
+                                            result.delete.length }}</p>
+                                    </li>
+                                </ul>
+                                <p v-else class="mt-4 text-gray-600">No search results available.</p>
+                            </template>
+                        </div>
                     </div>
                 </div>
             </div>
