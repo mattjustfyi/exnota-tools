@@ -40,13 +40,11 @@ const logout = () => {
                     <div class="flex justify-between h-16">
                         <div class="flex items-center">
                             <!-- Logo -->
-                            <div class="shrink-0 flex items-center">
-                                <Link :href="route('dashboard')" class="text-lg font-medium text-gray-600">
+                            <div class="shrink-0 flex flex-col items-start">
+                                <Link :href="route('dashboard')" class="text-sm font-medium text-gray-600">
                                     Exnota Tools
                                 </Link>
-                            </div>
-                            <div class="ml-6">
-                                <Link :href="route('dashboard')" class="text-2xl font-bold text-primary">
+                                <Link :href="route('dashboard')" class="text-xl font-bold text-primary mt-1">
                                     Delete Duplicates
                                 </Link>
                             </div>
