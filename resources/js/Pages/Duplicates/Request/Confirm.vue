@@ -268,20 +268,15 @@ onUnmounted(() => {
                     <div class="bg-secondary rounded-xl p-6 shadow-md mb-6">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-xl font-bold text-primary">Search Results</h3>
-                            <button v-if="uiState !== 'SEARCH_IN_PROGRESS' && duplicatesCount > 0"
+                            <button v-if="uiState !== 'SEARCH_IN_PROGRESS' && duplicatesCount > 0 && uiState !== 'DELETE_COMPLETE'"
                                 @click="uiState === 'DELETE_IN_PROGRESS' ? cancelDeletion() : startDeletion()"
-                                :disabled="toolDuplicateRequest.delete_ended_at !== null || toolDuplicateRequest.delete_cancelled"
+                                :disabled="toolDuplicateRequest.delete_cancelled"
                                 :class="[
                                     'px-4 py-2 text-secondary rounded-lg',
-                                    toolDuplicateRequest.delete_ended_at !== null || toolDuplicateRequest.delete_cancelled ? 'bg-accent cursor-not-allowed' :
+                                    toolDuplicateRequest.delete_cancelled ? 'bg-accent cursor-not-allowed' :
                                         uiState === 'DELETE_IN_PROGRESS' ? 'bg-accent hover:bg-primary' : 'bg-primary hover:bg-accent'
                                 ]">
-                                {{
-                                    uiState === 'DELETE_IN_PROGRESS' ? 'Cancel Deletion' :
-                                        toolDuplicateRequest.delete_cancelled ? 'Delete Cancelled' :
-                                            toolDuplicateRequest.delete_ended_at !== null ? 'Deletion Completed' :
-                                                'Delete Duplicates'
-                                }}
+                                {{ uiState === 'DELETE_IN_PROGRESS' ? 'Cancel Deletion' : 'Delete Duplicates' }}
                             </button>
                         </div>
                         <div class="grid grid-cols-3 gap-4 mt-4">
