@@ -230,15 +230,20 @@ onUnmounted(() => {
                                 }}
                             </button>
                         </div>
-                        <p class="mt-2 text-primary">
-                            Total Rows: {{ searchResultsCount }}
-                        </p>
-                        <p class="mt-2 text-primary">
-                            Total Duplicates: {{ duplicatesCount }}
-                        </p>
-                        <p class="mt-2 text-primary">
-                            Total Deleted: {{ deleteResultsCount }}
-                        </p>
+                        <div class="grid grid-cols-3 gap-4 mt-4">
+                            <div>
+                                <p class="text-sm text-gray-500">Total Rows</p>
+                                <p class="text-2xl font-bold text-primary">{{ searchResultsCount }}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Total Duplicates</p>
+                                <p class="text-2xl font-bold text-primary">{{ duplicatesCount }}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Total Deleted</p>
+                                <p class="text-2xl font-bold text-primary">{{ deleteResultsCount }}</p>
+                            </div>
+                        </div>
                         <p class="mt-2 text-accent">
                             Searched At: {{ new Date(toolDuplicateRequest.search_started_at).toLocaleString() }}
                         </p>
