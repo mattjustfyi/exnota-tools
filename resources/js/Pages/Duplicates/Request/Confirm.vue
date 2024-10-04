@@ -13,6 +13,16 @@ const props = defineProps({
     },
 });
 
+const workspaceId = computed(() => {
+    return props.toolDuplicateRequest.notion_object?.workspace_id;
+});
+
+const goToWorkspace = () => {
+    if (workspaceId.value) {
+        router.visit(`/duplicates/workspace/${workspaceId.value}`);
+    }
+};
+
 const searchResultsCount = computed(() => {
     return props.toolDuplicateRequest.search_results_count ?? 0;
 });
@@ -238,6 +248,13 @@ onUnmounted(() => {
         <div class="py-12 bg-background">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-background overflow-hidden p-6">
+                    <!-- Back to Workspace Link -->
+                    <div class="mb-4">
+                        <a @click="goToWorkspace" class="text-primary hover:text-accent cursor-pointer">
+                            &larr; Back to Workspace
+                        </a>
+                    </div>
+
                     <!-- Database Section -->
                     <div class="mb-8 bg-secondary rounded-xl p-6 shadow-md">
                         <div class="flex justify-between items-center">
