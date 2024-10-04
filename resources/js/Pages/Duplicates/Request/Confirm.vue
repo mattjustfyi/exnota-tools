@@ -342,10 +342,10 @@ onUnmounted(() => {
                                     <table class="w-full divide-y divide-gray-200">
                                         <thead class="bg-gray-50">
                                             <tr>
-                                                <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-4/5">
+                                                <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-5/6">
                                                     Page Title
                                                 </th>
-                                                <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">
+                                                <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
                                                     Copies
                                                 </th>
                                             </tr>
@@ -430,7 +430,7 @@ onUnmounted(() => {
 
 .truncate-title {
     display: inline-block;
-    max-width: 300px;
+    max-width: 100%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
