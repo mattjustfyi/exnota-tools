@@ -266,8 +266,7 @@ onUnmounted(() => {
 
                     <!-- Search Results Section -->
                     <div class="bg-secondary rounded-xl p-6 shadow-md mb-6">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-xl font-bold text-primary">Search Results</h3>
+                        <div class="flex justify-end mb-4">
                             <button v-if="uiState !== 'SEARCH_IN_PROGRESS' && duplicatesCount > 0 && uiState !== 'DELETE_COMPLETE'"
                                 @click="uiState === 'DELETE_IN_PROGRESS' ? cancelDeletion() : startDeletion()"
                                 :disabled="toolDuplicateRequest.delete_cancelled"
