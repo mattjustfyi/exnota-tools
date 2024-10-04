@@ -184,37 +184,45 @@ onUnmounted(() => {
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <!-- Database Section -->
+                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6 mb-6">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-900">Database Information</h3>
+                            <p class="mt-2 text-gray-800 font-semibold">
+                                Database: {{ notionObjectTitle }}
+                            </p>
+                        </div>
+                        <button @click="searchAgain"
+                            :disabled="isSearchButtonDisabled || searchInProgress || deleteInProgress" :class="[
+                                'px-4 py-2 text-white rounded',
+                                isSearchButtonDisabled || searchInProgress || deleteInProgress ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
+                            ]">
+                            Search again
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-medium text-gray-900">Search Results</h3>
-                        <div>
-                            <button @click="searchAgain"
-                                :disabled="isSearchButtonDisabled || searchInProgress || deleteInProgress" :class="[
-                                    'px-4 py-2 text-white rounded mr-2',
-                                    isSearchButtonDisabled || searchInProgress || deleteInProgress ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
-                                ]">
-                                Search again
-                            </button>
-                            <button v-if="!searchInProgress.value && duplicatesCount > 0"
-                                @click="deleteInProgress ? cancelDeletion() : startDeletion()"
-                                :disabled="toolDuplicateRequest.delete_ended_at !== null || toolDuplicateRequest.delete_cancelled"
-                                :class="[
-                                    'px-4 py-2 text-white rounded',
-                                    toolDuplicateRequest.delete_ended_at !== null || toolDuplicateRequest.delete_cancelled ? 'bg-gray-400 cursor-not-allowed' :
-                                        deleteInProgress ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-red-500 hover:bg-red-600'
-                                ]">
-                                {{
-                                    deleteInProgress ? 'Cancel Deletion' :
-                                        toolDuplicateRequest.delete_cancelled ? 'Delete Cancelled' :
-                                            toolDuplicateRequest.delete_ended_at !== null ? 'Deletion Completed' :
-                                                'Delete Duplicates'
-                                }}
-                            </button>
-                        </div>
+                        <button v-if="!searchInProgress.value && duplicatesCount > 0"
+                            @click="deleteInProgress ? cancelDeletion() : startDeletion()"
+                            :disabled="toolDuplicateRequest.delete_ended_at !== null || toolDuplicateRequest.delete_cancelled"
+                            :class="[
+                                'px-4 py-2 text-white rounded',
+                                toolDuplicateRequest.delete_ended_at !== null || toolDuplicateRequest.delete_cancelled ? 'bg-gray-400 cursor-not-allowed' :
+                                    deleteInProgress ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-red-500 hover:bg-red-600'
+                            ]">
+                            {{
+                                deleteInProgress ? 'Cancel Deletion' :
+                                    toolDuplicateRequest.delete_cancelled ? 'Delete Cancelled' :
+                                        toolDuplicateRequest.delete_ended_at !== null ? 'Deletion Completed' :
+                                            'Delete Duplicates'
+                            }}
+                        </button>
                     </div>
-                    <p class="mt-4 text-gray-800 font-semibold">
-                        Database: {{ notionObjectTitle }}
-                    </p>
                     <p class="mt-2 text-gray-700">
                         Total Rows: {{ searchResultsCount }}
                     </p>
