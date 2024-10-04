@@ -254,9 +254,9 @@ onUnmounted(() => {
                         <div class="flex justify-between items-center">
                             <h3 class="text-xl font-bold text-primary">Database: {{ notionObjectTitle }}</h3>
                             <button @click="searchAgain"
-                                :disabled="isSearchButtonDisabled || searchInProgress || deleteInProgress" :class="[
+                                :disabled="isSearchButtonDisabled || uiState === 'SEARCH_IN_PROGRESS' || uiState === 'DELETE_IN_PROGRESS'" :class="[
                                     'px-4 py-2 text-secondary rounded-lg',
-                                    isSearchButtonDisabled || searchInProgress || deleteInProgress ? 'bg-accent cursor-not-allowed' : 'bg-primary hover:bg-accent'
+                                    isSearchButtonDisabled || uiState === 'SEARCH_IN_PROGRESS' || uiState === 'DELETE_IN_PROGRESS' ? 'bg-accent cursor-not-allowed' : 'bg-primary hover:bg-accent'
                                 ]">
                                 Search again
                             </button>
@@ -267,16 +267,16 @@ onUnmounted(() => {
                     <div class="bg-secondary rounded-xl p-6 shadow-md">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-xl font-bold text-primary">Search Results</h3>
-                            <button v-if="!searchInProgress.value && duplicatesCount > 0"
-                                @click="deleteInProgress ? cancelDeletion() : startDeletion()"
+                            <button v-if="uiState !== 'SEARCH_IN_PROGRESS' && duplicatesCount > 0"
+                                @click="uiState === 'DELETE_IN_PROGRESS' ? cancelDeletion() : startDeletion()"
                                 :disabled="toolDuplicateRequest.delete_ended_at !== null || toolDuplicateRequest.delete_cancelled"
                                 :class="[
                                     'px-4 py-2 text-secondary rounded-lg',
                                     toolDuplicateRequest.delete_ended_at !== null || toolDuplicateRequest.delete_cancelled ? 'bg-accent cursor-not-allowed' :
-                                        deleteInProgress ? 'bg-accent hover:bg-primary' : 'bg-primary hover:bg-accent'
+                                        uiState === 'DELETE_IN_PROGRESS' ? 'bg-accent hover:bg-primary' : 'bg-primary hover:bg-accent'
                                 ]">
                                 {{
-                                    deleteInProgress ? 'Cancel Deletion' :
+                                    uiState === 'DELETE_IN_PROGRESS' ? 'Cancel Deletion' :
                                         toolDuplicateRequest.delete_cancelled ? 'Delete Cancelled' :
                                             toolDuplicateRequest.delete_ended_at !== null ? 'Deletion Completed' :
                                                 'Delete Duplicates'
