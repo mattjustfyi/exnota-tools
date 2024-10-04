@@ -343,10 +343,9 @@ onUnmounted(() => {
                                 <div v-if="duplicatesSample.length" class="space-y-2">
                                     <div v-for="(result, index) in duplicatesSample" :key="index"
                                         class="bg-gray-100 p-3 rounded">
-                                        <a :href="result.keep.url" target="_blank"
-                                            class="text-primary hover:text-accent font-medium">
+                                        <p class="text-primary font-medium">
                                             {{ truncateTitle(result.keep.title || '') }}
-                                        </a>
+                                        </p>
                                         <p class="text-sm text-gray-500 mt-1">
                                             Copies: {{ result.delete.length + 1 }}
                                         </p>
