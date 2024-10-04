@@ -303,13 +303,6 @@ onUnmounted(() => {
                     <!-- Deletion Results Section -->
                     <div class="bg-secondary rounded-xl p-6 shadow-md">
                         <h3 class="text-xl font-bold text-primary mb-4">Deletion Results</h3>
-                        <div class="grid grid-cols-1 gap-4 mt-4">
-                            <div>
-                                <p class="text-sm text-gray-500">Total Deleted</p>
-                                <p class="text-2xl font-bold text-primary">{{ deleteResultsCount }}</p>
-                            </div>
-                        </div>
-
                         <div class="mt-4">
                             <div v-if="props.toolDuplicateRequest.search_failed"
                                 class="mt-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
@@ -349,10 +342,12 @@ onUnmounted(() => {
                                 </p>
                             </div>
                             <div v-else-if="uiState === 'DELETE_COMPLETE'">
-                                <p v-if="notDeletedCount > 0" class="mt-2 text-gray-600">
-                                    {{ notDeletedCount }} pages were not deleted. Search again for more details.
+                                <p v-if="notDeletedCount > 0" class="mt-2 text-center text-xl font-bold text-primary">
+                                    Deleted {{ deleteResultsCount }} duplicates. Could not delete {{ notDeletedCount }} others.
                                 </p>
-                                <p v-else class="mt-2 text-gray-600">All pages were successfully deleted.</p>
+                                <p v-else class="mt-2 text-center text-xl font-bold text-primary">
+                                    Success! Deleted all {{ deleteResultsCount }} duplicates.
+                                </p>
                             </div>
                         </div>
                     </div>
