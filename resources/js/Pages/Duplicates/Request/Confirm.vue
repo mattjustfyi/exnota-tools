@@ -259,7 +259,7 @@ onUnmounted(() => {
                         <!-- Database Section -->
                         <div class="mb-6">
                             <div class="flex justify-between items-center mb-2">
-                                <h3 class="text-xl font-bold text-primary">Database: {{ notionObjectTitle }}</h3>
+                                <h3 class="text-xl font-bold text-primary">{{ notionObjectTitle }}</h3>
                                 <button @click="searchAgain"
                                     :disabled="isSearchButtonDisabled || uiState === 'SEARCH_IN_PROGRESS' || uiState === 'DELETE_IN_PROGRESS'"
                                     :class="[
@@ -269,7 +269,8 @@ onUnmounted(() => {
                                     Search again
                                 </button>
                             </div>
-                            <p class="text-sm text-gray-400">Searched at: {{ formatSearchedAt(toolDuplicateRequest.search_started_at) }}
+                            <p class="text-sm text-gray-400">Searched at: {{
+                                formatSearchedAt(toolDuplicateRequest.search_started_at) }}
                                 <span @click="toggleTooltip"
                                     class="cursor-pointer text-gray-500 hover:text-gray-700 ml-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline" viewBox="0 0 20 20"
@@ -342,10 +343,12 @@ onUnmounted(() => {
                                     <table class="w-full divide-y divide-gray-200">
                                         <thead class="bg-gray-50">
                                             <tr>
-                                                <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-5/6">
+                                                <th scope="col"
+                                                    class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-5/6">
                                                     Page Title
                                                 </th>
-                                                <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
+                                                <th scope="col"
+                                                    class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
                                                     Copies
                                                 </th>
                                             </tr>
@@ -353,7 +356,8 @@ onUnmounted(() => {
                                         <tbody class="bg-white divide-y divide-gray-200">
                                             <tr v-for="(result, index) in duplicatesSample" :key="index">
                                                 <td class="px-3 py-2 text-sm font-medium text-gray-900">
-                                                    <a :href="result.keep.url" target="_blank" class="text-primary hover:text-accent truncate-title">
+                                                    <a :href="result.keep.url" target="_blank"
+                                                        class="text-primary hover:text-accent truncate-title">
                                                         {{ truncateTitle(result.keep.title || '') }}
                                                     </a>
                                                 </td>
@@ -377,10 +381,13 @@ onUnmounted(() => {
                                 </p>
                             </div>
                             <div v-else-if="uiState === 'DELETE_COMPLETE'">
-                                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-md mb-4">
+                                <div
+                                    class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-md mb-4">
                                     <div class="flex items-center">
-                                        <svg class="h-6 w-6 text-green-500 mr-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                        <svg class="h-6 w-6 text-green-500 mr-4" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M5 13l4 4L19 7" />
                                         </svg>
                                         <div>
                                             <p class="font-bold">
@@ -389,17 +396,23 @@ onUnmounted(() => {
                                         </div>
                                     </div>
                                 </div>
-                                <div v-if="notDeletedCount > 0" class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg shadow-md">
+                                <div v-if="notDeletedCount > 0"
+                                    class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg shadow-md">
                                     <div class="flex items-center">
-                                        <svg class="h-6 w-6 text-yellow-500 mr-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                        <svg class="h-6 w-6 text-yellow-500 mr-4" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                         </svg>
                                         <div>
                                             <p class="font-bold">
                                                 Could not delete {{ notDeletedCount }} duplicates.
                                             </p>
                                             <p class="mt-1 text-sm">
-                                                <a @click="searchAgain" class="text-yellow-700 underline cursor-pointer">Search again</a> to see remaining duplicates.
+                                                <a @click="searchAgain"
+                                                    class="text-yellow-700 underline cursor-pointer">Search again</a> to
+                                                see
+                                                remaining duplicates.
                                             </p>
                                         </div>
                                     </div>
