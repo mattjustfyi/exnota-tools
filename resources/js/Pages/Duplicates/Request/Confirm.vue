@@ -278,7 +278,17 @@ onUnmounted(() => {
                                 {{ uiState === 'DELETE_IN_PROGRESS' ? 'Cancel Deletion' : 'Delete Duplicates' }}
                             </button>
                         </div>
-                        <div class="grid grid-cols-3 gap-4 mt-4">
+                        <p class="text-sm text-gray-400 mb-4">Searched at: {{ formatSearchedAt(toolDuplicateRequest.search_started_at) }}
+                            <span @click="toggleTooltip" class="cursor-pointer text-gray-500 hover:text-gray-700 ml-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                </svg>
+                            </span>
+                            <span ref="tooltip" class="absolute mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-2 text-xs text-gray-700 w-48 z-10 tooltip">
+                                {{ formatExactDateTime(toolDuplicateRequest.search_started_at) }}
+                            </span>
+                        </p>
+                        <div class="grid grid-cols-2 gap-4 mt-4">
                             <div>
                                 <p class="text-sm text-gray-500">Total Rows</p>
                                 <p class="text-2xl font-bold text-primary">{{ searchResultsCount }}</p>
@@ -286,29 +296,6 @@ onUnmounted(() => {
                             <div>
                                 <p class="text-sm text-gray-500">Total Duplicates</p>
                                 <p class="text-2xl font-bold text-primary">{{ duplicatesCount }}</p>
-                            </div>
-                            <div class="relative">
-                                <p class="text-sm text-gray-500">Searched At</p>
-                                <div class="flex items-center">
-                                    <p class="text-2xl font-bold text-primary">
-                                        {{ formatSearchedAt(toolDuplicateRequest.search_started_at) }}
-                                    </p>
-                                    <div class="ml-2 relative">
-                                        <span @click="toggleTooltip"
-                                            class="cursor-pointer text-gray-500 hover:text-gray-700">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
-                                                fill="currentColor">
-                                                <path fill-rule="evenodd"
-                                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                                                    clip-rule="evenodd" />
-                                            </svg>
-                                        </span>
-                                        <div ref="tooltip"
-                                            class="absolute right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-2 text-sm text-gray-700 w-48 z-10 tooltip">
-                                            {{ formatExactDateTime(toolDuplicateRequest.search_started_at) }}
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
