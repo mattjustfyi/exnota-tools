@@ -102,7 +102,7 @@ watch(() => props.toolDuplicateRequest.search_ended_at, (newValue) => {
     }
 });
 
-const truncateTitle = (title, maxLength = 50) => {
+const truncateTitle = (title, maxLength = 30) => {
     if (!title || title.trim() === '') return "(Untitled)";
     if (title.length <= maxLength) return title;
     return title.slice(0, maxLength) + '...';
@@ -340,25 +340,25 @@ onUnmounted(() => {
                             <div v-else-if="uiState === 'SEARCH_COMPLETE'">
                                 <h4 class="text-lg font-semibold mb-3">Sample duplicates</h4>
                                 <div v-if="duplicatesSample.length" class="overflow-x-auto">
-                                    <table class="min-w-full divide-y divide-gray-200">
+                                    <table class="w-full divide-y divide-gray-200">
                                         <thead class="bg-gray-50">
                                             <tr>
-                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                     Page Title
                                                 </th>
-                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Number of Copies
+                                                <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Copies
                                                 </th>
                                             </tr>
                                         </thead>
                                         <tbody class="bg-white divide-y divide-gray-200">
                                             <tr v-for="(result, index) in duplicatesSample" :key="index">
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                    <a :href="result.keep.url" target="_blank" class="text-primary hover:text-accent">
+                                                <td class="px-3 py-2 text-sm font-medium text-gray-900">
+                                                    <a :href="result.keep.url" target="_blank" class="text-primary hover:text-accent truncate block max-w-xs">
                                                         {{ truncateTitle(result.keep.title || '') }}
                                                     </a>
                                                 </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                <td class="px-3 py-2 text-sm text-gray-500">
                                                     {{ result.delete.length + 1 }}
                                                 </td>
                                             </tr>
