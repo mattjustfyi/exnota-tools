@@ -357,7 +357,7 @@ onUnmounted(() => {
                                                     {{ truncateTitle(result.keep.title || '') }}
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    {{ result.delete.length }}
+                                                    {{ result.delete.length + 1 }}
                                                 </td>
                                             </tr>
                                         </tbody>
