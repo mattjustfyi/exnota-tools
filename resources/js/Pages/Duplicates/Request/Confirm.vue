@@ -340,34 +340,16 @@ onUnmounted(() => {
                             </div>
                             <div v-else-if="uiState === 'SEARCH_COMPLETE'">
                                 <h4 class="text-lg font-semibold mb-3">Sample duplicates</h4>
-                                <div v-if="duplicatesSample.length" class="overflow-x-auto">
-                                    <table class="w-full divide-y divide-gray-200">
-                                        <thead class="bg-gray-50">
-                                            <tr>
-                                                <th scope="col"
-                                                    class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-5/6">
-                                                    Page Title
-                                                </th>
-                                                <th scope="col"
-                                                    class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
-                                                    Copies
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="bg-white divide-y divide-gray-200">
-                                            <tr v-for="(result, index) in duplicatesSample" :key="index">
-                                                <td class="px-3 py-2 text-sm font-medium text-gray-900">
-                                                    <a :href="result.keep.url" target="_blank"
-                                                        class="text-primary hover:text-accent truncate-title">
-                                                        {{ truncateTitle(result.keep.title || '') }}
-                                                    </a>
-                                                </td>
-                                                <td class="px-3 py-2 text-sm text-gray-500 whitespace-nowrap">
-                                                    {{ result.delete.length + 1 }}
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                <div v-if="duplicatesSample.length" class="space-y-2">
+                                    <div v-for="(result, index) in duplicatesSample" :key="index" class="bg-gray-100 p-3 rounded">
+                                        <a :href="result.keep.url" target="_blank"
+                                            class="text-primary hover:text-accent font-medium">
+                                            {{ truncateTitle(result.keep.title || '') }}
+                                        </a>
+                                        <p class="text-sm text-gray-500 mt-1">
+                                            Copies: {{ result.delete.length + 1 }}
+                                        </p>
+                                    </div>
                                 </div>
                                 <p v-else class="text-gray-600">No search results available.</p>
                             </div>
@@ -443,7 +425,7 @@ onUnmounted(() => {
 }
 
 .truncate-title {
-    display: inline-block;
+    display: block;
     max-width: 100%;
     white-space: nowrap;
     overflow: hidden;
@@ -456,5 +438,9 @@ onUnmounted(() => {
 
 .flex-shrink-0 {
     flex-shrink: 0;
+}
+
+.space-y-2 > * + * {
+    margin-top: 0.5rem;
 }
 </style>
