@@ -102,10 +102,9 @@ watch(() => props.toolDuplicateRequest.search_ended_at, (newValue) => {
     }
 });
 
-const truncateTitle = (title, maxLength = 30) => {
+const truncateTitle = (title) => {
     if (!title || title.trim() === '') return "(Untitled)";
-    if (title.length <= maxLength) return title;
-    return title.slice(0, maxLength) + '...';
+    return title;
 };
 
 const notionObjectTitle = computed(() => {
@@ -343,10 +342,10 @@ onUnmounted(() => {
                                     <table class="w-full divide-y divide-gray-200">
                                         <thead class="bg-gray-50">
                                             <tr>
-                                                <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-4/5">
                                                     Page Title
                                                 </th>
-                                                <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">
                                                     Copies
                                                 </th>
                                             </tr>
@@ -354,11 +353,11 @@ onUnmounted(() => {
                                         <tbody class="bg-white divide-y divide-gray-200">
                                             <tr v-for="(result, index) in duplicatesSample" :key="index">
                                                 <td class="px-3 py-2 text-sm font-medium text-gray-900">
-                                                    <a :href="result.keep.url" target="_blank" class="text-primary hover:text-accent truncate block max-w-xs">
+                                                    <a :href="result.keep.url" target="_blank" class="text-primary hover:text-accent break-words">
                                                         {{ truncateTitle(result.keep.title || '') }}
                                                     </a>
                                                 </td>
-                                                <td class="px-3 py-2 text-sm text-gray-500">
+                                                <td class="px-3 py-2 text-sm text-gray-500 whitespace-nowrap">
                                                     {{ result.delete.length + 1 }}
                                                 </td>
                                             </tr>
