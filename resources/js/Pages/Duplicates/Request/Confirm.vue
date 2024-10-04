@@ -199,12 +199,7 @@ onUnmounted(() => {
                     <!-- Database Section -->
                     <div class="mb-8 bg-secondary rounded-xl p-6 shadow-md">
                         <div class="flex justify-between items-center">
-                            <div>
-                                <h3 class="text-xl font-bold text-primary mb-2">Database Information</h3>
-                                <p class="text-primary font-medium">
-                                    Database: {{ notionObjectTitle }}
-                                </p>
-                            </div>
+                            <h3 class="text-xl font-bold text-primary">Database: {{ notionObjectTitle }}</h3>
                             <button @click="searchAgain"
                                 :disabled="isSearchButtonDisabled || searchInProgress || deleteInProgress" :class="[
                                     'px-4 py-2 text-secondary rounded-lg',
