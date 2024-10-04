@@ -39,8 +39,16 @@ const duplicatesSample = computed(() => {
 
 console.log('Props received:', props.toolDuplicateRequest);
 
-const searchInProgress = computed(() => {
-    return !props.toolDuplicateRequest.search_ended_at;
+const uiState = computed(() => {
+    if (!props.toolDuplicateRequest.search_ended_at) {
+        return 'SEARCH_IN_PROGRESS';
+    } else if (props.toolDuplicateRequest.delete_batch_id && !props.toolDuplicateRequest.delete_ended_at) {
+        return 'DELETE_IN_PROGRESS';
+    } else if (props.toolDuplicateRequest.delete_batch_id && props.toolDuplicateRequest.delete_ended_at) {
+        return 'DELETE_COMPLETE';
+    } else {
+        return 'SEARCH_COMPLETE';
+    }
 });
 
 const searchStatus = computed(() => {
@@ -149,14 +157,6 @@ onMounted(() => {
     });
 });
 
-const deleteInProgress = computed(() => {
-    return props.toolDuplicateRequest.delete_batch_id && !props.toolDuplicateRequest.delete_ended_at;
-});
-
-const deletionFinished = computed(() => {
-    return props.toolDuplicateRequest.delete_batch_id && props.toolDuplicateRequest.delete_ended_at;
-});
-
 const deleteProgress = computed(() => {
     if (!deleteListCount.value || !deleteResultsCount.value) {
         return 0;
@@ -188,7 +188,7 @@ const cancelDeletion = () => {
 };
 
 const shouldRefresh = computed(() => {
-    return deleteInProgress.value || searchInProgress.value;
+    return uiState.value === 'SEARCH_IN_PROGRESS' || uiState.value === 'DELETE_IN_PROGRESS';
 });
 
 const startPeriodicRefresh = () => {
@@ -324,23 +324,11 @@ onUnmounted(() => {
                                 <p>Searching failed. Check that Exnota still has access to the database and try again.
                                 </p>
                             </div>
-                            <div v-else-if="deleteInProgress" class="mt-4">
-                                <ProgressBar :progress="deleteProgress" />
-                                <p v-if="toolDuplicateRequest.delete_started_at" class="mt-2 text-center text-gray-600">
-                                    Deleting duplicates... {{ deletionStatus.deletedItems }} of {{
-                                        deletionStatus.totalItems
-                                    }}
-                                    completed
-                                </p>
-                                <p v-else class="mt-2 text-center text-gray-600">
-                                    Queued
-                                </p>
-                            </div>
-                            <template v-else-if="searchInProgress">
-                                <div v-if="searchStatus === 'queued'" class="mt-4 text-center text-gray-600">
+                            <div v-else-if="uiState === 'SEARCH_IN_PROGRESS'" class="mt-4">
+                                <div v-if="searchStatus === 'queued'" class="text-center text-gray-600">
                                     Search queued
                                 </div>
-                                <div v-else-if="searchStatus === 'in_progress'" class="mt-4">
+                                <div v-else-if="searchStatus === 'in_progress'">
                                     <ProgressBar :progress="searchProgress" />
                                     <p class="mt-2 text-center text-gray-600">
                                         Searching for duplicates...
@@ -349,24 +337,36 @@ onUnmounted(() => {
                                         </template>
                                     </p>
                                 </div>
-                            </template>
-                            <template v-else-if="deletionFinished">
-                                <h4 class="text-lg font-medium text-gray-900 mt-4">Pages that could not be deleted:</h4>
-                                <p v-if="notDeletedCount > 0" class="mt-4 text-gray-600">
-                                    {{ notDeletedCount }} pages were not deleted. Search again for more details.
-                                </p>
-                                <p v-else class="mt-4 text-gray-600">All pages were successfully deleted.</p>
-                            </template>
-                            <template v-else>
-                                <ul v-if="duplicatesSample.length" class="mt-4 space-y-4">
+                            </div>
+                            <div v-else-if="uiState === 'SEARCH_COMPLETE'" class="mt-4">
+                                <ul v-if="duplicatesSample.length" class="space-y-4">
                                     <li v-for="(result, index) in duplicatesSample" :key="index" class="border-b pb-4">
                                         <p class="font-semibold">{{ truncateTitle(result.keep.title || '') }}</p>
                                         <p class="text-sm text-gray-600">Number of duplicates to delete: {{
                                             result.delete.length }}</p>
                                     </li>
                                 </ul>
-                                <p v-else class="mt-4 text-gray-600">No search results available.</p>
-                            </template>
+                                <p v-else class="text-gray-600">No search results available.</p>
+                            </div>
+                            <div v-else-if="uiState === 'DELETE_IN_PROGRESS'" class="mt-4">
+                                <ProgressBar :progress="deleteProgress" />
+                                <p v-if="toolDuplicateRequest.delete_started_at" class="mt-2 text-center text-gray-600">
+                                    Deleting duplicates... {{ deletionStatus.deletedItems }} of {{
+                                        deletionStatus.totalItems
+                                    }}
+                                    completed
+                                </p>
+                                <p v-else class="mt-2 text-center text-gray-600">
+                                    Queued for deletion
+                                </p>
+                            </div>
+                            <div v-else-if="uiState === 'DELETE_COMPLETE'" class="mt-4">
+                                <h4 class="text-lg font-medium text-gray-900">Pages that could not be deleted:</h4>
+                                <p v-if="notDeletedCount > 0" class="mt-2 text-gray-600">
+                                    {{ notDeletedCount }} pages were not deleted. Search again for more details.
+                                </p>
+                                <p v-else class="mt-2 text-gray-600">All pages were successfully deleted.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
