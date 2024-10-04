@@ -116,11 +116,11 @@ const formatSearchedAt = (dateString) => {
             return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
         }
     } else {
-        return date.toLocaleString('en-US', { 
-            year: 'numeric', 
-            month: 'short', 
-            day: 'numeric', 
-            hour: '2-digit', 
+        return date.toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
             minute: '2-digit'
         });
     }
@@ -254,7 +254,8 @@ onUnmounted(() => {
                         <div class="flex justify-between items-center">
                             <h3 class="text-xl font-bold text-primary">Database: {{ notionObjectTitle }}</h3>
                             <button @click="searchAgain"
-                                :disabled="isSearchButtonDisabled || uiState === 'SEARCH_IN_PROGRESS' || uiState === 'DELETE_IN_PROGRESS'" :class="[
+                                :disabled="isSearchButtonDisabled || uiState === 'SEARCH_IN_PROGRESS' || uiState === 'DELETE_IN_PROGRESS'"
+                                :class="[
                                     'px-4 py-2 text-secondary rounded-lg',
                                     isSearchButtonDisabled || uiState === 'SEARCH_IN_PROGRESS' || uiState === 'DELETE_IN_PROGRESS' ? 'bg-accent cursor-not-allowed' : 'bg-primary hover:bg-accent'
                                 ]">
@@ -303,12 +304,17 @@ onUnmounted(() => {
                                         {{ formatSearchedAt(toolDuplicateRequest.search_started_at) }}
                                     </p>
                                     <div class="ml-2 relative">
-                                        <span @click="toggleTooltip" class="cursor-pointer text-gray-500 hover:text-gray-700">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                        <span @click="toggleTooltip"
+                                            class="cursor-pointer text-gray-500 hover:text-gray-700">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                                fill="currentColor">
+                                                <path fill-rule="evenodd"
+                                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                                    clip-rule="evenodd" />
                                             </svg>
                                         </span>
-                                        <div ref="tooltip" class="absolute right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-2 text-sm text-gray-700 w-48 z-10 tooltip">
+                                        <div ref="tooltip"
+                                            class="absolute right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-2 text-sm text-gray-700 w-48 z-10 tooltip">
                                             {{ formatExactDateTime(toolDuplicateRequest.search_started_at) }}
                                         </div>
                                     </div>
@@ -317,7 +323,6 @@ onUnmounted(() => {
                         </div>
 
                         <div class="mt-8">
-                            <h4 class="text-lg font-bold text-primary">Search Results:</h4>
                             <div v-if="props.toolDuplicateRequest.search_failed"
                                 class="mt-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
                                 <p class="font-bold">Error</p>
@@ -361,7 +366,6 @@ onUnmounted(() => {
                                 </p>
                             </div>
                             <div v-else-if="uiState === 'DELETE_COMPLETE'" class="mt-4">
-                                <h4 class="text-lg font-medium text-gray-900">Pages that could not be deleted:</h4>
                                 <p v-if="notDeletedCount > 0" class="mt-2 text-gray-600">
                                     {{ notDeletedCount }} pages were not deleted. Search again for more details.
                                 </p>
@@ -385,7 +389,7 @@ onUnmounted(() => {
 }
 
 @media (hover: hover) {
-    .cursor-pointer:hover + .tooltip {
+    .cursor-pointer:hover+.tooltip {
         display: block;
     }
 }
