@@ -297,7 +297,7 @@ onUnmounted(() => {
                                         <p class="text-2xl font-bold text-primary">{{ searchResultsCount }}</p>
                                     </div>
                                     <div>
-                                        <p class="text-sm text-gray-500">Total Duplicates</p>
+                                        <p class="text-sm text-gray-500">Duplicate rows</p>
                                         <p class="text-2xl font-bold text-primary">{{ duplicatesCount }}</p>
                                     </div>
                                 </div>
@@ -310,7 +310,8 @@ onUnmounted(() => {
                                             toolDuplicateRequest.delete_cancelled ? 'bg-accent cursor-not-allowed' :
                                                 uiState === 'DELETE_IN_PROGRESS' ? 'bg-accent hover:bg-primary' : 'bg-primary hover:bg-accent'
                                         ]">
-                                        {{ uiState === 'DELETE_IN_PROGRESS' ? 'Cancel Deletion' : `Delete ${duplicatesCount} duplicates` }}
+                                        {{ uiState === 'DELETE_IN_PROGRESS' ? 'Cancel Deletion' : `Delete
+                                        ${duplicatesCount} duplicates` }}
                                     </button>
                                 </div>
                             </div>
@@ -351,9 +352,14 @@ onUnmounted(() => {
                                         </p>
                                         <p class="text-sm text-gray-500 mt-1">
                                             Page to keep: <a :href="result.keep.url" target="_blank"
-                                                class="text-primary hover:text-accent">Open in Notion <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                            </svg></a>
+                                                class="text-primary hover:text-accent">Open in
+                                                Notion <svg xmlns="http://www.w3.org/2000/svg"
+                                                    class="h-4 w-4 inline-block ml-1" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                </svg></a>
                                         </p>
                                     </div>
                                 </div>
