@@ -349,6 +349,9 @@ onUnmounted(() => {
                                         <p class="text-sm text-gray-500 mt-1">
                                             Copies: {{ result.delete.length + 1 }}
                                         </p>
+                                        <p class="text-sm text-gray-500 mt-1">
+                                            Will be kept: <a :href="result.keep.url" target="_blank" class="text-primary hover:text-accent">Link</a>
+                                        </p>
                                     </div>
                                 </div>
                                 <p v-else class="text-gray-600">No search results available.</p>
