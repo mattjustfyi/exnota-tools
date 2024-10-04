@@ -314,8 +314,6 @@ onUnmounted(() => {
                             </div>
                         </div>
 
-                        <hr class="border-t border-gray-300 my-6">
-
                         <!-- Deletion Results Section -->
                         <div class="mt-4">
                             <div v-if="props.toolDuplicateRequest.search_failed"
@@ -358,14 +356,23 @@ onUnmounted(() => {
                                     Queued for deletion
                                 </p>
                             </div>
-                            <div v-else-if="uiState === 'DELETE_COMPLETE'">
-                                <p v-if="notDeletedCount > 0" class="mt-2 text-center text-xl font-bold text-primary">
-                                    Deleted {{ deleteResultsCount }} duplicates. Could not delete {{ notDeletedCount }}
-                                    others.
-                                </p>
-                                <p v-else class="mt-2 text-center text-xl font-bold text-primary">
-                                    Success! Deleted all {{ deleteResultsCount }} duplicates.
-                                </p>
+                            <div v-else-if="uiState === 'DELETE_COMPLETE'" class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-md">
+                                <div class="flex items-center">
+                                    <svg class="h-6 w-6 text-green-500 mr-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <div>
+                                        <p v-if="notDeletedCount > 0" class="font-bold">
+                                            Deleted {{ deleteResultsCount }} duplicates
+                                        </p>
+                                        <p v-if="notDeletedCount > 0" class="text-sm">
+                                            Could not delete {{ notDeletedCount }} others.
+                                        </p>
+                                        <p v-else class="font-bold">
+                                            Success! Deleted all {{ deleteResultsCount }} duplicates.
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
