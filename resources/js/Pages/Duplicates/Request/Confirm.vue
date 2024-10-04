@@ -354,7 +354,9 @@ onUnmounted(() => {
                                         <tbody class="bg-white divide-y divide-gray-200">
                                             <tr v-for="(result, index) in duplicatesSample" :key="index">
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                    {{ truncateTitle(result.keep.title || '') }}
+                                                    <a :href="result.keep.url" target="_blank" class="text-primary hover:text-accent">
+                                                        {{ truncateTitle(result.keep.title || '') }}
+                                                    </a>
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                     {{ result.delete.length + 1 }}
