@@ -238,17 +238,6 @@ onUnmounted(() => {
         <div class="py-12 bg-background">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-background overflow-hidden p-6">
-                    <!-- Database Overview Section -->
-                    <div class="mb-8 bg-secondary rounded-xl p-6 shadow-md">
-                        <h3 class="text-xl font-bold text-primary mb-4">Database Overview</h3>
-                        <div class="flex items-center justify-between">
-                            <p class="text-primary font-medium">View your database progress</p>
-                            <div class="w-1/2">
-                                <ProgressBar :progress="76" />
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Database Section -->
                     <div class="mb-8 bg-secondary rounded-xl p-6 shadow-md">
                         <div class="flex justify-between items-center">
@@ -267,10 +256,10 @@ onUnmounted(() => {
                     <!-- Search Results Section -->
                     <div class="bg-secondary rounded-xl p-6 shadow-md mb-6">
                         <div class="flex justify-end mb-4">
-                            <button v-if="uiState !== 'SEARCH_IN_PROGRESS' && duplicatesCount > 0 && uiState !== 'DELETE_COMPLETE'"
+                            <button
+                                v-if="uiState !== 'SEARCH_IN_PROGRESS' && duplicatesCount > 0 && uiState !== 'DELETE_COMPLETE'"
                                 @click="uiState === 'DELETE_IN_PROGRESS' ? cancelDeletion() : startDeletion()"
-                                :disabled="toolDuplicateRequest.delete_cancelled"
-                                :class="[
+                                :disabled="toolDuplicateRequest.delete_cancelled" :class="[
                                     'px-4 py-2 text-secondary rounded-lg',
                                     toolDuplicateRequest.delete_cancelled ? 'bg-accent cursor-not-allowed' :
                                         uiState === 'DELETE_IN_PROGRESS' ? 'bg-accent hover:bg-primary' : 'bg-primary hover:bg-accent'
@@ -278,13 +267,18 @@ onUnmounted(() => {
                                 {{ uiState === 'DELETE_IN_PROGRESS' ? 'Cancel Deletion' : 'Delete Duplicates' }}
                             </button>
                         </div>
-                        <p class="text-sm text-gray-400 mb-4">Searched at: {{ formatSearchedAt(toolDuplicateRequest.search_started_at) }}
+                        <p class="text-sm text-gray-400 mb-4">Searched at: {{
+                            formatSearchedAt(toolDuplicateRequest.search_started_at) }}
                             <span @click="toggleTooltip" class="cursor-pointer text-gray-500 hover:text-gray-700 ml-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline" viewBox="0 0 20 20"
+                                    fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                        clip-rule="evenodd" />
                                 </svg>
                             </span>
-                            <span ref="tooltip" class="absolute mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-2 text-xs text-gray-700 w-48 z-10 tooltip">
+                            <span ref="tooltip"
+                                class="absolute mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-2 text-xs text-gray-700 w-48 z-10 tooltip">
                                 {{ formatExactDateTime(toolDuplicateRequest.search_started_at) }}
                             </span>
                         </p>
@@ -306,7 +300,8 @@ onUnmounted(() => {
                             <div v-if="props.toolDuplicateRequest.search_failed"
                                 class="mt-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
                                 <p class="font-bold">Error</p>
-                                <p>Searching failed. Check that Exnota still has access to the database and try again.</p>
+                                <p>Searching failed. Check that Exnota still has access to the database and try again.
+                                </p>
                             </div>
                             <div v-else-if="uiState === 'SEARCH_IN_PROGRESS'">
                                 <div v-if="searchStatus === 'queued'" class="text-center text-gray-600">
@@ -326,7 +321,8 @@ onUnmounted(() => {
                                 <ul v-if="duplicatesSample.length" class="space-y-4">
                                     <li v-for="(result, index) in duplicatesSample" :key="index" class="border-b pb-4">
                                         <p class="font-semibold">{{ truncateTitle(result.keep.title || '') }}</p>
-                                        <p class="text-sm text-gray-600">Number of duplicates to delete: {{ result.delete.length }}</p>
+                                        <p class="text-sm text-gray-600">Number of duplicates to delete: {{
+                                            result.delete.length }}</p>
                                     </li>
                                 </ul>
                                 <p v-else class="text-gray-600">No search results available.</p>
@@ -334,7 +330,8 @@ onUnmounted(() => {
                             <div v-else-if="uiState === 'DELETE_IN_PROGRESS'">
                                 <ProgressBar :progress="deleteProgress" />
                                 <p v-if="toolDuplicateRequest.delete_started_at" class="mt-2 text-center text-gray-600">
-                                    Deleting duplicates... {{ deletionStatus.deletedItems }} of {{ deletionStatus.totalItems }} completed
+                                    Deleting duplicates... {{ deletionStatus.deletedItems }} of {{
+                                    deletionStatus.totalItems }} completed
                                 </p>
                                 <p v-else class="mt-2 text-center text-gray-600">
                                     Queued for deletion
@@ -342,7 +339,8 @@ onUnmounted(() => {
                             </div>
                             <div v-else-if="uiState === 'DELETE_COMPLETE'">
                                 <p v-if="notDeletedCount > 0" class="mt-2 text-center text-xl font-bold text-primary">
-                                    Deleted {{ deleteResultsCount }} duplicates. Could not delete {{ notDeletedCount }} others.
+                                    Deleted {{ deleteResultsCount }} duplicates. Could not delete {{ notDeletedCount }}
+                                    others.
                                 </p>
                                 <p v-else class="mt-2 text-center text-xl font-bold text-primary">
                                     Success! Deleted all {{ deleteResultsCount }} duplicates.
