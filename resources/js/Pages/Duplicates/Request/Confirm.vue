@@ -245,7 +245,13 @@ onUnmounted(() => {
                             </div>
                             <div>
                                 <p class="text-sm text-gray-500">Searched At</p>
-                                <p class="text-2xl font-bold text-primary">{{ new Date(toolDuplicateRequest.search_started_at).toLocaleString() }}</p>
+                                <p class="text-2xl font-bold text-primary">{{ new Date(toolDuplicateRequest.search_started_at).toLocaleString('en-US', { 
+                                    year: 'numeric', 
+                                    month: 'short', 
+                                    day: 'numeric', 
+                                    hour: '2-digit', 
+                                    minute: '2-digit'
+                                }) }}</p>
                             </div>
                         </div>
 
