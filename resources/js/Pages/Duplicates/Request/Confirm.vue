@@ -341,7 +341,8 @@ onUnmounted(() => {
                             <div v-else-if="uiState === 'SEARCH_COMPLETE'">
                                 <h4 class="text-lg font-semibold mb-3">Sample duplicates</h4>
                                 <div v-if="duplicatesSample.length" class="space-y-2">
-                                    <div v-for="(result, index) in duplicatesSample" :key="index" class="bg-gray-100 p-3 rounded">
+                                    <div v-for="(result, index) in duplicatesSample" :key="index"
+                                        class="bg-gray-100 p-3 rounded">
                                         <a :href="result.keep.url" target="_blank"
                                             class="text-primary hover:text-accent font-medium">
                                             {{ truncateTitle(result.keep.title || '') }}
@@ -350,7 +351,8 @@ onUnmounted(() => {
                                             Copies: {{ result.delete.length + 1 }}
                                         </p>
                                         <p class="text-sm text-gray-500 mt-1">
-                                            Will be kept: <a :href="result.keep.url" target="_blank" class="text-primary hover:text-accent">Link</a>
+                                            Page to keep: <a :href="result.keep.url" target="_blank"
+                                                class="text-primary hover:text-accent">Link</a>
                                         </p>
                                     </div>
                                 </div>
@@ -443,7 +445,7 @@ onUnmounted(() => {
     flex-shrink: 0;
 }
 
-.space-y-2 > * + * {
+.space-y-2>*+* {
     margin-top: 0.5rem;
 }
 </style>
