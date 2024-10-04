@@ -289,26 +289,28 @@ onUnmounted(() => {
 
                         <!-- Search Results Section -->
                         <div class="mb-6">
-                            <div class="flex justify-end mb-4">
-                                <button
-                                    v-if="uiState !== 'SEARCH_IN_PROGRESS' && duplicatesCount > 0 && uiState !== 'DELETE_COMPLETE'"
-                                    @click="uiState === 'DELETE_IN_PROGRESS' ? cancelDeletion() : startDeletion()"
-                                    :disabled="toolDuplicateRequest.delete_cancelled" :class="[
-                                        'px-4 py-2 text-secondary rounded-lg',
-                                        toolDuplicateRequest.delete_cancelled ? 'bg-accent cursor-not-allowed' :
-                                            uiState === 'DELETE_IN_PROGRESS' ? 'bg-accent hover:bg-primary' : 'bg-primary hover:bg-accent'
-                                    ]">
-                                    {{ uiState === 'DELETE_IN_PROGRESS' ? 'Cancel Deletion' : 'Delete Duplicates' }}
-                                </button>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4 mt-4">
-                                <div>
-                                    <p class="text-sm text-gray-500">Total Rows</p>
-                                    <p class="text-2xl font-bold text-primary">{{ searchResultsCount }}</p>
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                                <div class="grid grid-cols-2 gap-4 mb-4 md:mb-0">
+                                    <div>
+                                        <p class="text-sm text-gray-500">Total Rows</p>
+                                        <p class="text-2xl font-bold text-primary">{{ searchResultsCount }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-500">Total Duplicates</p>
+                                        <p class="text-2xl font-bold text-primary">{{ duplicatesCount }}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">Total Duplicates</p>
-                                    <p class="text-2xl font-bold text-primary">{{ duplicatesCount }}</p>
+                                <div class="mt-4 md:mt-0">
+                                    <button
+                                        v-if="uiState !== 'SEARCH_IN_PROGRESS' && duplicatesCount > 0 && uiState !== 'DELETE_COMPLETE'"
+                                        @click="uiState === 'DELETE_IN_PROGRESS' ? cancelDeletion() : startDeletion()"
+                                        :disabled="toolDuplicateRequest.delete_cancelled" :class="[
+                                            'px-4 py-2 text-secondary rounded-lg w-full md:w-auto',
+                                            toolDuplicateRequest.delete_cancelled ? 'bg-accent cursor-not-allowed' :
+                                                uiState === 'DELETE_IN_PROGRESS' ? 'bg-accent hover:bg-primary' : 'bg-primary hover:bg-accent'
+                                        ]">
+                                        {{ uiState === 'DELETE_IN_PROGRESS' ? 'Cancel Deletion' : 'Delete Duplicates' }}
+                                    </button>
                                 </div>
                             </div>
                         </div>
