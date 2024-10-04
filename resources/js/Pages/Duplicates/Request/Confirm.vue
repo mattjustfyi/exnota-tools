@@ -378,8 +378,8 @@ onUnmounted(() => {
                                             <p class="font-bold">
                                                 Could not delete {{ notDeletedCount }} duplicates.
                                             </p>
-                                            <p class="mt-1">
-                                                <a @click="searchAgain" class="text-primary hover:text-accent cursor-pointer">Search again</a> to see remaining duplicates.
+                                            <p class="mt-1 text-sm">
+                                                <a @click="searchAgain" class="text-yellow-700 underline cursor-pointer">Search again</a> to see remaining duplicates.
                                             </p>
                                         </div>
                                     </div>
