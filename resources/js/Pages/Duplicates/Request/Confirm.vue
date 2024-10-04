@@ -339,13 +339,30 @@ onUnmounted(() => {
                             </div>
                             <div v-else-if="uiState === 'SEARCH_COMPLETE'">
                                 <h4 class="text-lg font-semibold mb-3">Sample duplicates</h4>
-                                <ul v-if="duplicatesSample.length" class="space-y-4">
-                                    <li v-for="(result, index) in duplicatesSample" :key="index" class="border-b pb-4">
-                                        <p class="font-semibold">{{ truncateTitle(result.keep.title || '') }}</p>
-                                        <p class="text-sm text-gray-600">Number of duplicates to delete: {{
-                                            result.delete.length }}</p>
-                                    </li>
-                                </ul>
+                                <div v-if="duplicatesSample.length" class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Page Title
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Number of Copies
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-200">
+                                            <tr v-for="(result, index) in duplicatesSample" :key="index">
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                    {{ truncateTitle(result.keep.title || '') }}
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                    {{ result.delete.length }}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                                 <p v-else class="text-gray-600">No search results available.</p>
                             </div>
                             <div v-else-if="uiState === 'DELETE_IN_PROGRESS'">
