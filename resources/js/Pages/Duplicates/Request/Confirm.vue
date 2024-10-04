@@ -338,6 +338,7 @@ onUnmounted(() => {
                                 </div>
                             </div>
                             <div v-else-if="uiState === 'SEARCH_COMPLETE'">
+                                <h4 class="text-lg font-semibold mb-3">Sample duplicates</h4>
                                 <ul v-if="duplicatesSample.length" class="space-y-4">
                                     <li v-for="(result, index) in duplicatesSample" :key="index" class="border-b pb-4">
                                         <p class="font-semibold">{{ truncateTitle(result.keep.title || '') }}</p>
