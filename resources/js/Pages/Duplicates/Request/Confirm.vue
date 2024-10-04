@@ -270,22 +270,6 @@ onUnmounted(() => {
                                     Search again
                                 </button>
                             </div>
-                            <p class="text-sm text-gray-400">Searched at: {{
-                                formatSearchedAt(toolDuplicateRequest.search_started_at) }}
-                                <span @click="toggleTooltip"
-                                    class="cursor-pointer text-gray-500 hover:text-gray-700 ml-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline" viewBox="0 0 20 20"
-                                        fill="currentColor">
-                                        <path fill-rule="evenodd"
-                                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                </span>
-                                <span ref="tooltip"
-                                    class="absolute mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-2 text-xs text-gray-700 w-48 z-10 tooltip">
-                                    {{ formatExactDateTime(toolDuplicateRequest.search_started_at) }}
-                                </span>
-                            </p>
                         </div>
 
                         <!-- Search Results Section -->
@@ -301,7 +285,23 @@ onUnmounted(() => {
                                         <p class="text-2xl font-bold text-primary">{{ duplicatesCount }}</p>
                                     </div>
                                 </div>
-                                <div class="mt-4 md:mt-0">
+                                <div class="mt-4 md:mt-0 flex flex-col items-end">
+                                    <p class="text-sm text-gray-400 mb-2">Searched at: {{
+                                        formatSearchedAt(toolDuplicateRequest.search_started_at) }}
+                                        <span @click="toggleTooltip"
+                                            class="cursor-pointer text-gray-500 hover:text-gray-700 ml-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline" viewBox="0 0 20 20"
+                                                fill="currentColor">
+                                                <path fill-rule="evenodd"
+                                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                        </span>
+                                        <span ref="tooltip"
+                                            class="absolute mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-2 text-xs text-gray-700 w-48 z-10 tooltip">
+                                            {{ formatExactDateTime(toolDuplicateRequest.search_started_at) }}
+                                        </span>
+                                    </p>
                                     <button
                                         v-if="uiState !== 'SEARCH_IN_PROGRESS' && duplicatesCount > 0 && uiState !== 'DELETE_COMPLETE'"
                                         @click="uiState === 'DELETE_IN_PROGRESS' ? cancelDeletion() : startDeletion()"
