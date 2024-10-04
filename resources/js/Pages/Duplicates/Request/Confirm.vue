@@ -353,7 +353,7 @@ onUnmounted(() => {
                                         <tbody class="bg-white divide-y divide-gray-200">
                                             <tr v-for="(result, index) in duplicatesSample" :key="index">
                                                 <td class="px-3 py-2 text-sm font-medium text-gray-900">
-                                                    <a :href="result.keep.url" target="_blank" class="text-primary hover:text-accent break-words">
+                                                    <a :href="result.keep.url" target="_blank" class="text-primary hover:text-accent truncate-title">
                                                         {{ truncateTitle(result.keep.title || '') }}
                                                     </a>
                                                 </td>
@@ -426,5 +426,13 @@ onUnmounted(() => {
     .cursor-pointer:hover+.tooltip {
         display: block;
     }
+}
+
+.truncate-title {
+    display: inline-block;
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 </style>
