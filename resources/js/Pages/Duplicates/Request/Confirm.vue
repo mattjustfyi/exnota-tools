@@ -259,11 +259,11 @@ onUnmounted(() => {
                         <!-- Database Section -->
                         <div class="mb-6">
                             <div class="flex justify-between items-center mb-2">
-                                <h3 class="text-xl font-bold text-primary">{{ notionObjectTitle }}</h3>
+                                <h3 class="text-xl font-bold text-primary truncate-title mr-4 flex-grow">{{ notionObjectTitle }}</h3>
                                 <button @click="searchAgain"
                                     :disabled="isSearchButtonDisabled || uiState === 'SEARCH_IN_PROGRESS' || uiState === 'DELETE_IN_PROGRESS'"
                                     :class="[
-                                        'px-4 py-2 text-secondary rounded-lg',
+                                        'px-4 py-2 text-secondary rounded-lg flex-shrink-0',
                                         isSearchButtonDisabled || uiState === 'SEARCH_IN_PROGRESS' || uiState === 'DELETE_IN_PROGRESS' ? 'bg-accent cursor-not-allowed' : 'bg-primary hover:bg-accent'
                                     ]">
                                     Search again
@@ -447,5 +447,13 @@ onUnmounted(() => {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.flex-grow {
+    flex-grow: 1;
+}
+
+.flex-shrink-0 {
+    flex-shrink: 0;
 }
 </style>
