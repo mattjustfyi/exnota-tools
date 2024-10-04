@@ -288,7 +288,8 @@ onUnmounted(() => {
                             </div>
                             <p class="text-sm text-gray-400 mb-4">Searched at: {{
                                 formatSearchedAt(toolDuplicateRequest.search_started_at) }}
-                                <span @click="toggleTooltip" class="cursor-pointer text-gray-500 hover:text-gray-700 ml-1">
+                                <span @click="toggleTooltip"
+                                    class="cursor-pointer text-gray-500 hover:text-gray-700 ml-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline" viewBox="0 0 20 20"
                                         fill="currentColor">
                                         <path fill-rule="evenodd"
@@ -351,7 +352,7 @@ onUnmounted(() => {
                                 <ProgressBar :progress="deleteProgress" />
                                 <p v-if="toolDuplicateRequest.delete_started_at" class="mt-2 text-center text-gray-600">
                                     Deleting duplicates... {{ deletionStatus.deletedItems }} of {{
-                                    deletionStatus.totalItems }} completed
+                                        deletionStatus.totalItems }} completed
                                 </p>
                                 <p v-else class="mt-2 text-center text-gray-600">
                                     Queued for deletion
