@@ -310,7 +310,7 @@ onUnmounted(() => {
                                             toolDuplicateRequest.delete_cancelled ? 'bg-accent cursor-not-allowed' :
                                                 uiState === 'DELETE_IN_PROGRESS' ? 'bg-accent hover:bg-primary' : 'bg-primary hover:bg-accent'
                                         ]">
-                                        {{ uiState === 'DELETE_IN_PROGRESS' ? 'Cancel Deletion' : 'Delete Duplicates' }}
+                                        {{ uiState === 'DELETE_IN_PROGRESS' ? 'Cancel Deletion' : `Delete ${duplicatesCount} duplicates` }}
                                     </button>
                                 </div>
                             </div>
