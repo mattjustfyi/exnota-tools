@@ -57,6 +57,8 @@ const titleOrUndefined = (title) => {
 const uiState = computed(() => {
     if (!props.toolDuplicateRequest.search_ended_at) {
         return 'SEARCH_IN_PROGRESS';
+    } else if (props.toolDuplicateRequest.search_failed) {
+        return 'SEARCH_FAILED';
     } else if (props.toolDuplicateRequest.delete_batch_id && !props.toolDuplicateRequest.delete_ended_at) {
         return 'DELETE_IN_PROGRESS';
     } else if (props.toolDuplicateRequest.delete_batch_id && props.toolDuplicateRequest.delete_ended_at) {
@@ -227,6 +229,17 @@ onUnmounted(() => {
                         </div>
                     </div>
 
+                    <!-- Error Section -->
+                    <div v-else-if="uiState === 'SEARCH_FAILED'">
+                        <div class="bg-secondary rounded-xl p-6 shadow-md mt-6">
+                            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
+                                <p class="font-bold">Error</p>
+                                <p>Searching failed. Check that Exnota still has access to the database and try again.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Search Complete Section -->
                     <div v-else-if="uiState === 'SEARCH_COMPLETE'">
                         <div class="card bg-base-100">
@@ -370,17 +383,6 @@ onUnmounted(() => {
                         <div v-else class="text-sm text-gray-500">
                             <SearchedAt :searched-at="toolDuplicateRequest.delete_started_at" />.
                             <a class="link" @click="searchAgain">Search database again</a>.
-                        </div>
-                    </div>
-
-                    <!-- Error Section -->
-                    <div v-if="props.toolDuplicateRequest.search_failed">
-                        <div class="bg-secondary rounded-xl p-6 shadow-md mt-6">
-                            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
-                                <p class="font-bold">Error</p>
-                                <p>Searching failed. Check that Exnota still has access to the database and try again.
-                                </p>
-                            </div>
                         </div>
                     </div>
                 </div>
