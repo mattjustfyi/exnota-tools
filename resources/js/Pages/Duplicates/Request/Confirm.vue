@@ -275,7 +275,7 @@ onUnmounted(() => {
                         <div v-if="duplicatesSample.length" class="space-y-2">
                             <a v-for="(result, index) in duplicatesSample" :key="index" :href="result.keep.url"
                                 target="_blank" rel="noopener noreferrer"
-                                class="card bg-base-100 mb-4 no-underline hover:no-underline flex justify-between items-center">
+                                class="card bg-base-100 no-underline hover:no-underline flex justify-between items-center">
                                 <div class="card-body p-4 w-full">
                                     <div class="flex">
                                         <div class="flex-grow mr-2">
