@@ -114,16 +114,16 @@ const notionObjectTitle = computed(() => {
 const formatSearchedAt = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();
-    const diffInHours = (now - date) / (1000 * 60 * 60);
+    const diffInSeconds = Math.floor((now - date) / 1000);
 
-    if (diffInHours < 24) {
-        if (diffInHours < 1) {
-            const minutes = Math.floor((now - date) / (1000 * 60));
-            return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
-        } else {
-            const hours = Math.floor(diffInHours);
-            return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
-        }
+    const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
+
+    if (diffInSeconds < 60) {
+        return rtf.format(-diffInSeconds, 'second');
+    } else if (diffInSeconds < 3600) {
+        return rtf.format(-Math.floor(diffInSeconds / 60), 'minute');
+    } else if (diffInSeconds < 86400) {
+        return rtf.format(-Math.floor(diffInSeconds / 3600), 'hour');
     } else {
         return date.toLocaleString('en-US', {
             year: 'numeric',
