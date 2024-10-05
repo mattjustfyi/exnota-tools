@@ -4,6 +4,7 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import { computed, ref, watch, onMounted, onUnmounted } from 'vue';
 import ProgressBar from '@/Components/ProgressBar.vue';
 import SearchedAt from '@/Components/SearchedAt.vue';
+import NotionObjectTitle from '@/Components/NotionObjectTitle.vue';
 
 console.log('Component setup started');
 
@@ -103,16 +104,6 @@ watch(() => props.toolDuplicateRequest.search_ended_at, (newValue) => {
     }
 });
 
-const truncateTitle = (title) => {
-    if (!title || title.trim() === '') return "(Untitled)";
-    return title;
-};
-
-const notionObjectTitle = computed(() => {
-    return truncateTitle(props.toolDuplicateRequest.notion_object?.name || '');
-});
-
-
 const refreshInterval = ref(null);
 
 
@@ -207,7 +198,9 @@ onUnmounted(() => {
 
                     <!-- Database Section -->
                     <div class="mb-6">
-                        <h3 class="text-2xl font-bold text-primary truncate-title mb-2">{{ notionObjectTitle }}</h3>
+                        <h3 class="text-2xl font-bold text-primary mb-2">
+                            <NotionObjectTitle :notion-object="toolDuplicateRequest.notion_object" />
+                        </h3>
                     </div>
 
                     <!-- Search In Progress Section -->
