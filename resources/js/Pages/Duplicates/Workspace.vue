@@ -141,25 +141,31 @@ console.log('Script setup completed');
                             </div>
                         </div>
                         <template v-if="['complete', 'failed'].includes(props.workspace.sync_status)">
-                            <ul v-if="sortedNotionObjects.length" class="mt-4 space-y-2">
-                                <li v-for="object in sortedNotionObjects" :key="object.id"
-                                    class="p-4 bg-gray-100 rounded flex justify-between items-center">
-                                    <div class="font-bold truncate mr-4">
-                                        <NotionObjectTitle :notion-object="object" />
+                            <div v-if="sortedNotionObjects.length" class="mt-4 space-y-2">
+                                <a v-for="object in sortedNotionObjects" :key="object.id"
+                                    @click.prevent="existing_duplicate_requests[object.id] ? router.visit(`/duplicates/request/${existing_duplicate_requests[object.id]}/confirm`) : selectDatabase(object)"
+                                    class="card bg-base-100 no-underline hover:no-underline flex justify-between items-center cursor-pointer">
+                                    <div class="card-body p-4 w-full">
+                                        <div class="flex">
+                                            <div class="flex-grow mr-6 overflow-hidden">
+                                                <div class="card-title">
+                                                    <h2 class="text-primary font-medium text-sm truncate">
+                                                        <NotionObjectTitle :notion-object="object" />
+                                                    </h2>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M9 5l7 7-7 7" />
+                                                </svg>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <button v-if="existing_duplicate_requests[object.id]"
-                                        @click="router.visit(`/duplicates/request/${existing_duplicate_requests[object.id]}/confirm`)"
-                                        class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
-                                        Results
-                                    </button>
-                                    <button v-else @click="selectDatabase(object)"
-                                        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                                        Search
-                                    </button>
-                                </li>
-                            </ul>
-                            <p v-else class="mt-4 text-gray-600">No Notion Objects available for
-                                this workspace.</p>
+                                </a>
+                            </div>
+                            <p v-else class="mt-4 text-gray-600">No Notion Objects available for this workspace.</p>
                         </template>
                     </div>
                 </div>
