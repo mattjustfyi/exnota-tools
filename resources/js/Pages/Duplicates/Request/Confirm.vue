@@ -330,7 +330,7 @@ onUnmounted(() => {
                             </div>
                         </div>
                         <div v-if="notDeletedCount > 0"
-                            class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg shadow-md">
+                            class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg shadow-md mb-4">
                             <div class="flex items-center">
                                 <svg class="h-6 w-6 text-yellow-500 mr-4" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor">
@@ -341,13 +341,11 @@ onUnmounted(() => {
                                     <p class="font-bold">
                                         Could not delete {{ notDeletedCount }} duplicates.
                                     </p>
-                                    <p class="mt-1 text-sm">
-                                        <a @click="searchAgain" class="text-yellow-700 underline cursor-pointer">Search
-                                            again</a> to see
-                                        remaining duplicates.
-                                    </p>
                                 </div>
                             </div>
+                        </div>
+                        <div class="text-sm text-gray-500">
+                            <SearchedAt :searched-at="toolDuplicateRequest.delete_started_at" />
                         </div>
                     </div>
 
