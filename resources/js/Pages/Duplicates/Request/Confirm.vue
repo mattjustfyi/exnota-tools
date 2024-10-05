@@ -353,18 +353,6 @@ onUnmounted(() => {
                         </div>
                     </div>
 
-                    <!-- Search Again Button -->
-                    <div class="bg-secondary rounded-xl p-6 shadow-md mt-6">
-                        <button @click="searchAgain"
-                            :disabled="isSearchButtonDisabled || uiState === 'SEARCH_IN_PROGRESS' || uiState === 'DELETE_IN_PROGRESS'"
-                            :class="[
-                                'px-4 py-2 text-secondary rounded-lg w-full',
-                                isSearchButtonDisabled || uiState === 'SEARCH_IN_PROGRESS' || uiState === 'DELETE_IN_PROGRESS' ? 'bg-accent cursor-not-allowed' : 'bg-primary hover:bg-accent'
-                            ]">
-                            Search again
-                        </button>
-                    </div>
-
                     <h4 class="text-lg font-semibold mb-3">Sample duplicates</h4>
                     <div v-if="duplicatesSample.length" class="space-y-2">
                         <div v-for="(result, index) in duplicatesSample" :key="index" class="bg-gray-100 p-3 rounded">
