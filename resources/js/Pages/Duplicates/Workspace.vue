@@ -2,6 +2,7 @@
 import { Head, router, Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { ref, watch, onMounted, onUnmounted, computed } from 'vue';
+import NotionObjectTitle from '@/Components/NotionObjectTitle.vue';
 
 console.log('Script setup started');
 
@@ -142,8 +143,8 @@ console.log('Script setup completed');
                             <ul v-if="sortedNotionObjects.length" class="mt-4 space-y-2">
                                 <li v-for="object in sortedNotionObjects" :key="object.id"
                                     class="p-4 bg-gray-100 rounded flex justify-between items-center">
-                                    <div>
-                                        <strong>{{ object.name }}</strong>
+                                    <div class="font-bold truncate mr-4">
+                                        <NotionObjectTitle :notion-object="object" />
                                     </div>
                                     <button v-if="existing_duplicate_requests[object.id]"
                                         @click="router.visit(`/duplicates/request/${existing_duplicate_requests[object.id]}/confirm`)"

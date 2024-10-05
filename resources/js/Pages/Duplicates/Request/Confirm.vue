@@ -201,7 +201,7 @@ onUnmounted(() => {
 
                     <!-- Database Section -->
                     <div class="mb-6">
-                        <h3 class="text-2xl font-bold text-primary mb-2">
+                        <h3 class="text-2xl font-bold text-primary mb-2 truncate">
                             <NotionObjectTitle :notion-object="toolDuplicateRequest.notion_object" />
                         </h3>
                     </div>
