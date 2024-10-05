@@ -327,6 +327,11 @@ onUnmounted(() => {
                             <p v-else class="mt-2 text-center text-gray-600">
                                 Queued for deletion
                             </p>
+                            <div class="mt-4 text-center">
+                                <button @click="cancelDeletion" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+                                    Cancel Deletion
+                                </button>
+                            </div>
                         </div>
                     </div>
 
