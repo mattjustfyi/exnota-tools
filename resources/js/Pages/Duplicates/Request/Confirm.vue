@@ -123,12 +123,9 @@ const deleteProgress = computed(() => {
 });
 
 const deletionStatus = computed(() => {
-    if (!deleteListCount.value || !deleteResultsCount.value) {
-        return { deletedItems: 0, totalItems: 0 };
-    }
     return {
-        deletedItems: deleteResultsCount.value,
-        totalItems: deleteListCount.value
+        deletedItems: deleteResultsCount.value ?? 0,
+        totalItems: deleteListCount.value ?? 0,
     };
 });
 
@@ -326,8 +323,8 @@ onUnmounted(() => {
                                     <ProgressBar :progress="deleteProgress" />
                                     <p v-if="toolDuplicateRequest.delete_started_at"
                                         class="text-base-content text-center mt-2">
-                                        Deleting duplicates... {{ deletionStatus.deletedItems }} of {{
-                                            deletionStatus.totalItems }} completed
+                                        Deleted {{ deletionStatus.deletedItems }} of {{
+                                            deletionStatus.totalItems }}
                                     </p>
                                     <p v-else class="text-base-content text-center mt-2">
                                         Queued for deletion
