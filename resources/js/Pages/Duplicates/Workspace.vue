@@ -134,7 +134,10 @@ console.log('Script setup completed');
                     </p>
 
                     <div class="mt-8">
-                        <h4 class="text-2xl font-bold text-gray-900">Databases:</h4>
+                        <div class="flex justify-between items-center">
+                            <h4 class="text-2xl font-bold text-gray-900">Databases</h4>
+                            <button class="btn btn-ghost -mr-4">Can't find it?</button>
+                        </div>
                         <div v-if="['queued', 'in_progress'].includes(props.workspace.sync_status)"
                             class="mt-4 flex justify-center items-center">
                             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500">
