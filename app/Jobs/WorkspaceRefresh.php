@@ -75,18 +75,6 @@ class WorkspaceRefresh implements ShouldQueue
 
             if (!empty($result->results)) {
                 foreach ($result->results as $notionResult) {
-                    // Skip if already exists
-                    //
-                    // TODO: Future: Update existing if it was created more than
-                    // some number of minutes ago. Maybe the user changed the
-                    // name.
-                    //
-                    // TODO: Handled archived/trashed.
-                    if ($notionObjectIds->contains($notionResult->id)) {
-                        Log::debug('NotionObject already exists for workspace: ' . $this->workspace->id . ' with id: ' . $notionResult->id);
-                        continue;
-                    }
-
                     // Get type and title
                     $objectType = null;
                     if ($notionResult instanceof Page) {
@@ -101,13 +89,29 @@ class WorkspaceRefresh implements ShouldQueue
 
                     $title = NotionHelper::getTitleFromNotionResult($notionResult);
 
-                    // Persist
-                    NotionObject::create([
-                        'workspace_id' => $this->workspace->id,
-                        'type' => $objectType,
-                        'name' => $title,
-                        'data' => $notionResult,
-                    ]);
+                    // Check if NotionObject already exists
+                    $existingNotionObject = NotionObject::where('workspace_id', $this->workspace->id)
+                        ->where('data->id', $notionResult->id)
+                        ->first();
+
+                    if ($existingNotionObject) {
+                        // Update existing NotionObject
+                        $existingNotionObject->update([
+                            'type' => $objectType,
+                            'name' => $title,
+                            'data' => $notionResult,
+                        ]);
+                        Log::debug('NotionObject updated for workspace: ' . $this->workspace->id . ' with id: ' . $notionResult->id);
+                    } else {
+                        // Create new NotionObject
+                        NotionObject::create([
+                            'workspace_id' => $this->workspace->id,
+                            'type' => $objectType,
+                            'name' => $title,
+                            'data' => $notionResult,
+                        ]);
+                        Log::debug('New NotionObject created for workspace: ' . $this->workspace->id . ' with id: ' . $notionResult->id);
+                    }
                 }
                 Log::debug('All NotionObjects created for workspace: ' . $this->workspace->id);
             } else {
