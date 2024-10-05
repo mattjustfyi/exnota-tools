@@ -333,24 +333,20 @@ onUnmounted(() => {
                     </div>
 
                     <!-- Searched At Section -->
-                    <div class="bg-secondary rounded-xl p-6 shadow-md mt-6">
-                        <div class="flex flex-col md:flex-row md:items-center md:justify-between">
-                            <div class="mt-4 md:mt-0 flex flex-col items-end">
-                                <p class="text-sm text-gray-400 mb-2">
-                                    Searched {{ formatSearchedAt(toolDuplicateRequest.search_started_at) }}
-                                    <a @click="searchAgain" 
-                                       :class="[
-                                           'ml-2 cursor-pointer',
-                                           isSearchButtonDisabled || uiState === 'SEARCH_IN_PROGRESS' || uiState === 'DELETE_IN_PROGRESS' 
-                                               ? 'text-gray-400 cursor-not-allowed' 
-                                               : 'text-primary hover:text-accent'
-                                       ]"
-                                       :disabled="isSearchButtonDisabled || uiState === 'SEARCH_IN_PROGRESS' || uiState === 'DELETE_IN_PROGRESS'">
-                                        Search again
-                                    </a>
-                                </p>
-                            </div>
-                        </div>
+                    <div class="mt-6 mb-6">
+                        <p class="text-sm text-gray-400">
+                            Searched {{ formatSearchedAt(toolDuplicateRequest.search_started_at) }}
+                            <a @click="searchAgain" 
+                               :class="[
+                                   'ml-2 cursor-pointer',
+                                   isSearchButtonDisabled || uiState === 'SEARCH_IN_PROGRESS' || uiState === 'DELETE_IN_PROGRESS' 
+                                       ? 'text-gray-400 cursor-not-allowed' 
+                                       : 'text-primary hover:text-accent'
+                               ]"
+                               :disabled="isSearchButtonDisabled || uiState === 'SEARCH_IN_PROGRESS' || uiState === 'DELETE_IN_PROGRESS'">
+                                Search again
+                            </a>
+                        </p>
                     </div>
 
                     <h4 class="text-lg font-semibold mb-3">Sample duplicates</h4>
