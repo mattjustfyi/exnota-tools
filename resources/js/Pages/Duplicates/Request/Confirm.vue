@@ -49,7 +49,10 @@ const duplicatesSample = computed(() => {
     return props.toolDuplicateRequest.duplicates_sample ?? [];
 });
 
-console.log('Props received:', props.toolDuplicateRequest);
+const truncateTitle = (title) => {
+    if (!title || title.trim() === '') return "(Untitled)";
+    return title;
+};
 
 const uiState = computed(() => {
     if (!props.toolDuplicateRequest.search_ended_at) {
