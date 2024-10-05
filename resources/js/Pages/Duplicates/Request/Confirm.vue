@@ -234,101 +234,110 @@ onUnmounted(() => {
                     </div>
 
                     <!-- Search In Progress Section -->
-                    <div v-if="uiState === 'SEARCH_IN_PROGRESS'" class="bg-secondary rounded-xl p-6 shadow-md">
-                        <div v-if="searchStatus === 'queued'" class="text-center text-gray-600">
-                            Search queued
-                        </div>
-                        <div v-else-if="searchStatus === 'in_progress'">
-                            <ProgressBar :progress="searchProgress" />
-                            <p class="mt-2 text-center text-gray-600">
-                                Searching for duplicates...
-                                <template v-if="searchResultsCount > 0">
-                                    (scanned {{ searchResultsCount }} rows so far)
-                                </template>
-                            </p>
+                    <div v-if="uiState === 'SEARCH_IN_PROGRESS'">
+                        <div class="bg-secondary rounded-xl p-6 shadow-md">
+                            <div v-if="searchStatus === 'queued'" class="text-center text-gray-600">
+                                Search queued
+                            </div>
+                            <div v-else-if="searchStatus === 'in_progress'">
+                                <ProgressBar :progress="searchProgress" />
+                                <p class="mt-2 text-center text-gray-600">
+                                    Searching for duplicates...
+                                    <template v-if="searchResultsCount > 0">
+                                        (scanned {{ searchResultsCount }} rows so far)
+                                    </template>
+                                </p>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Search Complete Section -->
-                    <div v-else-if="uiState === 'SEARCH_COMPLETE'" class="bg-secondary rounded-xl p-6 shadow-md">
-                        <div class="grid grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <p class="text-sm text-gray-500">Total Rows</p>
-                                <p class="text-2xl font-bold text-primary">{{ searchResultsCount }}</p>
+                    <div v-else-if="uiState === 'SEARCH_COMPLETE'">
+                        <div class="bg-secondary rounded-xl p-6 shadow-md">
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <p class="text-sm text-gray-500">Total Rows</p>
+                                    <p class="text-2xl font-bold text-primary">{{ searchResultsCount }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Duplicate rows</p>
+                                    <p class="text-2xl font-bold text-primary">{{ duplicatesCount }}</p>
+                                </div>
                             </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Duplicate rows</p>
-                                <p class="text-2xl font-bold text-primary">{{ duplicatesCount }}</p>
+                            <div class="mb-4">
+                                <button v-if="duplicatesCount > 0" @click="startDeletion()"
+                                    :disabled="toolDuplicateRequest.delete_cancelled" :class="[
+                                        'px-4 py-2 text-secondary rounded-lg w-full',
+                                        toolDuplicateRequest.delete_cancelled ? 'bg-accent cursor-not-allowed' : 'bg-primary hover:bg-accent'
+                                    ]">
+                                    Delete {{ duplicatesCount }} duplicates
+                                </button>
                             </div>
-                        </div>
-                        <div class="mb-4">
-                            <button v-if="duplicatesCount > 0" @click="startDeletion()"
-                                :disabled="toolDuplicateRequest.delete_cancelled" :class="[
-                                    'px-4 py-2 text-secondary rounded-lg w-full',
-                                    toolDuplicateRequest.delete_cancelled ? 'bg-accent cursor-not-allowed' : 'bg-primary hover:bg-accent'
-                                ]">
-                                Delete {{ duplicatesCount }} duplicates
-                            </button>
                         </div>
                     </div>
 
                     <!-- Delete In Progress Section -->
-                    <div v-else-if="uiState === 'DELETE_IN_PROGRESS'" class="bg-secondary rounded-xl p-6 shadow-md">
-                        <ProgressBar :progress="deleteProgress" />
-                        <p v-if="toolDuplicateRequest.delete_started_at" class="mt-2 text-center text-gray-600">
-                            Deleting duplicates... {{ deletionStatus.deletedItems }} of {{ deletionStatus.totalItems }}
-                            completed
-                        </p>
-                        <p v-else class="mt-2 text-center text-gray-600">
-                            Queued for deletion
-                        </p>
+                    <div v-else-if="uiState === 'DELETE_IN_PROGRESS'">
+                        <div class="bg-secondary rounded-xl p-6 shadow-md">
+                            <ProgressBar :progress="deleteProgress" />
+                            <p v-if="toolDuplicateRequest.delete_started_at" class="mt-2 text-center text-gray-600">
+                                Deleting duplicates... {{ deletionStatus.deletedItems }} of {{ deletionStatus.totalItems }}
+                                completed
+                            </p>
+                            <p v-else class="mt-2 text-center text-gray-600">
+                                Queued for deletion
+                            </p>
+                        </div>
                     </div>
 
                     <!-- Delete Complete Section -->
-                    <div v-else-if="uiState === 'DELETE_COMPLETE'" class="bg-secondary rounded-xl p-6 shadow-md">
-                        <div
-                            class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-md mb-4">
-                            <div class="flex items-center">
-                                <svg class="h-6 w-6 text-green-500 mr-4" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 13l4 4L19 7" />
-                                </svg>
-                                <div>
-                                    <p class="font-bold">
-                                        Success! Deleted {{ deleteResultsCount }} duplicates.
-                                    </p>
+                    <div v-else-if="uiState === 'DELETE_COMPLETE'">
+                        <div class="bg-secondary rounded-xl p-6 shadow-md">
+                            <div
+                                class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-md mb-4">
+                                <div class="flex items-center">
+                                    <svg class="h-6 w-6 text-green-500 mr-4" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <div>
+                                        <p class="font-bold">
+                                            Success! Deleted {{ deleteResultsCount }} duplicates.
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div v-if="notDeletedCount > 0"
-                            class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg shadow-md">
-                            <div class="flex items-center">
-                                <svg class="h-6 w-6 text-yellow-500 mr-4" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                </svg>
-                                <div>
-                                    <p class="font-bold">
-                                        Could not delete {{ notDeletedCount }} duplicates.
-                                    </p>
-                                    <p class="mt-1 text-sm">
-                                        <a @click="searchAgain" class="text-yellow-700 underline cursor-pointer">Search
-                                            again</a> to see
-                                        remaining duplicates.
-                                    </p>
+                            <div v-if="notDeletedCount > 0"
+                                class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg shadow-md">
+                                <div class="flex items-center">
+                                    <svg class="h-6 w-6 text-yellow-500 mr-4" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                    <div>
+                                        <p class="font-bold">
+                                            Could not delete {{ notDeletedCount }} duplicates.
+                                        </p>
+                                        <p class="mt-1 text-sm">
+                                            <a @click="searchAgain" class="text-yellow-700 underline cursor-pointer">Search
+                                                again</a> to see
+                                            remaining duplicates.
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Error Section -->
-                    <div v-if="props.toolDuplicateRequest.search_failed"
-                        class="bg-secondary rounded-xl p-6 shadow-md mt-6">
-                        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
-                            <p class="font-bold">Error</p>
-                            <p>Searching failed. Check that Exnota still has access to the database and try again.</p>
+                    <div v-if="props.toolDuplicateRequest.search_failed">
+                        <div class="bg-secondary rounded-xl p-6 shadow-md mt-6">
+                            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
+                                <p class="font-bold">Error</p>
+                                <p>Searching failed. Check that Exnota still has access to the database and try again.</p>
+                            </div>
                         </div>
                     </div>
 
