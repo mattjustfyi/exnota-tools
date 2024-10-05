@@ -349,8 +349,12 @@ onUnmounted(() => {
                                 </div>
                             </div>
                         </div>
-                        <div class="text-sm text-gray-500">
+                        <div v-if="notDeletedCount > 0" class="text-sm text-gray-500">
                             <SearchedAt :searched-at="toolDuplicateRequest.delete_started_at" />
+                        </div>
+                        <div v-else class="text-sm text-gray-500">
+                            <SearchedAt :searched-at="toolDuplicateRequest.delete_started_at" />.
+                            <a class="link" @click="searchAgain">Search again</a>.
                         </div>
                     </div>
 
