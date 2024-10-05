@@ -273,24 +273,29 @@ onUnmounted(() => {
 
                         <h4 class="text-lg font-semibold mb-3">Sample duplicates</h4>
                         <div v-if="duplicatesSample.length" class="space-y-2">
-                            <div v-for="(result, index) in duplicatesSample" :key="index"
-                                class="bg-gray-100 p-3 rounded">
-                                <p class="text-primary font-medium">
-                                    {{ truncateTitle(result.keep.title || '') }}
-                                </p>
-                                <p class="text-sm text-gray-500 mt-1">
-                                    Copies: {{ result.delete.length + 1 }}
-                                </p>
-                                <p class="text-sm text-gray-500 mt-1">
-                                    Page to keep: <a :href="result.keep.url" target="_blank"
-                                        class="text-primary hover:text-accent">Open in
-                                        Notion <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block ml-1"
-                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                        </svg></a>
-                                </p>
-                            </div>
+                            <a v-for="(result, index) in duplicatesSample" :key="index" :href="result.keep.url"
+                                target="_blank" rel="noopener noreferrer"
+                                class="card bg-base-100 mb-4 no-underline hover:no-underline flex justify-between items-center">
+                                <div class="card-body p-4 w-full">
+                                    <div class="flex">
+                                        <div class="flex-grow mr-2">
+                                            <h2 class="card-title text-primary font-medium text-sm">
+                                                {{ truncateTitle(result.keep.title || '') }}
+                                            </h2>
+                                            <p class="text-sm text-gray-500 mt-1">
+                                                Copies: {{ result.delete.length + 1 }}
+                                            </p>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24"
+                                                stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 5l7 7-7 7" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
                         </div>
                         <p v-else class="text-gray-600">No search results available.</p>
                     </div>
