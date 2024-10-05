@@ -49,7 +49,7 @@ const duplicatesSample = computed(() => {
     return props.toolDuplicateRequest.duplicates_sample ?? [];
 });
 
-const truncateTitle = (title) => {
+const titleOrUndefined = (title) => {
     if (!title || title.trim() === '') return "(Untitled)";
     return title;
 };
@@ -268,16 +268,18 @@ onUnmounted(() => {
                         </div>
 
                         <h4 class="text-lg font-semibold mb-3">Sample duplicates</h4>
-                        <div v-if="duplicatesSample.length" class="space-y-2">
+                        <div v-if="duplicatesSample.length" class="space-y-4">
                             <a v-for="(result, index) in duplicatesSample" :key="index" :href="result.keep.url"
                                 target="_blank" rel="noopener noreferrer"
                                 class="card bg-base-100 no-underline hover:no-underline flex justify-between items-center">
                                 <div class="card-body p-4 w-full">
                                     <div class="flex">
-                                        <div class="flex-grow mr-2">
-                                            <h2 class="card-title text-primary font-medium text-sm">
-                                                {{ truncateTitle(result.keep.title || '') }}
-                                            </h2>
+                                        <div class="flex-grow mr-6 overflow-hidden">
+                                            <div class="card-title">
+                                                <h2 class="text-primary font-medium text-sm truncate">
+                                                    {{ titleOrUndefined(result.keep.title) }}
+                                                </h2>
+                                            </div>
                                             <p class="text-sm text-gray-500 mt-1">
                                                 Copies: {{ result.delete.length + 1 }}
                                             </p>
@@ -298,21 +300,25 @@ onUnmounted(() => {
 
                     <!-- Delete In Progress Section -->
                     <div v-else-if="uiState === 'DELETE_IN_PROGRESS'">
-                        <div class="bg-secondary rounded-xl p-6 shadow-md">
-                            <ProgressBar :progress="deleteProgress" />
-                            <p v-if="toolDuplicateRequest.delete_started_at" class="mt-2 text-center text-gray-600">
-                                Deleting duplicates... {{ deletionStatus.deletedItems }} of {{ deletionStatus.totalItems
-                                }}
-                                completed
-                            </p>
-                            <p v-else class="mt-2 text-center text-gray-600">
-                                Queued for deletion
-                            </p>
-                            <div class="mt-4 text-center">
-                                <button @click="cancelDeletion"
-                                    class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
-                                    Cancel Deletion
-                                </button>
+                        <div class="card bg-base-100">
+                            <div class="card-body">
+                                <h2 class="card-title justify-center mb-4">Deleting</h2>
+                                <div>
+                                    <ProgressBar :progress="deleteProgress" />
+                                    <p v-if="toolDuplicateRequest.delete_started_at"
+                                        class="text-base-content text-center mt-2">
+                                        Deleting duplicates... {{ deletionStatus.deletedItems }} of {{
+                                            deletionStatus.totalItems }} completed
+                                    </p>
+                                    <p v-else class="text-base-content text-center mt-2">
+                                        Queued for deletion
+                                    </p>
+                                    <div class="mt-16 text-center">
+                                        <button @click="cancelDeletion" class="btn btn-warning">
+                                            Cancel Deletion
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -335,9 +341,13 @@ onUnmounted(() => {
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
-                            <span class="font-bold">
-                                Could not delete {{ notDeletedCount }} duplicates.
-                            </span>
+                            <div>
+                                <h3 class="font-bold">Could not delete {{ notDeletedCount }} duplicates.</h3>
+                                <div class="text-xs"><a class="link" @click="searchAgain">Search again</a>
+                                    for
+                                    remaining duplicates.
+                                </div>
+                            </div>
                         </div>
                         <div class="text-sm text-gray-500">
                             <SearchedAt :searched-at="toolDuplicateRequest.delete_started_at" />
