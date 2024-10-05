@@ -212,7 +212,7 @@ onUnmounted(() => {
 
                     <!-- Search In Progress Section -->
                     <div v-if="uiState === 'SEARCH_IN_PROGRESS'">
-                        <div class="card bg-base-100 shadow-xl">
+                        <div class="card bg-base-100">
                             <div class="card-body">
                                 <h2 class="card-title justify-center">Searching</h2>
                                 <div>
@@ -307,7 +307,8 @@ onUnmounted(() => {
                                 Queued for deletion
                             </p>
                             <div class="mt-4 text-center">
-                                <button @click="cancelDeletion" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+                                <button @click="cancelDeletion"
+                                    class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
                                     Cancel Deletion
                                 </button>
                             </div>
