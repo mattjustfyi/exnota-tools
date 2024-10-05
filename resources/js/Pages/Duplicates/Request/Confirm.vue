@@ -214,16 +214,16 @@ onUnmounted(() => {
                     <div v-if="uiState === 'SEARCH_IN_PROGRESS'">
                         <div class="card bg-base-100 shadow-xl">
                             <div class="card-body">
-                                <h2 class="card-title text-2xl font-bold text-primary justify-center">Searching</h2>
+                                <h2 class="card-title justify-center">Searching</h2>
                                 <div>
                                     <ProgressBar :progress="searchProgress" />
-                                    <p v-if="searchStatus === 'queued'" class="mt-2 text-center text-base-content">
+                                    <p v-if="searchStatus === 'queued'" class="text-base-content">
                                         Search queued
                                     </p>
-                                    <p v-else-if="searchResultsCount === 0" class="mt-2 text-center text-base-content">
+                                    <p v-else-if="searchResultsCount === 0" class="text-base-content">
                                         Starting search...
                                     </p>
-                                    <p v-else class="mt-2 text-center text-base-content">
+                                    <p v-else class="text-base-content">
                                         Up to row {{ searchResultsCount }}
                                     </p>
                                 </div>
