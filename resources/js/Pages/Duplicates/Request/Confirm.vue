@@ -319,35 +319,25 @@ onUnmounted(() => {
 
                     <!-- Delete Complete Section -->
                     <div v-else-if="uiState === 'DELETE_COMPLETE'">
-                        <div
-                            class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-md mb-4">
-                            <div class="flex items-center">
-                                <svg class="h-6 w-6 text-green-500 mr-4" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 13l4 4L19 7" />
-                                </svg>
-                                <div>
-                                    <p class="font-bold">
-                                        Success! Deleted {{ deleteResultsCount }} duplicates.
-                                    </p>
-                                </div>
-                            </div>
+                        <div role="alert" class="alert alert-success mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="font-bold">
+                                Deleted {{ deleteResultsCount }} duplicates.
+                            </span>
                         </div>
-                        <div v-if="notDeletedCount > 0"
-                            class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg shadow-md mb-4">
-                            <div class="flex items-center">
-                                <svg class="h-6 w-6 text-yellow-500 mr-4" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                </svg>
-                                <div>
-                                    <p class="font-bold">
-                                        Could not delete {{ notDeletedCount }} duplicates.
-                                    </p>
-                                </div>
-                            </div>
+                        <div v-if="notDeletedCount > 0" class="alert alert-warning mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <span class="font-bold">
+                                Could not delete {{ notDeletedCount }} duplicates.
+                            </span>
                         </div>
                         <div class="text-sm text-gray-500">
                             <SearchedAt :searched-at="toolDuplicateRequest.delete_started_at" />
