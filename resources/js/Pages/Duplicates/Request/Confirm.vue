@@ -5,6 +5,7 @@ import { computed, ref, watch, onMounted, onUnmounted } from 'vue';
 import ProgressBar from '@/Components/ProgressBar.vue';
 import SearchedAt from '@/Components/SearchedAt.vue';
 import NotionObjectTitle from '@/Components/NotionObjectTitle.vue';
+import Headings from '@/Components/Headings.vue';
 
 console.log('Component setup started');
 
@@ -200,9 +201,9 @@ onUnmounted(() => {
 
                     <!-- Database Section -->
                     <div class="mb-6">
-                        <h3 class="text-2xl font-bold text-primary mb-2 truncate">
+                        <Headings :level="2" class="truncate">
                             <NotionObjectTitle :notion-object="toolDuplicateRequest.notion_object" />
-                        </h3>
+                        </Headings>
                     </div>
 
                     <!-- Search In Progress Section -->
@@ -283,7 +284,7 @@ onUnmounted(() => {
                             </p>
                         </div>
 
-                        <h4 class="text-lg font-semibold mb-3">Sample duplicates</h4>
+                        <Headings :level="4">Sample duplicates</Headings>
                         <div v-if="duplicatesSample.length" class="space-y-4">
                             <a v-for="(result, index) in duplicatesSample" :key="index" :href="result.keep.url"
                                 target="_blank" rel="noopener noreferrer"
