@@ -279,16 +279,6 @@ onUnmounted(() => {
                                         {{ formatExactDateTime(toolDuplicateRequest.search_started_at) }}
                                     </span>
                                 </p>
-                                <button
-                                    v-if="uiState !== 'SEARCH_IN_PROGRESS' && duplicatesCount > 0 && uiState !== 'DELETE_COMPLETE'"
-                                    @click="uiState === 'DELETE_IN_PROGRESS' ? cancelDeletion() : startDeletion()"
-                                    :disabled="toolDuplicateRequest.delete_cancelled" :class="[
-                                        'px-4 py-2 text-secondary rounded-lg w-full md:w-auto',
-                                        toolDuplicateRequest.delete_cancelled ? 'bg-accent cursor-not-allowed' :
-                                            uiState === 'DELETE_IN_PROGRESS' ? 'bg-accent hover:bg-primary' : 'bg-primary hover:bg-accent'
-                                    ]">
-                                    {{ uiState === 'DELETE_IN_PROGRESS' ? 'Cancel Deletion' : `Delete ${duplicatesCount} duplicates` }}
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -320,6 +310,18 @@ onUnmounted(() => {
                                 <p class="text-sm text-gray-500">Duplicate rows</p>
                                 <p class="text-2xl font-bold text-primary">{{ duplicatesCount }}</p>
                             </div>
+                        </div>
+                        <div class="mb-4">
+                            <button
+                                v-if="duplicatesCount > 0"
+                                @click="startDeletion()"
+                                :disabled="toolDuplicateRequest.delete_cancelled"
+                                :class="[
+                                    'px-4 py-2 text-secondary rounded-lg w-full',
+                                    toolDuplicateRequest.delete_cancelled ? 'bg-accent cursor-not-allowed' : 'bg-primary hover:bg-accent'
+                                ]">
+                                Delete {{ duplicatesCount }} duplicates
+                            </button>
                         </div>
                         <h4 class="text-lg font-semibold mb-3">Sample duplicates</h4>
                         <div v-if="duplicatesSample.length" class="space-y-2">
