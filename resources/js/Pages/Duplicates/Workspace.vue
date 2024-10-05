@@ -117,23 +117,21 @@ console.log('Script setup completed');
                             Select database
                         </Heading>
                     </div>
-                    <div class="mb-6">
-                        <Heading :level="4" class="truncate">
+                    <div class="mb-6 flex flex-wrap justify-between items-center">
+                        <Heading :level="4" class="truncate  mb-0">
                             Workspace: <img v-if="props.workspace.workspace_icon" :src="props.workspace.workspace_icon"
-                                alt="Workspace Icon" class="inline-block mr-1 mh-1"
+                                alt="Workspace Icon" class="inline-block mr-1"
                                 style="width:1em;height:1em;vertical-align:-0.15em;" />
                             {{ workspace.workspace_name }}
                         </Heading>
-                    </div>
-                    <div class="mt-4 flex items-center">
-                        <button @click="fetchUserData" class="btn btn-secondary btn-outline">
+                        <button @click="fetchUserData" class="btn btn-secondary btn-outline sm:mt-0">
                             Refresh
                         </button>
-                        <!-- TODO: Update this style -->
-                        <p v-if="props.workspace.sync_status === 'failed'" class="ml-4 text-red-500">
-                            Sync failed. Please try again.
-                        </p>
                     </div>
+                    <!-- TODO: Update this style -->
+                    <p v-if="props.workspace.sync_status === 'failed'" class="ml-4 text-red-500">
+                        Sync failed. Please try again.
+                    </p>
 
                     <div class="mt-8">
                         <h4 class="text-2xl font-bold text-gray-900">Databases:</h4>
