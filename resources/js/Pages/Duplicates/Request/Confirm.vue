@@ -217,13 +217,13 @@ onUnmounted(() => {
                                 <h2 class="card-title justify-center mb-4">Searching</h2>
                                 <div>
                                     <ProgressBar :progress="searchProgress" />
-                                    <p v-if="searchStatus === 'queued'" class="text-base-content">
+                                    <p v-if="searchStatus === 'queued'" class="text-base-content text-center">
                                         Search queued
                                     </p>
-                                    <p v-else-if="searchResultsCount === 0" class="text-base-content">
+                                    <p v-else-if="searchResultsCount === 0" class="text-base-content text-center">
                                         Starting search...
                                     </p>
-                                    <p v-else class="text-base-content">
+                                    <p v-else class="text-base-content text-center">
                                         Up to row {{ searchResultsCount }}
                                     </p>
                                 </div>
@@ -233,40 +233,41 @@ onUnmounted(() => {
 
                     <!-- Search Complete Section -->
                     <div v-else-if="uiState === 'SEARCH_COMPLETE'">
-                        <div class="bg-secondary rounded-xl p-6 shadow-md">
-                            <div class="grid grid-cols-2 gap-4 mb-4">
-                                <div>
-                                    <p class="text-sm text-gray-500">Total Rows</p>
-                                    <p class="text-2xl font-bold text-primary">{{ searchResultsCount }}</p>
+                        <div class="card bg-base-100">
+                            <div class="card-body">
+                                <div class="grid grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <p class="text-sm text-gray-500">Total Rows</p>
+                                        <p class="text-2xl font-bold text-primary">{{ searchResultsCount }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-500">Duplicate rows</p>
+                                        <p class="text-2xl font-bold text-primary">{{ duplicatesCount }}</p>
+                                    </div>
                                 </div>
                                 <div>
-                                    <p class="text-sm text-gray-500">Duplicate rows</p>
-                                    <p class="text-2xl font-bold text-primary">{{ duplicatesCount }}</p>
+                                    <button v-if="duplicatesCount > 0" @click="startDeletion()"
+                                        :disabled="toolDuplicateRequest.delete_cancelled" :class="[
+                                            'btn w-full',
+                                            toolDuplicateRequest.delete_cancelled ? 'btn-disabled' : 'btn-primary'
+                                        ]">
+                                        Delete {{ duplicatesCount }} duplicates
+                                    </button>
                                 </div>
-                            </div>
-                            <div class="mb-4">
-                                <button v-if="duplicatesCount > 0" @click="startDeletion()"
-                                    :disabled="toolDuplicateRequest.delete_cancelled" :class="[
-                                        'px-4 py-2 text-secondary rounded-lg w-full',
-                                        toolDuplicateRequest.delete_cancelled ? 'bg-accent cursor-not-allowed' : 'bg-primary hover:bg-accent'
-                                    ]">
-                                    Delete {{ duplicatesCount }} duplicates
-                                </button>
                             </div>
                         </div>
 
                         <div class="mt-6 mb-6">
                             <p class="text-sm text-gray-400">
-                                <SearchedAt :searched-at="toolDuplicateRequest.search_started_at" />
+                                <SearchedAt :searched-at="toolDuplicateRequest.search_started_at" />.
                                 <a @click="searchAgain" :class="[
-                                    'ml-2 cursor-pointer',
+                                    'cursor-pointer underline',
                                     isSearchButtonDisabled || uiState === 'SEARCH_IN_PROGRESS' || uiState === 'DELETE_IN_PROGRESS'
                                         ? 'text-gray-400 cursor-not-allowed'
-                                        : 'text-primary hover:text-accent'
+                                        : 'text-gray-400 hover:text-gray-400'
                                 ]"
                                     :disabled="isSearchButtonDisabled || uiState === 'SEARCH_IN_PROGRESS' || uiState === 'DELETE_IN_PROGRESS'">
-                                    Search again
-                                </a>
+                                    Search again</a>.
                             </p>
                         </div>
 
