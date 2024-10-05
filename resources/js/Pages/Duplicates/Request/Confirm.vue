@@ -236,6 +236,7 @@ onUnmounted(() => {
                     <!-- Search In Progress Section -->
                     <div v-if="uiState === 'SEARCH_IN_PROGRESS'">
                         <div class="bg-secondary rounded-xl p-6 shadow-md">
+                            <h2 class="text-2xl font-bold text-primary text-center mb-4">Searching</h2>
                             <div v-if="searchStatus === 'queued'" class="text-center text-gray-600">
                                 Search queued
                             </div>
