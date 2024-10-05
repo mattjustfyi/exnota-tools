@@ -214,7 +214,7 @@ onUnmounted(() => {
                     <div v-if="uiState === 'SEARCH_IN_PROGRESS'">
                         <div class="card bg-base-100">
                             <div class="card-body">
-                                <h2 class="card-title justify-center">Searching</h2>
+                                <h2 class="card-title justify-center mb-4">Searching</h2>
                                 <div>
                                     <ProgressBar :progress="searchProgress" />
                                     <p v-if="searchStatus === 'queued'" class="text-base-content">
