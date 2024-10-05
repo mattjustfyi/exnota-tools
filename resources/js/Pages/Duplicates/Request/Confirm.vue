@@ -255,10 +255,8 @@ onUnmounted(() => {
                     </div>
 
                     <!-- Database Section -->
-                    <div class="bg-secondary rounded-xl p-6 shadow-md mb-6">
-                        <div class="flex justify-between items-center mb-2">
-                            <h3 class="text-xl font-bold text-primary truncate-title mr-4 flex-grow">{{ notionObjectTitle }}</h3>
-                        </div>
+                    <div class="mb-6">
+                        <h3 class="text-2xl font-bold text-primary truncate-title mb-2">{{ notionObjectTitle }}</h3>
                     </div>
 
                     <!-- Search In Progress Section -->
