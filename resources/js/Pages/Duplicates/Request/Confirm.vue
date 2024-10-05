@@ -254,165 +254,140 @@ onUnmounted(() => {
                         </a>
                     </div>
 
-                    <!-- Combined Section -->
-                    <div class="bg-secondary rounded-xl p-6 shadow-md">
-                        <!-- Database Section -->
-                        <div class="mb-6">
-                            <div class="flex justify-between items-center mb-2">
-                                <h3 class="text-xl font-bold text-primary truncate-title mr-4 flex-grow">{{
-                                    notionObjectTitle }}</h3>
-                                <button @click="searchAgain"
-                                    :disabled="isSearchButtonDisabled || uiState === 'SEARCH_IN_PROGRESS' || uiState === 'DELETE_IN_PROGRESS'"
-                                    :class="[
-                                        'px-4 py-2 text-secondary rounded-lg flex-shrink-0',
-                                        isSearchButtonDisabled || uiState === 'SEARCH_IN_PROGRESS' || uiState === 'DELETE_IN_PROGRESS' ? 'bg-accent cursor-not-allowed' : 'bg-primary hover:bg-accent'
+                    <!-- Database Section -->
+                    <div class="bg-secondary rounded-xl p-6 shadow-md mb-6">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-xl font-bold text-primary truncate-title mr-4 flex-grow">{{ notionObjectTitle }}</h3>
+                            <button @click="searchAgain"
+                                :disabled="isSearchButtonDisabled || uiState === 'SEARCH_IN_PROGRESS' || uiState === 'DELETE_IN_PROGRESS'"
+                                :class="[
+                                    'px-4 py-2 text-secondary rounded-lg flex-shrink-0',
+                                    isSearchButtonDisabled || uiState === 'SEARCH_IN_PROGRESS' || uiState === 'DELETE_IN_PROGRESS' ? 'bg-accent cursor-not-allowed' : 'bg-primary hover:bg-accent'
+                                ]">
+                                Search again
+                            </button>
+                        </div>
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                            <div class="grid grid-cols-2 gap-4 mb-4 md:mb-0">
+                                <div>
+                                    <p class="text-sm text-gray-500">Total Rows</p>
+                                    <p class="text-2xl font-bold text-primary">{{ searchResultsCount }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Duplicate rows</p>
+                                    <p class="text-2xl font-bold text-primary">{{ duplicatesCount }}</p>
+                                </div>
+                            </div>
+                            <div class="mt-4 md:mt-0 flex flex-col items-end">
+                                <p class="text-sm text-gray-400 mb-2">Searched at: {{ formatSearchedAt(toolDuplicateRequest.search_started_at) }}
+                                    <span @click="toggleTooltip" class="cursor-pointer text-gray-500 hover:text-gray-700 ml-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                        </svg>
+                                    </span>
+                                    <span ref="tooltip" class="absolute mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-2 text-xs text-gray-700 w-48 z-10 tooltip">
+                                        {{ formatExactDateTime(toolDuplicateRequest.search_started_at) }}
+                                    </span>
+                                </p>
+                                <button
+                                    v-if="uiState !== 'SEARCH_IN_PROGRESS' && duplicatesCount > 0 && uiState !== 'DELETE_COMPLETE'"
+                                    @click="uiState === 'DELETE_IN_PROGRESS' ? cancelDeletion() : startDeletion()"
+                                    :disabled="toolDuplicateRequest.delete_cancelled" :class="[
+                                        'px-4 py-2 text-secondary rounded-lg w-full md:w-auto',
+                                        toolDuplicateRequest.delete_cancelled ? 'bg-accent cursor-not-allowed' :
+                                            uiState === 'DELETE_IN_PROGRESS' ? 'bg-accent hover:bg-primary' : 'bg-primary hover:bg-accent'
                                     ]">
-                                    Search again
+                                    {{ uiState === 'DELETE_IN_PROGRESS' ? 'Cancel Deletion' : `Delete ${duplicatesCount} duplicates` }}
                                 </button>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Search Results Section -->
-                        <div class="mb-6">
-                            <div class="flex flex-col md:flex-row md:items-center md:justify-between">
-                                <div class="grid grid-cols-2 gap-4 mb-4 md:mb-0">
-                                    <div>
-                                        <p class="text-sm text-gray-500">Total Rows</p>
-                                        <p class="text-2xl font-bold text-primary">{{ searchResultsCount }}</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-sm text-gray-500">Duplicate rows</p>
-                                        <p class="text-2xl font-bold text-primary">{{ duplicatesCount }}</p>
-                                    </div>
-                                </div>
-                                <div class="mt-4 md:mt-0 flex flex-col items-end">
-                                    <p class="text-sm text-gray-400 mb-2">Searched at: {{
-                                        formatSearchedAt(toolDuplicateRequest.search_started_at) }}
-                                        <span @click="toggleTooltip"
-                                            class="cursor-pointer text-gray-500 hover:text-gray-700 ml-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline" viewBox="0 0 20 20"
-                                                fill="currentColor">
-                                                <path fill-rule="evenodd"
-                                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                                                    clip-rule="evenodd" />
-                                            </svg>
-                                        </span>
-                                        <span ref="tooltip"
-                                            class="absolute mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-2 text-xs text-gray-700 w-48 z-10 tooltip">
-                                            {{ formatExactDateTime(toolDuplicateRequest.search_started_at) }}
-                                        </span>
+                    <!-- Search In Progress Section -->
+                    <div v-if="uiState === 'SEARCH_IN_PROGRESS'" class="bg-secondary rounded-xl p-6 shadow-md">
+                        <div v-if="searchStatus === 'queued'" class="text-center text-gray-600">
+                            Search queued
+                        </div>
+                        <div v-else-if="searchStatus === 'in_progress'">
+                            <ProgressBar :progress="searchProgress" />
+                            <p class="mt-2 text-center text-gray-600">
+                                Searching for duplicates...
+                                <template v-if="searchResultsCount > 0">
+                                    (scanned {{ searchResultsCount }} rows so far)
+                                </template>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Search Complete Section -->
+                    <div v-else-if="uiState === 'SEARCH_COMPLETE'" class="bg-secondary rounded-xl p-6 shadow-md">
+                        <h4 class="text-lg font-semibold mb-3">Sample duplicates</h4>
+                        <div v-if="duplicatesSample.length" class="space-y-2">
+                            <div v-for="(result, index) in duplicatesSample" :key="index" class="bg-gray-100 p-3 rounded">
+                                <p class="text-primary font-medium">
+                                    {{ truncateTitle(result.keep.title || '') }}
+                                </p>
+                                <p class="text-sm text-gray-500 mt-1">
+                                    Copies: {{ result.delete.length + 1 }}
+                                </p>
+                                <p class="text-sm text-gray-500 mt-1">
+                                    Page to keep: <a :href="result.keep.url" target="_blank" class="text-primary hover:text-accent">Open in
+                                        Notion <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                        </svg></a>
+                                </p>
+                            </div>
+                        </div>
+                        <p v-else class="text-gray-600">No search results available.</p>
+                    </div>
+
+                    <!-- Delete In Progress Section -->
+                    <div v-else-if="uiState === 'DELETE_IN_PROGRESS'" class="bg-secondary rounded-xl p-6 shadow-md">
+                        <ProgressBar :progress="deleteProgress" />
+                        <p v-if="toolDuplicateRequest.delete_started_at" class="mt-2 text-center text-gray-600">
+                            Deleting duplicates... {{ deletionStatus.deletedItems }} of {{ deletionStatus.totalItems }} completed
+                        </p>
+                        <p v-else class="mt-2 text-center text-gray-600">
+                            Queued for deletion
+                        </p>
+                    </div>
+
+                    <!-- Delete Complete Section -->
+                    <div v-else-if="uiState === 'DELETE_COMPLETE'" class="bg-secondary rounded-xl p-6 shadow-md">
+                        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-md mb-4">
+                            <div class="flex items-center">
+                                <svg class="h-6 w-6 text-green-500 mr-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                                <div>
+                                    <p class="font-bold">
+                                        Success! Deleted {{ deleteResultsCount }} duplicates.
                                     </p>
-                                    <button
-                                        v-if="uiState !== 'SEARCH_IN_PROGRESS' && duplicatesCount > 0 && uiState !== 'DELETE_COMPLETE'"
-                                        @click="uiState === 'DELETE_IN_PROGRESS' ? cancelDeletion() : startDeletion()"
-                                        :disabled="toolDuplicateRequest.delete_cancelled" :class="[
-                                            'px-4 py-2 text-secondary rounded-lg w-full md:w-auto',
-                                            toolDuplicateRequest.delete_cancelled ? 'bg-accent cursor-not-allowed' :
-                                                uiState === 'DELETE_IN_PROGRESS' ? 'bg-accent hover:bg-primary' : 'bg-primary hover:bg-accent'
-                                        ]">
-                                        {{ uiState === 'DELETE_IN_PROGRESS' ? 'Cancel Deletion' : `Delete
-                                        ${duplicatesCount} duplicates` }}
-                                    </button>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Deletion Results Section -->
-                        <div class="mt-16">
-                            <div v-if="props.toolDuplicateRequest.search_failed"
-                                class="mt-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
-                                <p class="font-bold">Error</p>
-                                <p>Searching failed. Check that Exnota still has access to the database and try again.
-                                </p>
-                            </div>
-                            <div v-else-if="uiState === 'SEARCH_IN_PROGRESS'">
-                                <div v-if="searchStatus === 'queued'" class="text-center text-gray-600">
-                                    Search queued
-                                </div>
-                                <div v-else-if="searchStatus === 'in_progress'">
-                                    <ProgressBar :progress="searchProgress" />
-                                    <p class="mt-2 text-center text-gray-600">
-                                        Searching for duplicates...
-                                        <template v-if="searchResultsCount > 0">
-                                            (scanned {{ searchResultsCount }} rows so far)
-                                        </template>
+                        <div v-if="notDeletedCount > 0" class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg shadow-md">
+                            <div class="flex items-center">
+                                <svg class="h-6 w-6 text-yellow-500 mr-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                                <div>
+                                    <p class="font-bold">
+                                        Could not delete {{ notDeletedCount }} duplicates.
+                                    </p>
+                                    <p class="mt-1 text-sm">
+                                        <a @click="searchAgain" class="text-yellow-700 underline cursor-pointer">Search again</a> to see remaining duplicates.
                                     </p>
                                 </div>
                             </div>
-                            <div v-else-if="uiState === 'SEARCH_COMPLETE'">
-                                <h4 class="text-lg font-semibold mb-3">Sample duplicates</h4>
-                                <div v-if="duplicatesSample.length" class="space-y-2">
-                                    <div v-for="(result, index) in duplicatesSample" :key="index"
-                                        class="bg-gray-100 p-3 rounded">
-                                        <p class="text-primary font-medium">
-                                            {{ truncateTitle(result.keep.title || '') }}
-                                        </p>
-                                        <p class="text-sm text-gray-500 mt-1">
-                                            Copies: {{ result.delete.length + 1 }}
-                                        </p>
-                                        <p class="text-sm text-gray-500 mt-1">
-                                            Page to keep: <a :href="result.keep.url" target="_blank"
-                                                class="text-primary hover:text-accent">Open in
-                                                Notion <svg xmlns="http://www.w3.org/2000/svg"
-                                                    class="h-4 w-4 inline-block ml-1" fill="none" viewBox="0 0 24 24"
-                                                    stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                                </svg></a>
-                                        </p>
-                                    </div>
-                                </div>
-                                <p v-else class="text-gray-600">No search results available.</p>
-                            </div>
-                            <div v-else-if="uiState === 'DELETE_IN_PROGRESS'">
-                                <ProgressBar :progress="deleteProgress" />
-                                <p v-if="toolDuplicateRequest.delete_started_at" class="mt-2 text-center text-gray-600">
-                                    Deleting duplicates... {{ deletionStatus.deletedItems }} of {{
-                                        deletionStatus.totalItems }} completed
-                                </p>
-                                <p v-else class="mt-2 text-center text-gray-600">
-                                    Queued for deletion
-                                </p>
-                            </div>
-                            <div v-else-if="uiState === 'DELETE_COMPLETE'">
-                                <div
-                                    class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-md mb-4">
-                                    <div class="flex items-center">
-                                        <svg class="h-6 w-6 text-green-500 mr-4" fill="none" viewBox="0 0 24 24"
-                                            stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M5 13l4 4L19 7" />
-                                        </svg>
-                                        <div>
-                                            <p class="font-bold">
-                                                Success! Deleted {{ deleteResultsCount }} duplicates.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div v-if="notDeletedCount > 0"
-                                    class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg shadow-md">
-                                    <div class="flex items-center">
-                                        <svg class="h-6 w-6 text-yellow-500 mr-4" fill="none" viewBox="0 0 24 24"
-                                            stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                        </svg>
-                                        <div>
-                                            <p class="font-bold">
-                                                Could not delete {{ notDeletedCount }} duplicates.
-                                            </p>
-                                            <p class="mt-1 text-sm">
-                                                <a @click="searchAgain"
-                                                    class="text-yellow-700 underline cursor-pointer">Search again</a> to
-                                                see
-                                                remaining duplicates.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Error Section -->
+                    <div v-if="props.toolDuplicateRequest.search_failed" class="bg-secondary rounded-xl p-6 shadow-md mt-6">
+                        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
+                            <p class="font-bold">Error</p>
+                            <p>Searching failed. Check that Exnota still has access to the database and try again.</p>
                         </div>
                     </div>
                 </div>
