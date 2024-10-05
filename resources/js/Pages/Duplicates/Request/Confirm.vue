@@ -268,16 +268,6 @@ onUnmounted(() => {
                             </button>
                         </div>
                         <div class="flex flex-col md:flex-row md:items-center md:justify-between">
-                            <div class="grid grid-cols-2 gap-4 mb-4 md:mb-0">
-                                <div>
-                                    <p class="text-sm text-gray-500">Total Rows</p>
-                                    <p class="text-2xl font-bold text-primary">{{ searchResultsCount }}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-500">Duplicate rows</p>
-                                    <p class="text-2xl font-bold text-primary">{{ duplicatesCount }}</p>
-                                </div>
-                            </div>
                             <div class="mt-4 md:mt-0 flex flex-col items-end">
                                 <p class="text-sm text-gray-400 mb-2">Searched at: {{ formatSearchedAt(toolDuplicateRequest.search_started_at) }}
                                     <span @click="toggleTooltip" class="cursor-pointer text-gray-500 hover:text-gray-700 ml-1">
@@ -321,6 +311,16 @@ onUnmounted(() => {
 
                     <!-- Search Complete Section -->
                     <div v-else-if="uiState === 'SEARCH_COMPLETE'" class="bg-secondary rounded-xl p-6 shadow-md">
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <p class="text-sm text-gray-500">Total Rows</p>
+                                <p class="text-2xl font-bold text-primary">{{ searchResultsCount }}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Duplicate rows</p>
+                                <p class="text-2xl font-bold text-primary">{{ duplicatesCount }}</p>
+                            </div>
+                        </div>
                         <h4 class="text-lg font-semibold mb-3">Sample duplicates</h4>
                         <div v-if="duplicatesSample.length" class="space-y-2">
                             <div v-for="(result, index) in duplicatesSample" :key="index" class="bg-gray-100 p-3 rounded">
