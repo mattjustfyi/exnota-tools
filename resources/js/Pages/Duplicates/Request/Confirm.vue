@@ -3,6 +3,7 @@ import { Head, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { computed, ref, watch, onMounted, onUnmounted } from 'vue';
 import ProgressBar from '@/Components/ProgressBar.vue';
+import SearchedAt from '@/Components/SearchedAt.vue';
 
 console.log('Component setup started');
 
@@ -110,30 +111,6 @@ const truncateTitle = (title) => {
 const notionObjectTitle = computed(() => {
     return truncateTitle(props.toolDuplicateRequest.notion_object?.name || '');
 });
-
-const formatSearchedAt = (dateString) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInSeconds = Math.floor((now - date) / 1000);
-
-    const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
-
-    if (diffInSeconds < 60) {
-        return rtf.format(-diffInSeconds, 'second');
-    } else if (diffInSeconds < 3600) {
-        return rtf.format(-Math.floor(diffInSeconds / 60), 'minute');
-    } else if (diffInSeconds < 86400) {
-        return rtf.format(-Math.floor(diffInSeconds / 3600), 'hour');
-    } else {
-        return date.toLocaleString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    }
-};
 
 
 const refreshInterval = ref(null);
@@ -278,7 +255,7 @@ onUnmounted(() => {
 
                         <div class="mt-6 mb-6">
                             <p class="text-sm text-gray-400">
-                                Searched {{ formatSearchedAt(toolDuplicateRequest.search_started_at) }}
+                                <SearchedAt :searched-at="toolDuplicateRequest.search_started_at" />
                                 <a @click="searchAgain" :class="[
                                     'ml-2 cursor-pointer',
                                     isSearchButtonDisabled || uiState === 'SEARCH_IN_PROGRESS' || uiState === 'DELETE_IN_PROGRESS'
