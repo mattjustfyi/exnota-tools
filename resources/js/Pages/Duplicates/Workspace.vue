@@ -3,6 +3,7 @@ import { Head, router, Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { ref, watch, onMounted, onUnmounted, computed } from 'vue';
 import NotionObjectTitle from '@/Components/NotionObjectTitle.vue';
+import Heading from '@/Components/Heading.vue';
 
 console.log('Script setup started');
 
@@ -107,39 +108,41 @@ console.log('Script setup completed');
 
         <Head title="Workspace" />
 
-        <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Workspace
-            </h2>
-        </template>
-
-        <div class="py-12">
+        <div class="bg-background">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
-                    <h3 class="text-lg font-medium text-gray-900">Workspace ID: {{ workspace.id }}</h3>
-                    <p class="mt-4 text-gray-600">This is the workspace page. You can add more content and functionality
-                        here.
-                    </p>
+                <div class="bg-background overflow-hidden p-6">
+
+                    <div class="mb-6">
+                        <Heading :level="1" class="truncate">
+                            Select database
+                        </Heading>
+                    </div>
+                    <div class="mb-6">
+                        <Heading :level="4" class="truncate">
+                            Workspace: <img v-if="props.workspace.workspace_icon" :src="props.workspace.workspace_icon"
+                                alt="Workspace Icon" class="inline-block mr-1 mh-1"
+                                style="width:1em;height:1em;vertical-align:-0.15em;" />
+                            {{ workspace.workspace_name }}
+                        </Heading>
+                    </div>
                     <div class="mt-4 flex items-center">
-                        <button @click="fetchUserData"
-                            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                            Refresh Workspace
+                        <button @click="fetchUserData" class="btn btn-secondary btn-outline">
+                            Refresh
                         </button>
+                        <!-- TODO: Update this style -->
                         <p v-if="props.workspace.sync_status === 'failed'" class="ml-4 text-red-500">
                             Sync failed. Please try again.
                         </p>
                     </div>
 
                     <div class="mt-8">
-                        <h4 class="text-lg font-medium text-gray-900">Databases:</h4>
+                        <h4 class="text-2xl font-bold text-gray-900">Databases:</h4>
                         <div v-if="['queued', 'in_progress'].includes(props.workspace.sync_status)"
                             class="mt-4 flex justify-center items-center">
-                            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500">
+                            </div>
                         </div>
                         <template v-if="['complete', 'failed'].includes(props.workspace.sync_status)">
-                            <p v-if="sortedNotionObjects.length" class="mt-4 font-semibold">
-                                Databases found: {{ sortedNotionObjects.length }}
-                            </p>
                             <ul v-if="sortedNotionObjects.length" class="mt-4 space-y-2">
                                 <li v-for="object in sortedNotionObjects" :key="object.id"
                                     class="p-4 bg-gray-100 rounded flex justify-between items-center">

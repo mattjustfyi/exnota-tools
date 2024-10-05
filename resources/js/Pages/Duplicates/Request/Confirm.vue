@@ -201,7 +201,7 @@ onUnmounted(() => {
 
                     <!-- Database Section -->
                     <div class="mb-6">
-                        <Heading :level="2" class="truncate">
+                        <Heading :level="1" class="truncate">
                             <NotionObjectTitle :notion-object="toolDuplicateRequest.notion_object" />
                         </Heading>
                     </div>
@@ -284,7 +284,7 @@ onUnmounted(() => {
                             </p>
                         </div>
 
-                        <Heading :level="4">Sample duplicates</Heading>
+                        <Heading :level="2">Sample duplicates</Heading>
                         <div v-if="duplicatesSample.length" class="space-y-4">
                             <a v-for="(result, index) in duplicatesSample" :key="index" :href="result.keep.url"
                                 target="_blank" rel="noopener noreferrer"
