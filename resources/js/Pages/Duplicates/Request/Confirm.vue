@@ -231,11 +231,17 @@ onUnmounted(() => {
 
                     <!-- Error Section -->
                     <div v-else-if="uiState === 'SEARCH_FAILED'">
-                        <div class="bg-secondary rounded-xl p-6 shadow-md mt-6">
-                            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
-                                <p class="font-bold">Error</p>
-                                <p>Searching failed. Check that Exnota still has access to the database and try again.
-                                </p>
+                        <div class="alert alert-error mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div>
+                                <h3 class="font-bold">Searching failed</h3>
+                                <div class="text-xs">Check that Exnota still has access to the database and <a
+                                        class="link" @click="searchAgain">try again</a>.
+                                </div>
                             </div>
                         </div>
                     </div>
