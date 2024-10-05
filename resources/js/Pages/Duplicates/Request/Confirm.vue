@@ -237,16 +237,16 @@ onUnmounted(() => {
                     <div v-if="uiState === 'SEARCH_IN_PROGRESS'">
                         <div class="bg-secondary rounded-xl p-6 shadow-md">
                             <h2 class="text-2xl font-bold text-primary text-center mb-4">Searching</h2>
-                            <div v-if="searchStatus === 'queued'" class="text-center text-gray-600">
-                                Search queued
-                            </div>
-                            <div v-else-if="searchStatus === 'in_progress'">
+                            <div>
                                 <ProgressBar :progress="searchProgress" />
-                                <p class="mt-2 text-center text-gray-600">
-                                    Searching for duplicates...
-                                    <template v-if="searchResultsCount > 0">
-                                        (scanned {{ searchResultsCount }} rows so far)
-                                    </template>
+                                <p v-if="searchStatus === 'queued'" class="mt-2 text-center text-gray-600">
+                                    Search queued
+                                </p>
+                                <p v-else-if="searchResultsCount === 0" class="mt-2 text-center text-gray-600">
+                                    Starting search...
+                                </p>
+                                <p v-else class="mt-2 text-center text-gray-600">
+                                    Up to row {{ searchResultsCount }}
                                 </p>
                             </div>
                         </div>
