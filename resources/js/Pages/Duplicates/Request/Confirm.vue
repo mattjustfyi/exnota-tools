@@ -274,6 +274,21 @@ onUnmounted(() => {
                                 </button>
                             </div>
                         </div>
+
+                        <div class="mt-6 mb-6">
+                            <p class="text-sm text-gray-400">
+                                Searched {{ formatSearchedAt(toolDuplicateRequest.search_started_at) }}
+                                <a @click="searchAgain" :class="[
+                                    'ml-2 cursor-pointer',
+                                    isSearchButtonDisabled || uiState === 'SEARCH_IN_PROGRESS' || uiState === 'DELETE_IN_PROGRESS'
+                                        ? 'text-gray-400 cursor-not-allowed'
+                                        : 'text-primary hover:text-accent'
+                                ]"
+                                    :disabled="isSearchButtonDisabled || uiState === 'SEARCH_IN_PROGRESS' || uiState === 'DELETE_IN_PROGRESS'">
+                                    Search again
+                                </a>
+                            </p>
+                        </div>
                     </div>
 
                     <!-- Delete In Progress Section -->
@@ -281,7 +296,8 @@ onUnmounted(() => {
                         <div class="bg-secondary rounded-xl p-6 shadow-md">
                             <ProgressBar :progress="deleteProgress" />
                             <p v-if="toolDuplicateRequest.delete_started_at" class="mt-2 text-center text-gray-600">
-                                Deleting duplicates... {{ deletionStatus.deletedItems }} of {{ deletionStatus.totalItems }}
+                                Deleting duplicates... {{ deletionStatus.deletedItems }} of {{ deletionStatus.totalItems
+                                }}
                                 completed
                             </p>
                             <p v-else class="mt-2 text-center text-gray-600">
@@ -321,7 +337,8 @@ onUnmounted(() => {
                                             Could not delete {{ notDeletedCount }} duplicates.
                                         </p>
                                         <p class="mt-1 text-sm">
-                                            <a @click="searchAgain" class="text-yellow-700 underline cursor-pointer">Search
+                                            <a @click="searchAgain"
+                                                class="text-yellow-700 underline cursor-pointer">Search
                                                 again</a> to see
                                             remaining duplicates.
                                         </p>
@@ -336,26 +353,10 @@ onUnmounted(() => {
                         <div class="bg-secondary rounded-xl p-6 shadow-md mt-6">
                             <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
                                 <p class="font-bold">Error</p>
-                                <p>Searching failed. Check that Exnota still has access to the database and try again.</p>
+                                <p>Searching failed. Check that Exnota still has access to the database and try again.
+                                </p>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Searched At Section -->
-                    <div class="mt-6 mb-6">
-                        <p class="text-sm text-gray-400">
-                            Searched {{ formatSearchedAt(toolDuplicateRequest.search_started_at) }}
-                            <a @click="searchAgain" 
-                               :class="[
-                                   'ml-2 cursor-pointer',
-                                   isSearchButtonDisabled || uiState === 'SEARCH_IN_PROGRESS' || uiState === 'DELETE_IN_PROGRESS' 
-                                       ? 'text-gray-400 cursor-not-allowed' 
-                                       : 'text-primary hover:text-accent'
-                               ]"
-                               :disabled="isSearchButtonDisabled || uiState === 'SEARCH_IN_PROGRESS' || uiState === 'DELETE_IN_PROGRESS'">
-                                Search again
-                            </a>
-                        </p>
                     </div>
 
                     <h4 class="text-lg font-semibold mb-3">Sample duplicates</h4>
