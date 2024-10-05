@@ -212,19 +212,21 @@ onUnmounted(() => {
 
                     <!-- Search In Progress Section -->
                     <div v-if="uiState === 'SEARCH_IN_PROGRESS'">
-                        <div class="bg-secondary rounded-xl p-6 shadow-md">
-                            <h2 class="text-2xl font-bold text-primary text-center mb-4">Searching</h2>
-                            <div>
-                                <ProgressBar :progress="searchProgress" />
-                                <p v-if="searchStatus === 'queued'" class="mt-2 text-center text-gray-600">
-                                    Search queued
-                                </p>
-                                <p v-else-if="searchResultsCount === 0" class="mt-2 text-center text-gray-600">
-                                    Starting search...
-                                </p>
-                                <p v-else class="mt-2 text-center text-gray-600">
-                                    Up to row {{ searchResultsCount }}
-                                </p>
+                        <div class="card bg-base-100 shadow-xl">
+                            <div class="card-body">
+                                <h2 class="card-title text-2xl font-bold text-primary justify-center">Searching</h2>
+                                <div>
+                                    <ProgressBar :progress="searchProgress" />
+                                    <p v-if="searchStatus === 'queued'" class="mt-2 text-center text-base-content">
+                                        Search queued
+                                    </p>
+                                    <p v-else-if="searchResultsCount === 0" class="mt-2 text-center text-base-content">
+                                        Starting search...
+                                    </p>
+                                    <p v-else class="mt-2 text-center text-base-content">
+                                        Up to row {{ searchResultsCount }}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
