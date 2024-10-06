@@ -121,8 +121,8 @@ console.log('Script setup completed');
                             Select database
                         </Heading>
                     </div>
-                    <div class="mb-6 flex flex-wrap justify-between items-center">
-                        <Heading :level="4" class="truncate  mb-0">
+                    <div class="mb-6 flex justify-between items-center">
+                        <Heading :level="4" class="truncate mb-0 mr-4">
                             Workspace: <img v-if="props.workspace.workspace_icon" :src="props.workspace.workspace_icon"
                                 alt="Workspace Icon" class="inline-block mr-1"
                                 style="width:1em;height:1em;vertical-align:-0.15em;" />
