@@ -38,7 +38,7 @@ const fetchUserData = () => {
                     <div class="hero">
                         <div class="hero-content flex-col lg:flex-row-reverse">
                             <img src="/images/duplicates/search-results-sample2.png"
-                                class="sm:max-w-xs md:max-w-s j shadow-lg rounded-xl" />
+                                class="max-w-full w-64 shadow-lg rounded-xl" />
                             <div>
                                 <h1 class="text-4xl font-bold leading-normal">Delete duplicates in a Notion
                                     database.<span class="block">Without
