@@ -1,4 +1,5 @@
 <script setup>
+import Heading from '@/Components/Heading.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link } from "@inertiajs/vue3";
 
@@ -30,10 +31,29 @@ const fetchUserData = () => {
     <AppLayout>
 
         <Head title="Duplicates - Exnota Tools - Find/delete duplicate Notion database rows" />
-        <h1>Find/Delete duplicate Rows</h1>
-        <p>User: {{ user }}</p>
-        <Link href="/duplicates/connect" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Start</Link>
-        <br><br>
-        <button @click="fetchUserData">Refresh Workspace</button>
+        <div class="bg-background">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div class="bg-background overflow-hidden p-6">
+
+                    <div class="mb-6">
+                        <Heading :level="1" class="truncate">
+                            Connect to Notion
+                        </Heading>
+                        <p>Select your database in Notion and press Allow Access.</p>
+                    </div>
+
+                    <img src="/images/duplicates/notion-auth-short.gif"
+                        alt="On the next screen, login to Notion, select your database, and select Allow Access"
+                        class="w-full mb-6 border border-gray-300" />
+
+                    <div class="flex justify-end">
+                        <Link href="/duplicates/connect" class="btn btn-primary">
+                        Go to Notion
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </AppLayout>
 </template>
