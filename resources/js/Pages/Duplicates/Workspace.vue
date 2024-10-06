@@ -52,9 +52,6 @@ const fetchUserData = () => {
     router.post(`/test/workspace/${props.workspace.id}/refresh`, {}, {
         preserveState: true,
         preserveScroll: true,
-        onFinish: () => {
-            isLoading.value = false;
-        }
     });
 };
 
@@ -63,7 +60,7 @@ const startPeriodicRefresh = () => {
         console.log('Periodic refresh already started. Returning.');
         return;
     }
-    console.log('startPeriodicRefresh called');
+    isLoading.value = true;
     const val = setInterval(() => {
         // console.log('Periodic refresh triggered');
         router.reload();
@@ -74,6 +71,7 @@ const startPeriodicRefresh = () => {
 
 const stopPeriodicRefresh = () => {
     console.log('stopPeriodicRefresh called');
+    isLoading.value = false;
     if (refreshInterval.value) {
         console.log('Clearing refresh interval: refreshInterval.value:', refreshInterval.value);
         clearInterval(refreshInterval.value);
@@ -142,8 +140,9 @@ console.log('Script setup completed');
                                 style="width:1em;height:1em;vertical-align:-0.15em;" />
                             {{ workspace.workspace_name }}
                         </Heading>
-                        <button @click="fetchUserData" :disabled="isLoading" class="btn btn-secondary btn-outline btn-sm sm:mt-0">
-                            {{ isLoading ? 'Refreshing...' : 'Refresh' }}
+                        <button @click="fetchUserData" :disabled="isLoading"
+                            class="btn btn-secondary btn-outline btn-sm sm:mt-0">
+                            Refresh
                         </button>
                     </div>
                     <!-- TODO: Update this style -->
