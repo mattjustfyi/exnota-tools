@@ -10,11 +10,11 @@ console.log('Script setup started');
 const showModal = ref(false);
 
 const openModal = () => {
-    showModal.value = true;
+    document.getElementById('modal-cant-find-it').showModal();
 };
 
 const closeModal = () => {
-    showModal.value = false;
+    document.getElementById('modal-cant-find-it').close();
 };
 
 const props = defineProps({
@@ -146,7 +146,8 @@ console.log('Script setup completed');
                     <div class="mt-8">
                         <div class="flex justify-between items-center">
                             <h4 class="text-2xl font-bold text-gray-900">Databases</h4>
-                            <button class="btn btn-ghost -mr-4" @click="openModal">Can't find it?</button>
+                            <button class="btn btn-ghost -mr-4" @click="openModal()">Can't find
+                                it?</button>
                         </div>
                         <div v-if="['queued', 'in_progress'].includes(props.workspace.sync_status)"
                             class="mt-4 flex justify-center items-center">
@@ -186,21 +187,49 @@ console.log('Script setup completed');
         </div>
 
         <!-- Modal -->
-        <input type="checkbox" id="my-modal" class="modal-toggle" v-model="showModal" />
-        <div class="modal" :class="{ 'modal-open': showModal }">
-            <div class="modal-box">
-                <h3 class="font-bold text-lg">Can't find your database?</h3>
-                <p class="py-4">Here's some placeholder text to help you troubleshoot:</p>
-                <ul class="list-disc list-inside">
-                    <li>Make sure you've connected the correct Notion workspace</li>
-                    <li>Check if the database is shared with the integration</li>
-                    <li>Try refreshing the page or clicking the "Refresh" button</li>
-                    <li>If the problem persists, contact our support team</li>
-                </ul>
+        <!-- <input type="checkbox" id="my-modal" class="modal-toggle" v-model="showModal" /> -->
+        <!-- <div class="modal" :class="{ 'modal-open': showModal }">
+            <div class="modal-box prose">
+                <div class="prose">
+                    <h3 class="font-bold text-lg">Can't find your database?</h3>
+                    <p>1. Open your database</p>
+                    <p>2. Select the three dots menu at the top-right</p>
+                    <img src="/images/duplicates/find-database-1.png" class="border border-gray-300 rounded">
+                    <p>3. Select Connect to > Exnota</p>
+                    <img src="/images/duplicates/find-database-2.png">
+                </div>
+                <form method="dialog">
+                    <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                </form>
                 <div class="modal-action">
                     <button class="btn" @click="closeModal">Close</button>
                 </div>
             </div>
-        </div>
+        </div> -->
+        <dialog id="modal-cant-find-it" class="modal">
+            <div class="modal-box">
+                <form method="dialog">
+                    <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                </form>
+                <div class="prose">
+                    <h3 class="font-bold text-lg">Can't find your database?</h3>
+                    <p>1. Open your database in Notion.</p>
+                    <p>2. Select the three dots menu at the top-right:</p>
+                    <img src="/images/duplicates/find-database-1.png" class="border border-gray-300 rounded mt-0 mb-0">
+                    <p>3. Select Connect to > Exnota:</p>
+                    <img src="/images/duplicates/find-database-2.png" class="border border-gray-300 rounded mt-0 mb-0">
+                    <p>4. Refresh your workspace</p>
+                </div>
+                <div class="modal-action">
+                    <form method="dialog">
+                        <!-- if there is a button in form, it will close the modal -->
+                        <button class="btn btn-primary">Refresh workspace</button>
+                    </form>
+                </div>
+            </div>
+            <form method="dialog" class="modal-backdrop">
+                <button>close</button>
+            </form>
+        </dialog>
     </AppLayout>
 </template>
