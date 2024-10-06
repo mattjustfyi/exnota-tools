@@ -44,9 +44,18 @@ const callDuplicateCreateController = (notionObjectId) => {
     router.post('/duplicates/request', { notion_object_id: notionObjectId });
 };
 
+const isLoading = ref(false);
+
 const fetchUserData = () => {
     console.log('fetchUserData called');
-    router.post(`/test/workspace/${props.workspace.id}/refresh`);
+    isLoading.value = true;
+    router.post(`/test/workspace/${props.workspace.id}/refresh`, {}, {
+        preserveState: true,
+        preserveScroll: true,
+        onFinish: () => {
+            isLoading.value = false;
+        }
+    });
 };
 
 const startPeriodicRefresh = () => {
@@ -133,8 +142,8 @@ console.log('Script setup completed');
                                 style="width:1em;height:1em;vertical-align:-0.15em;" />
                             {{ workspace.workspace_name }}
                         </Heading>
-                        <button @click="fetchUserData" class="btn btn-secondary btn-outline btn-sm sm:mt-0">
-                            Refresh
+                        <button @click="fetchUserData" :disabled="isLoading" class="btn btn-secondary btn-outline btn-sm sm:mt-0">
+                            {{ isLoading ? 'Refreshing...' : 'Refresh' }}
                         </button>
                     </div>
                     <!-- TODO: Update this style -->
