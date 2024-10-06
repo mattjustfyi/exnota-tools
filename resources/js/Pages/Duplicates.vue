@@ -1,5 +1,5 @@
 <script setup>
-import AppLayoutNoUser from '@/Layouts/AppLayoutNoUser.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link } from "@inertiajs/vue3";
 
 defineProps({
@@ -27,7 +27,7 @@ const fetchUserData = () => {
 </script>
 
 <template>
-    <AppLayoutNoUser>
+    <AppLayout>
 
         <Head title="Duplicates - Exnota Tools - Find/delete duplicate Notion database rows" />
         <h1>Find/Delete duplicate Rows</h1>
@@ -35,5 +35,5 @@ const fetchUserData = () => {
         <Link href="/duplicates/connect" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Start</Link>
         <br><br>
         <button @click="fetchUserData">Refresh Workspace</button>
-    </AppLayoutNoUser>
+    </AppLayout>
 </template>
