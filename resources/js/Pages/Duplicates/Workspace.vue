@@ -149,7 +149,7 @@ console.log('Script setup completed');
                                     @click.prevent="existing_duplicate_requests[object.id] ? router.visit(`/duplicates/request/${existing_duplicate_requests[object.id]}/confirm`) : selectDatabase(object)"
                                     class="card bg-base-100 no-underline hover:no-underline flex justify-between items-center cursor-pointer">
                                     <div class="card-body p-4 w-full">
-                                        <div class="flex">
+                                        <div class="flex items-center">
                                             <div class="flex-grow mr-6 overflow-hidden">
                                                 <div class="card-title">
                                                     <h2 class="text-primary font-medium text-sm truncate">
