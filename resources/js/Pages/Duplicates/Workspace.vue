@@ -146,9 +146,14 @@ console.log('Script setup completed');
                         </button>
                     </div>
                     <!-- TODO: Update this style -->
-                    <p v-if="props.workspace.sync_status === 'failed'" class="ml-4 text-red-500">
-                        Sync failed. Please try again.
-                    </p>
+                    <div v-if="props.workspace.sync_status === 'failed'" class="alert alert-error">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M18.364 5.636l-12.728 12.728M5.636 5.636l12.728 12.728" />
+                        </svg>
+                        <span>Sync failed. Please try again.</span>
+                    </div>
 
                     <div class="mt-12">
                         <div v-if="['queued', 'in_progress'].includes(props.workspace.sync_status)"
