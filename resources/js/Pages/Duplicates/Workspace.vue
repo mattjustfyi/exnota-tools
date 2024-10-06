@@ -143,17 +143,17 @@ console.log('Script setup completed');
                     </p>
 
                     <div class="mt-12">
-                        <div class="flex justify-between items-center">
-                            <h4 class="text-2xl font-bold text-gray-900">Databases</h4>
-                            <button class="btn btn-ghost -mr-4" @click="openModal()">Can't find
-                                it?</button>
-                        </div>
                         <div v-if="['queued', 'in_progress'].includes(props.workspace.sync_status)"
                             class="mt-4 flex justify-center items-center">
                             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500">
                             </div>
                         </div>
                         <template v-if="['complete', 'failed'].includes(props.workspace.sync_status)">
+                            <div class="flex justify-between items-center">
+                                <h4 class="text-2xl font-bold text-gray-900">Databases</h4>
+                                <button class="btn btn-ghost -mr-4" @click="openModal()">Can't find
+                                    it?</button>
+                            </div>
                             <div v-if="sortedNotionObjects.length" class="mt-4 space-y-2">
                                 <a v-for="object in sortedNotionObjects" :key="object.id"
                                     @click.prevent="existing_duplicate_requests[object.id] ? router.visit(`/duplicates/request/${existing_duplicate_requests[object.id]}/confirm`) : selectDatabase(object)"
