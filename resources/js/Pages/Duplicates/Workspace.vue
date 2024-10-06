@@ -11,6 +11,11 @@ const openModal = () => {
     document.getElementById('modal-cant-find-it').showModal();
 };
 
+const refreshAndCloseModal = () => {
+    document.getElementById('modal-cant-find-it').close();
+    fetchUserData();
+};
+
 const props = defineProps({
     workspace: {
         type: Object,
@@ -215,10 +220,7 @@ console.log('Script setup completed');
                     <p>4. Refresh your workspace</p>
                 </div>
                 <div class="modal-action">
-                    <form method="dialog">
-                        <!-- if there is a button in form, it will close the modal -->
-                        <button class="btn btn-primary">Refresh workspace</button>
-                    </form>
+                    <button @click="refreshAndCloseModal" class="btn btn-primary">Refresh workspace</button>
                 </div>
             </div>
             <form method="dialog" class="modal-backdrop">
