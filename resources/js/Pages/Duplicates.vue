@@ -39,7 +39,7 @@ const fetchUserData = () => {
                         <Heading :level="1" class="truncate">
                             Connect to Notion
                         </Heading>
-                        <p>Select your database in Notion and press Allow Access.</p>
+                        <p>Select your database in Notion and press <strong>Allow Access</strong>.</p>
                     </div>
 
                     <img src="/images/duplicates/notion-auth-short.gif"
