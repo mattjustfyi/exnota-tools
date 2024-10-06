@@ -35,22 +35,27 @@ const fetchUserData = () => {
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-background overflow-hidden p-6">
 
-                    <div class="mb-6">
-                        <Heading :level="1" class="truncate">
-                            Connect to Notion
-                        </Heading>
-                        <p>Select your database in Notion and press <strong>Allow Access</strong>.</p>
+                    <div class="hero">
+                        <div class="hero-content flex-col lg:flex-row-reverse">
+                            <img src="/images/duplicates/search-results-sample2.png"
+                                class="sm:max-w-xs md:max-w-s j shadow-lg rounded-xl" />
+                            <div>
+                                <h1 class="text-4xl font-bold leading-normal">Delete duplicates in a Notion
+                                    database.<span class="block">Without
+                                        tricks.</span></h1>
+                                <p class="py-6">
+                                    Automatically delete database entries with the same title, so you don’t have to mess
+                                    with database tricks or CSVs.
+                                </p>
+                                <div class="flex justify-end lg:justify-start">
+                                    <Link href="/duplicates/connect" class="btn btn-primary px-8">
+                                    Start
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <img src="/images/duplicates/notion-auth-short.gif"
-                        alt="On the next screen, login to Notion, select your database, and select Allow Access"
-                        class="w-full mb-6 border border-gray-300" />
-
-                    <div class="flex justify-end">
-                        <Link href="/duplicates/connect" class="btn btn-primary">
-                        Go to Notion
-                        </Link>
-                    </div>
                 </div>
             </div>
         </div>
