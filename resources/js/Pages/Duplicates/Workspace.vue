@@ -7,14 +7,8 @@ import Heading from '@/Components/Heading.vue';
 
 console.log('Script setup started');
 
-const showModal = ref(false);
-
 const openModal = () => {
     document.getElementById('modal-cant-find-it').showModal();
-};
-
-const closeModal = () => {
-    document.getElementById('modal-cant-find-it').close();
 };
 
 const props = defineProps({
@@ -134,7 +128,7 @@ console.log('Script setup completed');
                                 style="width:1em;height:1em;vertical-align:-0.15em;" />
                             {{ workspace.workspace_name }}
                         </Heading>
-                        <button @click="fetchUserData" class="btn btn-secondary btn-outline sm:mt-0">
+                        <button @click="fetchUserData" class="btn btn-secondary btn-outline btn-sm sm:mt-0">
                             Refresh
                         </button>
                     </div>
@@ -143,7 +137,7 @@ console.log('Script setup completed');
                         Sync failed. Please try again.
                     </p>
 
-                    <div class="mt-8">
+                    <div class="mt-12">
                         <div class="flex justify-between items-center">
                             <h4 class="text-2xl font-bold text-gray-900">Databases</h4>
                             <button class="btn btn-ghost -mr-4" @click="openModal()">Can't find
