@@ -7,6 +7,16 @@ import Heading from '@/Components/Heading.vue';
 
 console.log('Script setup started');
 
+const showModal = ref(false);
+
+const openModal = () => {
+    showModal.value = true;
+};
+
+const closeModal = () => {
+    showModal.value = false;
+};
+
 const props = defineProps({
     workspace: {
         type: Object,
@@ -136,7 +146,7 @@ console.log('Script setup completed');
                     <div class="mt-8">
                         <div class="flex justify-between items-center">
                             <h4 class="text-2xl font-bold text-gray-900">Databases</h4>
-                            <button class="btn btn-ghost -mr-4">Can't find it?</button>
+                            <button class="btn btn-ghost -mr-4" @click="openModal">Can't find it?</button>
                         </div>
                         <div v-if="['queued', 'in_progress'].includes(props.workspace.sync_status)"
                             class="mt-4 flex justify-center items-center">
@@ -171,6 +181,24 @@ console.log('Script setup completed');
                             <p v-else class="mt-4 text-gray-600">No Notion Objects available for this workspace.</p>
                         </template>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <input type="checkbox" id="my-modal" class="modal-toggle" v-model="showModal" />
+        <div class="modal" :class="{ 'modal-open': showModal }">
+            <div class="modal-box">
+                <h3 class="font-bold text-lg">Can't find your database?</h3>
+                <p class="py-4">Here's some placeholder text to help you troubleshoot:</p>
+                <ul class="list-disc list-inside">
+                    <li>Make sure you've connected the correct Notion workspace</li>
+                    <li>Check if the database is shared with the integration</li>
+                    <li>Try refreshing the page or clicking the "Refresh" button</li>
+                    <li>If the problem persists, contact our support team</li>
+                </ul>
+                <div class="modal-action">
+                    <button class="btn" @click="closeModal">Close</button>
                 </div>
             </div>
         </div>
