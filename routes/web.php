@@ -5,17 +5,13 @@ use App\Http\Controllers\DuplicatesConnectController;
 use App\Http\Controllers\DuplicateCreateController;
 use App\Http\Controllers\DuplicateDeleteController;
 use App\Http\Controllers\DuplicateCancelController;
+use App\Http\Controllers\DuplicatesCreateAccountController;
 use App\Http\Controllers\NotionAuthSaveController;
 use App\Http\Controllers\WorkspaceController;
 use App\Http\Controllers\WorkspaceRefreshController;
 use App\Http\Middleware\CreateDuplicateRequestPolicyMiddleware;
-use App\Jobs\WorkspaceRefresh;
 use App\Models\ToolDuplicateRequest;
-use App\Models\Workspace;
 use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -49,6 +45,9 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
+
+    Route::get('/duplicates/create-account', [DuplicatesCreateAccountController::class, 'show'])
+        ->name('duplicates.create-account');
 
     Route::get('/duplicates/workspace/{workspace}', [WorkspaceController::class, 'show'])
         ->name('duplicates.workspace')
