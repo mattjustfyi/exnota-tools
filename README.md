@@ -6,7 +6,8 @@
     - [Steps](#steps)
   - [Local development](#local-development)
     - [Running](#running)
-    - [Workers](#workers)
+      - [Automatic](#automatic)
+      - [Commands](#commands)
     - [Redis](#redis)
     - [Setup](#setup)
     - [Database UI](#database-ui)
@@ -144,19 +145,29 @@ Deploy improvement ideas:
 
 ### Running
 
+#### Automatic
+
+1. Copy `iterm2-exnota-tools-local.py` to `/Users/matt/Library/Application Support/iTerm2/Scripts`
+2. Cmd > `Debug: Select and Start Debugging` > `Listen for Sail XDebug`
+3. Open new iTerm2 window
+4. ⌘ ⇧ O
+5. Select `iterm2-exnota-tools-local`
+6. Go to `http://localhost`
+
+#### Commands
+
 ```bash
+# Sail-managed docker-compose
 ./vendor/bin/sail up
 ./vendor/bin/sail down
-```
 
-### Workers
+# Frontend
+npm run dev
 
-Manually start workers in debug mode:
-
-```bash
-# See supervised-worker.conf
+# Workers (For more details: supervised-worker.conf)
 ./vendor/bin/sail debug queue:listen -vvv --queue=default --timeout=180
 ./vendor/bin/sail debug queue:listen -vvv --queue=delete-1 --timeout=180
+./vendor/bin/sail debug queue:listen -vvv --queue=delete-2 --timeout=180
 ```
 
 ### Redis
