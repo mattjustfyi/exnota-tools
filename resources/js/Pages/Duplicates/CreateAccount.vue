@@ -32,10 +32,12 @@ const submitForm = () => {
                             2/4 Create account
                         </Heading>
                     </div>
-                    <p class="mb-6 text-gray-600">One-step sign-up to save your Notion details.</p>
-                    <p class="mb-6 text-gray-600">No marketing. Important emails only.</p>
+                    <div class="prose">
+                        <p>One-step sign-up to save your Notion details.</p>
+                        <p>No marketing. Important emails only.</p>
+                    </div>
                     <form @submit.prevent="submitForm">
-                        <div class="mb-6">
+                        <div class="mb-16 mt-16">
                             <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
                             <div class="mt-1 flex rounded-md shadow-sm">
                                 <input disabled type="email" name="email" id="email" v-model="form.email"
@@ -47,7 +49,7 @@ const submitForm = () => {
                                 </button>
                             </div>
                         </div>
-                        <p class="mb-6 text-sm text-gray-600">
+                        <p class="mt-16 mb-4 text-sm text-gray-400">
                             By continuing, you acknowledge that you understand and agree to the
                             <a href="#" class="text-indigo-600 hover:text-indigo-500">Terms & Conditions</a> and
                             <a href="#" class="text-indigo-600 hover:text-indigo-500">Privacy Policy</a>.
