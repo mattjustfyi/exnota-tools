@@ -1,7 +1,7 @@
 <script setup>
 import Heading from '@/Components/Heading.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { Head, Link, useForm } from "@inertiajs/vue3";
+import { Head, Link, useForm, router } from "@inertiajs/vue3";
 import { ref } from 'vue';
 
 const props = defineProps({
@@ -27,6 +27,12 @@ const submitForm = () => {
         <div class="bg-background">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-background overflow-hidden p-6">
+                    <!--
+                        🚨🚨🚨
+                        If updating any of this page, also update consent grant
+                        in app/Http/Controllers/DuplicatesConsentController.php
+                        🚨🚨🚨
+                     -->
                     <div class="mb-6">
                         <Heading :level="1" class="truncate">
                             2/4 Create account

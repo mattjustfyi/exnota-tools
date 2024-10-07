@@ -5,6 +5,7 @@ use App\Http\Controllers\DuplicatesConnectController;
 use App\Http\Controllers\DuplicateCreateController;
 use App\Http\Controllers\DuplicateDeleteController;
 use App\Http\Controllers\DuplicateCancelController;
+use App\Http\Controllers\DuplicatesConsentController;
 use App\Http\Controllers\DuplicatesCreateAccountController;
 use App\Http\Controllers\NotionAuthSaveController;
 use App\Http\Controllers\WorkspaceController;
@@ -48,6 +49,9 @@ Route::middleware([
 
     Route::get('/duplicates/create-account', [DuplicatesCreateAccountController::class, 'show'])
         ->name('duplicates.create-account');
+
+    Route::post('/duplicates/consent', DuplicatesConsentController::class)
+        ->name('duplicates.consent');
 
     Route::get('/duplicates/workspace/{workspace}', [WorkspaceController::class, 'show'])
         ->name('duplicates.workspace')
