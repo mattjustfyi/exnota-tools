@@ -8,6 +8,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
+use App\DTOs\ConsentGrant;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -27,6 +30,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'consent',
     ];
 
     /**
@@ -39,6 +43,7 @@ class User extends Authenticatable
         'remember_token',
         'two_factor_recovery_codes',
         'two_factor_secret',
+        'consent',
     ];
 
     /**
@@ -69,5 +74,39 @@ class User extends Authenticatable
     public function workspaces()
     {
         return $this->hasMany(Workspace::class);
+    }
+
+    protected function consent(): Attribute
+    {
+        return Attribute::make(
+            get: function (?string $value) {
+                if (!$value) {
+                    return null;
+                }
+
+                $arr = json_decode($value, true);
+
+                return array_map(function ($entry) {
+                    return new ConsentGrant(
+                        Carbon::parse($entry['timestamp']),
+                        $entry['terms_version'],
+                        $entry['privacy_version'],
+                        $entry['consent_url'],
+                        $entry['consent_language']
+                    );
+                }, $arr);
+            },
+            set: function (array $value) {
+                return json_encode(array_map(function (ConsentGrant $grant) {
+                    return [
+                        'timestamp' => $grant->timestamp->toDateTimeString(),
+                        'terms_version' => $grant->terms_version,
+                        'privacy_version' => $grant->privacy_version,
+                        'consent_url' => $grant->consent_url,
+                        'consent_language' => $grant->consent_language,
+                    ];
+                }, $value));
+            }
+        );
     }
 }
