@@ -2,20 +2,10 @@
 import ApiTokenManager from '@/Pages/API/Partials/ApiTokenManager.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 
-// defineProps({
-//     tokens: Array,
-//     availablePermissions: Array,
-//     defaultPermissions: Array,
-// });
-
-
 
 // Get "code" request param
 const urlParams = new URLSearchParams(window.location.search);
 const code = urlParams.get('code');
-
-// Print the code
-console.log(code);
 
 // Send code to server
 fetch('/api/notion/auth/save', {
@@ -27,35 +17,20 @@ fetch('/api/notion/auth/save', {
 })
     .then(async (response) => {
         console.log(response);
-        // const data = await response.text();
         const json = await response.json();
         return json;
     })
     .finally(() => {
-        // console.log(data);
-        // window.location.href = `/duplicates/workspace/${data.workspace_id}`;
         window.opener.location.reload(); // Reload parent window
         window.close(); // Close current window
     })
-// .then(data => {
-//     console.log(data);
-//     // window.location.href = `/duplicates/workspace/${data.workspace_id}`;
-//     window.opener.location.reload(); // Reload parent window
-//     window.close(); // Close current window
-
-//     // if (data && data.workspace_id) {
-//     //     // Redirect to the workspace page
-//     //     window.location.href = `/duplicates/workspace/${data.workspace_id}`;
-//     // } else {
-//     //     console.error('Workspace ID not found in the response');
-// })
-// .catch(error => {
-//     // Handle any errors
-//     console.error('Error:', error);
-// });
-
 </script>
 
 <template>
-    Taking you back to Exnota Tools...
+    <div class="flex flex-col items-center justify-center h-screen">
+        <div class="flex items-center justify-center space-x-2">
+            <span class="loading loading-spinner loading-lg"></span>
+        </div>
+        <p class="mt-4 text-center">Taking you back to Exnota Tools</p>
+    </div>
 </template>
