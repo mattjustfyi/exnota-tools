@@ -14,6 +14,10 @@ class DuplicatesConnectController extends Controller
         $user = Auth::user();
 
         if ($user) {
+            if (empty($user->consent)) {
+                return to_route('duplicates.create-account');
+            }
+
             $latestWorkspace = $user->workspaces()->latest('updated_at')->first();
             if ($latestWorkspace) {
                 return to_route('duplicates.workspace', ['workspace' => $latestWorkspace->id]);
@@ -23,7 +27,6 @@ class DuplicatesConnectController extends Controller
         $workspaces = $user ? $user->workspaces : null;
 
         return Inertia::render('Duplicates/Connect', [
-            'user' => $user,
             'workspaces' => $workspaces,
             'notionClientId' => env('NOTION_CLIENT_ID'),
             'notionRedirectUri' => url('/api/notion/auth/redirect'),

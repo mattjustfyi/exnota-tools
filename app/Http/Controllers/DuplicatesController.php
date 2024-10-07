@@ -11,8 +11,6 @@ class DuplicatesController extends Controller
 {
     public function show(Request $request, User $user)
     {
-        return Inertia::render('Duplicates', [
-            'user' => $user
-        ]);
+        return Inertia::render('Duplicates', []);
     }
 }
