@@ -130,7 +130,7 @@ console.log('Script setup completed');
 
                     <div class="mb-6">
                         <Heading :level="1" class="truncate">
-                            Select database
+                            3/4 Select database
                         </Heading>
                     </div>
                     <div class="mb-6 flex justify-between items-center">
@@ -230,7 +230,7 @@ console.log('Script setup completed');
                     <img src="/images/duplicates/find-database-1.png" class="border border-gray-300 rounded mt-0 mb-0">
                     <p>3. Select Connect to > Exnota:</p>
                     <img src="/images/duplicates/find-database-2.png" class="border border-gray-300 rounded mt-0 mb-0">
-                    <p>4. Refresh your workspace</p>
+                    <p>4. Select Refresh Workspace below.</p>
                 </div>
                 <div class="modal-action">
                     <button @click="refreshAndCloseModal" class="btn btn-primary">Refresh workspace</button>
