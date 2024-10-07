@@ -10,11 +10,11 @@ class DuplicatesConnectController extends Controller
 {
     public function show()
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         if ($user) {
             $latestWorkspace = $user->workspaces()->latest('updated_at')->first();
-            
             if ($latestWorkspace) {
                 return to_route('duplicates.workspace', ['workspace' => $latestWorkspace->id]);
             }
