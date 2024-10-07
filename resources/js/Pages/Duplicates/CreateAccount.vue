@@ -22,7 +22,7 @@ const props = defineProps({
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-background overflow-hidden p-6">
 
-                    {{ props.user.name }}
+
                 </div>
             </div>
         </div>
