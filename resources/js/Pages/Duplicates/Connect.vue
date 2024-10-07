@@ -3,7 +3,9 @@ import Heading from '@/Components/Heading.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import AppLayoutNoUser from '@/Layouts/AppLayoutNoUser.vue';
 import { Head, Link, router } from "@inertiajs/vue3";
-import { computed, onBeforeMount } from 'vue';
+import { computed, onBeforeMount, ref } from 'vue';
+
+const isWindowOpened = ref(false);
 
 const props = defineProps({
     user: {
@@ -31,6 +33,7 @@ const url = "https://api.notion.com/v1/oauth/authorize?client_id=" +
 
 const openNewWindow = () => {
     window.open(url, '_blank');
+    isWindowOpened.value = true;
 };
 
 const shouldNavigateToWorkspace = computed(() => {
@@ -64,22 +67,29 @@ onBeforeMount(() => {
                     </template>
 
                     <template v-else>
-                        <div class="mb-6">
-                            <Heading :level="1" class="truncate">
-                                1/4 Connect to Notion
-                            </Heading>
-                            <p>Select your database in Notion and press <strong>Allow Access</strong>.</p>
-                        </div>
+                        <template v-if="isWindowOpened">
+                            <div class="flex justify-center items-center h-1/2 mt-32">
+                                <span class="loading loading-spinner loading-lg"></span>
+                            </div>
+                        </template>
+                        <template v-else>
+                            <div class="mb-6">
+                                <Heading :level="1" class="truncate">
+                                    1/4 Connect to Notion
+                                </Heading>
+                                <p>Select your database in Notion and press <strong>Allow Access</strong>.</p>
+                            </div>
 
-                        <img src="/images/duplicates/notion-auth-short.gif"
-                            alt="On the next screen, login to Notion, select your database, and select Allow Access"
-                            class="w-full mb-6 border border-gray-300" />
+                            <img src="/images/duplicates/notion-auth-short.gif"
+                                alt="On the next screen, login to Notion, select your database, and select Allow Access"
+                                class="w-full mb-6 border border-gray-300" />
 
-                        <div class="flex justify-end">
-                            <button @click="openNewWindow" class="btn btn-primary">
-                                Go to Notion
-                            </button>
-                        </div>
+                            <div class="flex justify-end">
+                                <button @click="openNewWindow" class="btn btn-primary">
+                                    Go to Notion
+                                </button>
+                            </div>
+                        </template>
                     </template>
                 </div>
             </div>
