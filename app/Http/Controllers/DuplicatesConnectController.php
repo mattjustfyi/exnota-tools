@@ -11,6 +11,15 @@ class DuplicatesConnectController extends Controller
     public function show()
     {
         $user = Auth::user();
+
+        if ($user) {
+            $latestWorkspace = $user->workspaces()->latest('updated_at')->first();
+            
+            if ($latestWorkspace) {
+                return to_route('duplicates.workspace', ['workspace' => $latestWorkspace->id]);
+            }
+        }
+
         $workspaces = $user ? $user->workspaces : null;
 
         return Inertia::render('Duplicates/Connect', [
