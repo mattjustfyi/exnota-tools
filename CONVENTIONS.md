@@ -14,6 +14,6 @@
 
 ## Frontend
 
-- Frontend uses Vue
+- Frontend uses Vue and Inertia.js.
 - Use default DaisyUI components/classes.
 - Enhance with standard TailwindCSS only if needed.
