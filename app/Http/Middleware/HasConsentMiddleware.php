@@ -17,7 +17,7 @@ class HasConsentMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         if (Gate::denies('has-consent')) {
-            abort(403, 'Unauthorized action.');
+            return to_route('duplicates');
         }
 
         return $next($request);
