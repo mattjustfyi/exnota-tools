@@ -112,8 +112,6 @@ watch(() => props.toolDuplicateRequest.search_ended_at, (newValue) => {
 
 const refreshInterval = ref(null);
 
-
-
 const deleteProgress = computed(() => {
     if (!deleteListCount.value || !deleteResultsCount.value) {
         return 0;
@@ -130,7 +128,12 @@ const deletionStatus = computed(() => {
     };
 });
 
+const showDeleteConfirmModal = () => {
+    document.getElementById('modal-delete-confirm').showModal();
+};
+
 const startDeletion = () => {
+    document.getElementById('modal-delete-confirm').close();
     router.post(route('duplicates.delete-request', props.toolDuplicateRequest.id));
 };
 
@@ -259,7 +262,7 @@ onUnmounted(() => {
                                     </div>
                                 </div>
                                 <div>
-                                    <button v-if="duplicatesCount > 0" @click="startDeletion()"
+                                    <button v-if="duplicatesCount > 0" @click="showDeleteConfirmModal()"
                                         :disabled="toolDuplicateRequest.delete_cancelled" :class="[
                                             'btn w-full',
                                             toolDuplicateRequest.delete_cancelled ? 'btn-disabled' : 'btn-primary'
@@ -393,6 +396,27 @@ onUnmounted(() => {
             </div>
         </div>
     </AppLayout>
+
+    <!-- Delete Confirmation Modal -->
+    <dialog id="modal-delete-confirm" class="modal">
+        <div class="modal-box">
+            <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+            </form>
+            <h3 class="font-bold text-lg">Confirm Deletion</h3>
+            <p class="py-4">{{ duplicatesCount }} duplicates will be moved to your Trash in Notion. You can manually
+                restore them in Notion if necessary.</p>
+            <div class="modal-action">
+                <form method="dialog">
+                    <button class="btn btn-outline mr-2">Cancel</button>
+                </form>
+                <button @click="startDeletion" class="btn btn-primary">Delete Duplicates</button>
+            </div>
+        </div>
+        <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+        </form>
+    </dialog>
 </template>
 
 <style scoped>
