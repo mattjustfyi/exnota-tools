@@ -8,21 +8,21 @@ const props = defineProps({
     user: {
         type: Object,
         required: true
-    }
+    },
+    errors: Object,
 });
 
 const form = useForm({
     email: props.user.email,
 });
 
-const tempEmail = ref(form.email);
+const tempEmail = ref();
 
 const submitForm = () => {
     router.post(route('duplicates.consent'), form)
 };
 
 const openModal = () => {
-    tempEmail.value = form.email;
     document.getElementById('modal-change-email').showModal();
 };
 
@@ -66,6 +66,9 @@ const updateEmail = () => {
                                     Change
                                 </button>
                             </div>
+                            <div v-if="errors.email" role="alert" class="alert alert-error mt-4">
+                                <span>{{ errors.email }}</span>
+                            </div>
                         </div>
                         <p class="mt-16 mb-4 text-sm text-gray-400">
                             By continuing, you acknowledge that you understand and agree to the
@@ -90,16 +93,15 @@ const updateEmail = () => {
                     <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                 </form>
                 <h3 class="font-bold text-lg">Change Email</h3>
-                <div class="mt-4">
-                    <label for="new-email" class="block text-sm font-medium text-gray-700">New Email</label>
-                    <input type="email" id="new-email" v-model="tempEmail"
-                        class="mt-1 block w-full input input-bordered" required>
-                </div>
+                <label class="input input-bordered flex items-center gap-2 mt-4">
+                    <input type="email" id="new-email" v-model="tempEmail" class="grow border-0"
+                        placeholder="Enter your email address..." />
+                </label>
                 <div class="modal-action">
-                    <button @click="updateEmail" class="btn btn-primary">Update</button>
                     <form method="dialog">
                         <button class="btn">Cancel</button>
                     </form>
+                    <button @click="updateEmail" class="btn btn-primary">Change Email</button>
                 </div>
             </div>
             <form method="dialog" class="modal-backdrop">
