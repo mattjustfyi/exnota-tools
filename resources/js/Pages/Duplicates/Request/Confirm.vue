@@ -112,8 +112,6 @@ watch(() => props.toolDuplicateRequest.search_ended_at, (newValue) => {
 
 const refreshInterval = ref(null);
 
-
-
 const deleteProgress = computed(() => {
     if (!deleteListCount.value || !deleteResultsCount.value) {
         return 0;
