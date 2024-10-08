@@ -72,8 +72,10 @@ const updateEmail = () => {
                         </div>
                         <p class="mt-16 mb-4 text-sm text-gray-400">
                             By continuing, you acknowledge that you understand and agree to the
-                            <a href="#" class="text-indigo-600 hover:text-indigo-500">Terms & Conditions</a> and
-                            <a href="#" class="text-indigo-600 hover:text-indigo-500">Privacy Policy</a>.
+                            <a href="/terms-of-service" target="_blank"
+                                class="text-indigo-600 hover:text-indigo-500">Terms & Conditions</a> and
+                            <a href="/privacy-policy" target="_blank"
+                                class="text-indigo-600 hover:text-indigo-500">Privacy Policy</a>.
                         </p>
                         <div class="flex justify-end">
                             <button type="submit"
