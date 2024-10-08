@@ -37,7 +37,7 @@ Route::get('/api/notion/auth/redirect', function () {
 // TODO: This probably shouldn't be "api"
 Route::post('/api/notion/auth/save', NotionAuthSaveController::class)->middleware('api');
 
-// Routes protected by auth:sanctum
+// Routes requiring login
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
@@ -53,31 +53,34 @@ Route::middleware([
     Route::post('/duplicates/consent', DuplicatesConsentController::class)
         ->name('duplicates.consent');
 
-    Route::get('/duplicates/workspace/{workspace}', [WorkspaceController::class, 'show'])
-        ->name('duplicates.workspace')
-        ->middleware('can:view,workspace');
+    // Routes requiring consent
+    Route::middleware('check.consent')->group(function () {
+        Route::get('/duplicates/workspace/{workspace}', [WorkspaceController::class, 'show'])
+            ->name('duplicates.workspace')
+            ->middleware('can:view,workspace');
 
-    Route::post('/test/workspace/{workspace}/refresh', [WorkspaceRefreshController::class, 'refresh'])
-        ->name('api.test.workspace.refresh')
-        ->middleware('can:update,workspace');
+        Route::post('/test/workspace/{workspace}/refresh', [WorkspaceRefreshController::class, 'refresh'])
+            ->name('api.test.workspace.refresh')
+            ->middleware('can:update,workspace');
 
-    Route::post('/duplicates/request', [DuplicateCreateController::class, 'create'])
-        ->name('duplicates.create-request')
-        ->middleware(CreateDuplicateRequestPolicyMiddleware::class);
+        Route::post('/duplicates/request', [DuplicateCreateController::class, 'create'])
+            ->name('duplicates.create-request')
+            ->middleware(CreateDuplicateRequestPolicyMiddleware::class);
 
-    Route::post('/duplicates/request/{toolDuplicateRequest}/delete', [DuplicateDeleteController::class, 'delete'])
-        ->name('duplicates.delete-request')
-        ->middleware('can:update,toolDuplicateRequest');
+        Route::post('/duplicates/request/{toolDuplicateRequest}/delete', [DuplicateDeleteController::class, 'delete'])
+            ->name('duplicates.delete-request')
+            ->middleware('can:update,toolDuplicateRequest');
 
-    Route::get('/duplicates/request/{toolDuplicateRequest}/confirm', function (ToolDuplicateRequest $toolDuplicateRequest) {
-        $toolDuplicateRequest->loadMissing('notionObject');
+        Route::get('/duplicates/request/{toolDuplicateRequest}/confirm', function (ToolDuplicateRequest $toolDuplicateRequest) {
+            $toolDuplicateRequest->loadMissing('notionObject');
 
-        return Inertia::render('Duplicates/Request/Confirm', [
-            'toolDuplicateRequest' => $toolDuplicateRequest,
-        ]);
-    })->name('duplicates.request.confirm')->middleware('can:view,toolDuplicateRequest');
+            return Inertia::render('Duplicates/Request/Confirm', [
+                'toolDuplicateRequest' => $toolDuplicateRequest,
+            ]);
+        })->name('duplicates.request.confirm')->middleware('can:view,toolDuplicateRequest');
 
-    Route::post('/duplicates/request/{toolDuplicateRequest}/cancel', [DuplicateCancelController::class, 'cancel'])
-        ->name('duplicates.cancel-request')
-        ->middleware('can:update,toolDuplicateRequest');
+        Route::post('/duplicates/request/{toolDuplicateRequest}/cancel', [DuplicateCancelController::class, 'cancel'])
+            ->name('duplicates.cancel-request')
+            ->middleware('can:update,toolDuplicateRequest');
+    });
 });
