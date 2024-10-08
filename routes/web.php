@@ -27,9 +27,7 @@ Route::get('/', function () {
 
 // Public routes
 Route::get('/duplicates', [DuplicatesController::class, 'show'])->name('duplicates');;
-
 Route::get('/duplicates/connect', [DuplicatesConnectController::class, 'show']);
-
 Route::get('/api/notion/auth/redirect', function () {
     return Inertia::render('API/Notion/Auth/Redirect');
 });
