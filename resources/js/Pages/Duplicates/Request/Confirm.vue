@@ -404,7 +404,8 @@ onUnmounted(() => {
                 <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
             </form>
             <h3 class="font-bold text-lg">Confirm Deletion</h3>
-            <p class="py-4">Are you sure you want to delete {{ duplicatesCount }} duplicates? This action cannot be undone.</p>
+            <p class="py-4">{{ duplicatesCount }} duplicates will be moved to your Trash in Notion. You can manually
+                restore them in Notion if necessary.</p>
             <div class="modal-action">
                 <form method="dialog">
                     <button class="btn btn-outline mr-2">Cancel</button>
