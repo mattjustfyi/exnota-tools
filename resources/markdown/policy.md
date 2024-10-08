@@ -6,15 +6,13 @@
 
 Welcome to Exnota. Your privacy is critically important to us. This Privacy Policy outlines how we collect, use, and protect your personal information when you use our services.
 
-## 2. Information we collect
+## 2. Information Collection and Use
 
-We collect the following types of information:
-
-* **Email address and name**: We collect email addresses and names from our users when they connect their Notion accounts and create an account.
+- **Hetzner (Hetzner Online GmbH)**: We use Hetzner for cloud computing services and securely storing user data, including personal information.
 
 ## 3. Personal Information
 
-We collect personal information that you provide to us when authorizing Exnota to connect to your Notion account, such as your name and email address. This information is used to provide you with our services and communicate with you.
+We collect personal information that you authorize us to access when connecting Exnota to your Notion accounts, such as your name and email address. This information is used to provide you with our services and communicate with you.
 
 ## 4. Data Security
 
