@@ -39,6 +39,7 @@ class HandleInertiaRequests extends Middleware
             'user' => $request->user()
                 ? $request->user()->only('id', 'name', 'email')
                 : null,
+            'env' => config('app.env'),
         ]);
     }
 }
