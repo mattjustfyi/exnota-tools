@@ -45,7 +45,7 @@ const logout = () => {
                                 <Link href="/" class="text-sm font-medium text-gray-600">
                                 Exnota Tools
                                 </Link>
-                                <Link :href="route('dashboard')" class="text-xl font-bold text-primary mt-1">
+                                <Link :href="route('duplicates')" class="text-xl font-bold text-primary mt-1">
                                 Delete Duplicates
                                 </Link>
                             </div>
