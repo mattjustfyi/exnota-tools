@@ -21,3 +21,8 @@ curl -X POST \
 curl -X POST \
     -H "Content-Type: application/json" \
     https://tools.exnota.com/test/workspace/1/refresh
+
+
+### Slack webhook
+# https://api.slack.com/apps/A07QLH0RKV5/incoming-webhooks
+curl -X POST -H 'Content-type: application/json' --data '{"text":"Hello, World!"}' https://hooks.slack.com/services/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
