@@ -78,7 +78,7 @@ return [
             'url' => env('LOG_SLACK_WEBHOOK_URL'),
             // 'username' => env('LOG_SLACK_USERNAME', 'Laravel Log'),
             'emoji' => env('LOG_SLACK_EMOJI', ':tada:'),
-            'level' => 'debug',
+            'level' => env('LOG_SLACK_LEVEL', 'debug'),
             'replace_placeholders' => true,
         ],
 
