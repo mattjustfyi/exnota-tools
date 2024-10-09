@@ -1,12 +1,9 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
-import ApplicationMark from '@/Components/ApplicationMark.vue';
 import Banner from '@/Components/Banner.vue';
-import Dropdown from '@/Components/Dropdown.vue';
-import DropdownLink from '@/Components/DropdownLink.vue';
-import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
+import HelpMessage from '@/Components/HelpMessage.vue';
 
 const props = defineProps({
     title: String,
@@ -180,6 +177,10 @@ const logout = () => {
             <!-- Page Content -->
             <main>
                 <slot />
+
+                <div class="pt-12 pb-24 px-12">
+                    <HelpMessage class="mt-6 text-xs" />
+                </div>
             </main>
         </div>
     </div>

@@ -240,7 +240,7 @@ onUnmounted(() => {
                             </svg>
                             <div>
                                 <h3 class="font-bold">Searching failed</h3>
-                                <div class="text-xs">Check that Exnota still has access to the database and <a
+                                <div class="text-xs mt-2">Check that Exnota still has access to the database and <a
                                         class="link" @click="searchAgain">try again</a>.
                                 </div>
                             </div>
