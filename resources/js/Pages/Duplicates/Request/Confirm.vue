@@ -263,7 +263,7 @@ onUnmounted(() => {
                                         <p class="text-2xl font-bold text-primary">{{ searchResultsCount }}</p>
                                     </div>
                                     <div>
-                                        <p class="text-sm text-gray-500">Duplicate rows</p>
+                                        <p class="text-sm text-gray-500">Duplicate rows*</p>
                                         <p class="text-2xl font-bold text-primary">{{ duplicatesCount }}</p>
                                     </div>
                                 </div>
@@ -276,6 +276,10 @@ onUnmounted(() => {
                                         Delete {{ duplicatesCount }} duplicates
                                     </button>
                                 </div>
+                                <p class="text-sm text-gray-500 mt-4 italic">* Duplicate means the same title. Other
+                                    properties
+                                    and
+                                    content may differ.</p>
                             </div>
                         </div>
 
@@ -412,6 +416,7 @@ onUnmounted(() => {
             <h3 class="font-bold text-lg">Confirm Deletion</h3>
             <p class="py-4">{{ duplicatesCount }} duplicates will be moved to your Trash in Notion. You can manually
                 restore them in Notion if necessary.</p>
+            <p>Duplicate means <strong>the titles are the same</strong>. Properties and content may be different.</p>
             <div class="modal-action">
                 <form method="dialog">
                     <button class="btn btn-outline mr-2">Cancel</button>
