@@ -205,6 +205,12 @@ onUnmounted(() => {
                     <!-- Database Section -->
                     <div class="mb-6">
                         <Heading :level="1" class="truncate">
+                            4/4 Delete duplicates
+                        </Heading>
+                    </div>
+                    <div class="mb-6 flex justify-between items-center">
+                        <Heading :level="4" class="truncate mr-4">
+                            Database:
                             <NotionObjectTitle :notion-object="toolDuplicateRequest.notion_object" />
                         </Heading>
                     </div>
