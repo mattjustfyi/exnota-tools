@@ -4,6 +4,7 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import { ref, watch, onMounted, onUnmounted, computed } from 'vue';
 import NotionObjectTitle from '@/Components/NotionObjectTitle.vue';
 import Heading from '@/Components/Heading.vue';
+import HelpMessage from '@/Components/HelpMessage.vue';
 
 console.log('Script setup started');
 
@@ -11,8 +12,12 @@ const openModal = () => {
     document.getElementById('modal-cant-find-it').showModal();
 };
 
-const refreshAndCloseModal = () => {
+const closeModal = () => {
     document.getElementById('modal-cant-find-it').close();
+};
+
+const refreshAndCloseModal = () => {
+    closeModal();
     fetchUserData();
 };
 
@@ -26,8 +31,6 @@ const props = defineProps({
         required: true
     }
 });
-
-console.log('Props:', props);
 
 const refreshInterval = ref(null);
 const selectedDatabase = ref(null);
@@ -230,6 +233,7 @@ console.log('Script setup completed');
                     <p>3. Select Connect to > Exnota:</p>
                     <img src="/images/duplicates/find-database-2.png" class="border border-gray-300 rounded mt-0 mb-0">
                     <p>4. Select Refresh Workspace below.</p>
+                    <HelpMessage :on-chat="closeModal" />
                 </div>
                 <div class="modal-action">
                     <button @click="refreshAndCloseModal" class="btn btn-primary">Refresh workspace</button>
