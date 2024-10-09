@@ -83,7 +83,7 @@ class WorkspaceRefresh implements ShouldQueue
                         $objectType = NotionObjectType::DATABASE;
                     } else {
                         // Log unknown object type and continue to next result
-                        Log::warning('Unknown object type: ' . $notionResult->object . ' for workspace: ' . $this->workspace->id);
+                        Log::error('Unknown object type: ' . $notionResult->object . ' for workspace: ' . $this->workspace->id);
                         continue;
                     }
 
@@ -102,6 +102,15 @@ class WorkspaceRefresh implements ShouldQueue
                             'data' => $notionResult,
                         ]);
                         Log::debug('NotionObject updated for workspace: ' . $this->workspace->id . ' with id: ' . $notionResult->id);
+
+                        // TODO: Skip importing archived objects. Will require
+                        // making a copy of the PHP Notion SDK because
+                        // it does not support the archived property on
+                        // databases.
+                        //
+                        // } else if ($notionResult->archived === true) {
+                        //     Log::debug('Skipping archived NotionObject for workspace: ' . $this->workspace->id . ' with id: ' . $notionResult->id);
+                        // continue;
                     } else {
                         // Create new NotionObject
                         NotionObject::create([
