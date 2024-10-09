@@ -10,6 +10,8 @@ Welcome to Exnota. Your privacy is critically important to us. This Privacy Poli
 
 - **Hetzner (Hetzner Online GmbH)**: We use Hetzner for cloud computing services and securely storing user data, including personal information.
 
+- **Crisp**: We use Crisp to communicate with users.
+
 ## 3. Personal Information
 
 We collect personal information that you authorize us to access when connecting Exnota to your Notion accounts, such as your name and email address. This information is used to provide you with our services and communicate with you.
