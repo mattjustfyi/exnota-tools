@@ -42,7 +42,7 @@ const logout = () => {
                         <div class="flex items-center">
                             <!-- Logo -->
                             <div class="shrink-0 flex flex-col items-start">
-                                <Link :href="route('dashboard')" class="text-sm font-medium text-gray-600">
+                                <Link href="/" class="text-sm font-medium text-gray-600">
                                 Exnota Tools
                                 </Link>
                                 <Link :href="route('dashboard')" class="text-xl font-bold text-primary mt-1">
