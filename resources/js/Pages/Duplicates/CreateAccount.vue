@@ -51,8 +51,8 @@ const updateEmail = () => {
                         </Heading>
                     </div>
                     <div class="prose">
-                        <p>One-step sign-up to save your Notion details.</p>
-                        <p>No marketing. Important emails only.</p>
+                        <p>One-step sign up to save your Notion details.</p>
+                        <p>No spam.</p>
                     </div>
                     <form @submit.prevent="submitForm">
                         <div class="mb-16 mt-16">
