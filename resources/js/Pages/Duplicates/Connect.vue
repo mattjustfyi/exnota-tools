@@ -26,6 +26,10 @@ const props = defineProps({
     }
 });
 
+const reload = () => {
+    window.location.reload();
+};
+
 const url = "https://api.notion.com/v1/oauth/authorize?client_id=" +
     props.notionClientId +
     "&response_type=code&owner=user&redirect_uri=" +
@@ -68,8 +72,15 @@ onBeforeMount(() => {
 
                     <template v-else>
                         <template v-if="isWindowOpened">
-                            <div class="flex justify-center items-center h-1/2 mt-32">
+                            <div class="flex flex-col justify-center items-center h-1/2 mt-32">
                                 <span class="loading loading-spinner loading-lg"></span>
+                                <p class="text-center mt-8">Opening Notion so you can connect.</p>
+                                <p class="text-center mt-4">If this message lasts more than a few seconds, please try
+                                    again.
+                                </p>
+                                <button @click="reload" class="btn btn-primary mt-8">
+                                    Try again
+                                </button>
                             </div>
                         </template>
                         <template v-else>
