@@ -8,7 +8,7 @@
     <h3 v-else-if="level === 3" class="text-xl font-semibold text-primary mb-2">
         <slot></slot>
     </h3>
-    <h4 v-else-if="level === 4" class="text-lg font-semibold mb-2">
+    <h4 v-else-if="level === 4" class="text-lg font-semibold">
         <slot></slot>
     </h4>
 </template>

@@ -134,7 +134,7 @@ console.log('Script setup completed');
                         </Heading>
                     </div>
                     <div class="mb-6 flex justify-between items-center">
-                        <Heading :level="4" class="truncate mb-0 mr-4">
+                        <Heading :level="4" class="truncate mr-4">
                             Workspace: <img v-if="props.workspace.workspace_icon" :src="props.workspace.workspace_icon"
                                 alt="Workspace Icon" class="inline-block mr-1"
                                 style="width:1em;height:1em;vertical-align:-0.15em;" />
@@ -152,7 +152,7 @@ console.log('Script setup completed');
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M18.364 5.636l-12.728 12.728M5.636 5.636l12.728 12.728" />
                         </svg>
-                        <span>Sync failed. Please try again.</span>
+                        <span>Loading databases from Notion failed. Please try again.</span>
                     </div>
 
                     <div class="mt-12">
@@ -164,8 +164,7 @@ console.log('Script setup completed');
                         <template v-if="['complete', 'failed'].includes(props.workspace.sync_status)">
                             <div class="flex justify-between items-center">
                                 <h4 class="text-2xl font-bold text-gray-900">Databases</h4>
-                                <button class="btn btn-ghost -mr-4" @click="openModal()">Can't find
-                                    it?</button>
+                                <button class="btn btn-ghost -mr-4" @click="openModal()">Not listed?</button>
                             </div>
                             <div v-if="sortedNotionObjects.length" class="mt-4 space-y-2">
                                 <a v-for="object in sortedNotionObjects" :key="object.id"
@@ -191,7 +190,7 @@ console.log('Script setup completed');
                                     </div>
                                 </a>
                             </div>
-                            <p v-else class="mt-4 text-gray-600">No Notion Objects available for this workspace.</p>
+                            <p v-else class="mt-4 text-gray-600">No Notion databases shared with Notion.</p>
                         </template>
                     </div>
                 </div>

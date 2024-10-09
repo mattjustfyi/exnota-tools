@@ -42,7 +42,7 @@ class DuplicatesConsentController extends Controller
             '1.0', // terms version
             '1.0', // privacy version
             url('/duplicates/create-account'),
-            '2/4 Create account\n\nOne-step sign-up to save your Notion details.\n\nNo marketing. Important emails only.\n\nBy continuing, you acknowledge that you understand and agree to the Terms & Conditions and Privacy Policy. Button: Create account',
+            '2/4 Create account\n\nOne-step sign up to save your Notion details.\n\nNo spam.\n\nBy continuing, you acknowledge that you understand and agree to the Terms & Conditions and Privacy Policy. Button: Create account',
         );
         $consent = $user->refresh()->consent;
         $consent = DB::table('users')
