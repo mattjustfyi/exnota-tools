@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class DuplicatesConnectController extends Controller
 {
     public function show()
     {
+        Log::channel('slack')->info('[User] Pressed connect.');
+
         /** @var \App\Models\User $user */
         $user = Auth::user();
 

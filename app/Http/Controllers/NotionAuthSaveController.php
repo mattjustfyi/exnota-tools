@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class NotionAuthSaveController extends Controller
 {
@@ -21,7 +22,7 @@ class NotionAuthSaveController extends Controller
     {
         $request->validate($request->rules());
 
-        // ...
+        Log::channel('slack')->info('[User] Saved auth.');
 
         try {
             $redirectUrl = url('/api/notion/auth/redirect');
