@@ -13,9 +13,6 @@ class DuplicateCreateController extends Controller
 {
     public function create(Request $request)
     {
-        // Simulate 2 seconds of lag
-        sleep(2);
-
         $request->validate([
             'notion_object_id' => 'required|integer',
         ]);

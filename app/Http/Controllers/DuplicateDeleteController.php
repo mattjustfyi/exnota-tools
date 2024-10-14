@@ -22,6 +22,10 @@ class DuplicateDeleteController extends Controller
             return redirect()->back()->with('error', 'Delete request already in progress.');
         }
 
+        if (!is_array($toolDuplicateRequest->duplicates)) {
+            throw new \Exception('Invalid duplicates data. Expected an array.');
+        }
+
         $deleteList = [];
         foreach ($toolDuplicateRequest->duplicates as $result) {
             $dtos = $result->delete;

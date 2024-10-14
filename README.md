@@ -13,6 +13,7 @@
     - [Database UI](#database-ui)
       - [Local](#local)
       - [Prod](#prod)
+    - [Testing](#testing)
     - [Troubleshooting](#troubleshooting)
       - [Web: Inertia route opens in iframe](#web-inertia-route-opens-in-iframe)
     - [Laravel Model: BadMethodCallException \[...\] Method \[nethodName in model\] does not exist](#laravel-model-badmethodcallexception--method-nethodname-in-model-does-not-exist)
@@ -72,7 +73,13 @@
 
 ### Steps
 
-1. !FIRST TIME ONLY! deploying from a specific device.
+1. Run tests
+
+    ```bash
+    ./sail.sh debug test tests/Feature/AuthorizationTest.php
+    ```
+  
+2. !FIRST TIME ONLY! deploying from a specific device.
    - Don't run inside dev container!
    - Ensure you have configured [SSH](#ssh)
    - Add Dokku remote to git repo
@@ -82,7 +89,7 @@
         git remote add dokku dokku@<domain>:exnota-tools
         ```
 
-2. Deploy app
+3. Deploy app
    TODO: Migrations technically need to be run first to avoid issues. When site
    starts getting traffic, need to move to this.
 
@@ -94,7 +101,7 @@
       git push dokku <branch-name>:main
       ```
 
-3. Run migrations
+4. Run migrations
 
       ```bash
       ssh -t dokku@195.201.33.178 enter exnota-tools web php artisan migrate
@@ -104,7 +111,7 @@
       docker exec -it exnota-tools.web.1 php artisan migrate
       ```
 
-4. Manually restart worker
+5. Manually restart worker
 
     Laravel workers need to be restarted to get code changes: <https://laravel.com/docs/11.x/queues#the-queue-work-command>.
 
@@ -123,7 +130,7 @@
     dokku ps:restart exnota-tools
     ```
 
-5. Check statuses with `dokku ps:report exnota-tools`
+6. Check statuses with `dokku ps:report exnota-tools`
 
     ```bash
     ssh -t dokku@195.201.33.178 ps:report exnota-tools
@@ -248,6 +255,14 @@ del db_duplicate_delete-delay
    > - Host: 127.0.0.1
    > - Database: exnotatools
    > - User/Pass: [look up]
+
+### Testing
+
+Vite (frontend) must be running.
+
+- In debug `./sail.sh debug test`
+- Specific test `./sail.sh debug test --filter test_method_name`
+- Specific file `./sail.sh debug test tests/Feature/AuthorizationTest.php`
 
 ### Troubleshooting
 
