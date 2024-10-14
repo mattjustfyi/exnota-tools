@@ -1,5 +1,4 @@
 <script setup>
-import Heading from '@/Components/Heading.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link } from "@inertiajs/vue3";
 
@@ -53,6 +52,23 @@ const fetchUserData = () => {
                                     Start
                                     </Link>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-6 mt-16">
+                        <h3 class="text-xl font-bold">How long does it take?</h3>
+                    </div>
+
+                    <div class="flex justify-between">
+                        <div class="stats shadow">
+                            <div class="stat">
+                                <div class="stat-title">100 duplicates</div>
+                                <div class="stat-value">~5 min</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-title">1,000 duplicates</div>
+                                <div class="stat-value">~30 min</div>
                             </div>
                         </div>
                     </div>
