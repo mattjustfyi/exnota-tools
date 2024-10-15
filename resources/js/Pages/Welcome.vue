@@ -6,14 +6,15 @@ import { Head, Link } from '@inertiajs/vue3';
 <template>
 
     <Head title="Welcome" />
-    <div class="max-w-screen-md mx-auto mt-16">
-        <h1 class="text-4xl font-bold text-center">Exnota Tools</h1>
+    <div class="container xl:max-w-5xl mx-auto px-4">
+        <h1 class="text-4xl font-bold text-center mt-24">Exnota Tools</h1>
+        <p class=" text-center mt-4">Free tools for Notion.</p>
 
-        <div class="card card-side bg-base-100 mt-16 shadow-xl">
-            <figure class="max-w-xs">
+        <div class="card card-side w-full bg-base-100 mt-24 shadow-xl">
+            <figure class="max-w-xs w-64">
                 <img src="/images/duplicates/search-results-sample2.png" />
             </figure>
-            <div class="card-body">
+            <div class="card-body min-w-sm">
                 <h2 class="card-title">Delete Duplicates in Notion</h2>
                 <p>Delete database entries with identical titles.</p>
                 <div class="card-actions justify-end">
@@ -24,7 +25,7 @@ import { Head, Link } from '@inertiajs/vue3';
 
         <div class="divider my-16"></div>
 
-        <div class="card bg-base-100 w-96 shadow-xl mx-auto">
+        <div class="card bg-base-100 w-full shadow-xl mx-auto">
             <div class="card-body">
                 <h2 class="card-title text-center mx-auto">More coming soon</h2>
             </div>
