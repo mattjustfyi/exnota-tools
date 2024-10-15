@@ -73,13 +73,13 @@
 
 ### Steps
 
-1. Run tests
+1. Run tests locally.
 
     ```bash
     ./sail.sh debug test tests/Feature/AuthorizationTest.php
     ```
-  
-2. !FIRST TIME ONLY! deploying from a specific device.
+
+2. (FIRST TIME ONLY) deploying from a specific device.
    - Don't run inside dev container!
    - Ensure you have configured [SSH](#ssh)
    - Add Dokku remote to git repo
@@ -89,9 +89,21 @@
         git remote add dokku dokku@<domain>:exnota-tools
         ```
 
-3. Deploy app
+3. Check no-one's using the service: <https://app.crisp.chat/website/ce54fcea-7cfd-42ed-af5c-29d2512544d8/visitors/>
+
+4. Confirm on the correct branch locally (i.e. not a feature branch).
+
+    ```bash
+    git checkout main; git pull; 
+    ```
+
+5. Deploy app
    TODO: Migrations technically need to be run first to avoid issues. When site
-   starts getting traffic, need to move to this.
+   starts getting traffic, need to find a way to run migrations first. This
+   currently isn't possible using the deploy method below because until the git
+   push happens, the updated code with migrations isn't on the server. Might
+   need to search things like: laravel auto run migrations; dokku pre deploy
+   hooks. Also see below under 'Deploy improvement ideas:'.
 
       ```bash
       # Deploy master branch
@@ -101,7 +113,7 @@
       git push dokku <branch-name>:main
       ```
 
-4. Run migrations
+6. Run migrations
 
       ```bash
       ssh -t dokku@195.201.33.178 enter exnota-tools web php artisan migrate
@@ -111,7 +123,18 @@
       docker exec -it exnota-tools.web.1 php artisan migrate
       ```
 
-5. Manually restart worker
+7. Monitoring (deploy will disconnect connections, so must go after deploy):
+   1. (First time) `iterm2-exnota-tools-prod.py` to `/Users/matt/Library/Application Support/iTerm2/Scripts`
+   2. Open new iTerm2 window
+   3. ⌘ ⇧ O
+   4. Select `iterm2-exnota-tools-prod`
+   5. Insert password to each window:
+      1. `⌘ ⌥ F` to open password manager
+      2. `↓` then `⏎`
+      3. `⌘ ⌥ ↑↓←→` (next terminal)
+      4. Repeat
+
+8. (Probably not needed) Manually restart worker
 
     Laravel workers need to be restarted to get code changes: <https://laravel.com/docs/11.x/queues#the-queue-work-command>.
 
@@ -130,7 +153,7 @@
     dokku ps:restart exnota-tools
     ```
 
-6. Check statuses with `dokku ps:report exnota-tools`
+9. Check that web/worker services are running with `dokku ps:report exnota-tools`
 
     ```bash
     ssh -t dokku@195.201.33.178 ps:report exnota-tools
