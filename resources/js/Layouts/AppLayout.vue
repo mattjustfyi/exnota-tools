@@ -37,34 +37,34 @@ const logout = () => {
         <div class="min-h-screen bg-background">
             <nav class="bg-secondary border-b border-gray-200">
                 <!-- Primary Navigation Menu -->
-                <div class="max-w-7xl mx-auto p-4 sm:px-6 lg:px-8">
-                    <div class="flex justify-between h-12">
-                        <div class="flex items-center">
-                            <!-- Logo -->
-                            <div class="shrink-0 flex flex-col items-start">
-                                <Link href="/" class="text-sm font-medium text-gray-600">
-                                Exnota Tools
-                                </Link>
-                                <Link :href="route('duplicates')" class="text-xl font-bold text-primary mt-1">
-                                Delete Duplicates
-                                </Link>
+                <!-- 1/3 identical page width classes -->
+                <div class="container xl:max-w-5xl mx-auto px-4">
+                    <div class="py-4">
+                        <div class="flex justify-between h-12">
+                            <div class="flex items-center">
+                                <!-- Logo -->
+                                <div class="shrink-0 flex flex-col items-start">
+                                    <Link href="/" class="text-sm font-medium text-gray-600">
+                                    Exnota Tools
+                                    </Link>
+                                    <Link :href="route('duplicates')" class="text-xl font-bold text-primary mt-1">
+                                    Delete Duplicates
+                                    </Link>
+                                </div>
                             </div>
-                        </div>
-
-                        <!-- Placeholder for future content -->
-                        <div class="flex items-center">
-                        </div>
-
-                        <!-- Hamburger -->
-                        <div v-if="!$page.props.auth.user || !isLocal" class="">
-                            <a href="/">
-                                <img src="/images/exnota-128.png" alt="Exnota logo" class="max-h-full" />
-                            </a>
-                        </div>
-                        <div v-else class="">
-                            <img src="/images/exnota-128.png" alt="Exnota logo" class="max-h-full"
-                                @click="showingNavigationDropdown = !showingNavigationDropdown" />
-
+                            <!-- Placeholder for future content -->
+                            <div class="flex items-center">
+                            </div>
+                            <!-- Hamburger -->
+                            <div v-if="!$page.props.auth.user || !isLocal" class="">
+                                <a href="/">
+                                    <img src="/images/exnota-128.png" alt="Exnota logo" class="max-h-full" />
+                                </a>
+                            </div>
+                            <div v-else class="">
+                                <img src="/images/exnota-128.png" alt="Exnota logo" class="max-h-full"
+                                    @click="showingNavigationDropdown = !showingNavigationDropdown" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -169,16 +169,20 @@ const logout = () => {
 
             <!-- Page Heading -->
             <header v-if="$slots.header" class="bg-white shadow">
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                <!-- 2/3 identical page width classes -->
+                <div class="container xl:max-w-5xl mx-auto px-4">
                     <slot name="header" />
                 </div>
             </header>
 
             <!-- Page Content -->
-            <main>
+            <!-- 3/3 identical page width classes -->
+            <main class="container xl:max-w-5xl mx-auto px-4">
+                <div class="mt-8"></div>
+
                 <slot />
 
-                <div class="pt-12 pb-24 px-12">
+                <div class="pt-12 pb-24">
                     <HelpMessage class="mt-6 text-xs" />
                 </div>
             </main>

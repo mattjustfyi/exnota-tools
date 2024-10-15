@@ -14,7 +14,7 @@ import { Head, Link } from '@inertiajs/vue3';
                 <img src="/images/duplicates/search-results-sample2.png" />
             </figure>
             <div class="card-body">
-                <h2 class="card-title">Delete Duplicates</h2>
+                <h2 class="card-title">Delete Duplicates in Notion</h2>
                 <p>Delete database entries with identical titles.</p>
                 <div class="card-actions justify-end">
                     <a class="btn btn-primary" :href="route('duplicates')">Delete Duplicates</a>
