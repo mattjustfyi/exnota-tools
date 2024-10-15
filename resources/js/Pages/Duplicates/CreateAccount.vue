@@ -36,57 +36,50 @@ const updateEmail = () => {
     <AppLayout>
 
         <Head title="Create Account - Exnota Tools" />
-        <div class="bg-background">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-background overflow-hidden p-6">
-                    <!--
+        <!--
                         🚨🚨🚨
                         If updating any of this page, also update consent grant
                         in app/Http/Controllers/DuplicatesConsentController.php
                         🚨🚨🚨
                      -->
-                    <div class="mb-6">
-                        <Heading :level="1" class="truncate">
-                            2/4 Create account
-                        </Heading>
-                    </div>
-                    <div class="prose">
-                        <p>One-step sign up to save your Notion details.</p>
-                        <p>No spam.</p>
-                    </div>
-                    <form @submit.prevent="submitForm">
-                        <div class="mb-16 mt-16">
-                            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                            <div class="mt-1 flex rounded-md shadow-sm">
-                                <input disabled type="email" name="email" id="email" v-model="form.email"
-                                    class="flex-1 input input-bordered" placeholder="Enter your email address..."
-                                    required>
-                                <button type="button" @click="openModal"
-                                    class="ml-3 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    Change
-                                </button>
-                            </div>
-                            <div v-if="errors.email" role="alert" class="alert alert-error mt-4">
-                                <span>{{ errors.email }}</span>
-                            </div>
-                        </div>
-                        <p class="mt-16 mb-4 text-sm text-gray-400">
-                            By continuing, you acknowledge that you understand and agree to the
-                            <a href="/terms-of-service" target="_blank"
-                                class="text-indigo-600 hover:text-indigo-500">Terms & Conditions</a> and
-                            <a href="/privacy-policy" target="_blank"
-                                class="text-indigo-600 hover:text-indigo-500">Privacy Policy</a>.
-                        </p>
-                        <div class="flex justify-end">
-                            <button type="submit"
-                                class="flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                Create account
-                            </button>
-                        </div>
-                    </form>
+        <div class="mb-6">
+            <Heading :level="1" class="truncate">
+                2/4 Create account
+            </Heading>
+        </div>
+        <div class="prose">
+            <p>One-step sign up to save your Notion details.</p>
+            <p>No spam.</p>
+        </div>
+        <form @submit.prevent="submitForm">
+            <div class="mb-16 mt-16">
+                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                <div class="mt-1 flex rounded-md shadow-sm">
+                    <input disabled type="email" name="email" id="email" v-model="form.email"
+                        class="flex-1 input input-bordered" placeholder="Enter your email address..." required>
+                    <button type="button" @click="openModal"
+                        class="ml-3 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Change
+                    </button>
+                </div>
+                <div v-if="errors.email" role="alert" class="alert alert-error mt-4">
+                    <span>{{ errors.email }}</span>
                 </div>
             </div>
-        </div>
+            <p class="mt-16 mb-4 text-sm">
+                By continuing, you acknowledge that you understand and agree to the
+                <a href="/terms-of-service" target="_blank" class="text-indigo-600 hover:text-indigo-500">Terms &
+                    Conditions</a> and
+                <a href="/privacy-policy" target="_blank" class="text-indigo-600 hover:text-indigo-500">Privacy
+                    Policy</a>.
+            </p>
+            <div class="flex justify-end">
+                <button type="submit"
+                    class="flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Create account
+                </button>
+            </div>
+        </form>
 
         <!-- Modal for changing email -->
         <dialog id="modal-change-email" class="modal">

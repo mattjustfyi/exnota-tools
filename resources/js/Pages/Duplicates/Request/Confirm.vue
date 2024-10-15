@@ -322,7 +322,7 @@ onUnmounted(() => {
                     </div>
                 </a>
             </div>
-            <p v-else class="text-gray-600">No search results available.</p>
+            <p v-else class="text-gray-600">No duplicates found.</p>
         </div>
 
         <!-- Delete In Progress Section -->
