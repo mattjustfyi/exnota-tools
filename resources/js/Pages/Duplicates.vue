@@ -38,9 +38,8 @@ const fetchUserData = () => {
                         database.<span class="block">Without
                             tricks.</span></h1>
                     <p class="py-6">
-                        Automatically delete database entries with <strong>the same title</strong>, so you
-                        don’t have to mess
-                        with database tricks or CSVs.
+                        In just a few clicks, delete database entries with <strong>the same title</strong>, so you
+                        can avoid the hassle of using database tricks or cleaning up CSVs and starting from scratch.
                     </p>
                     <div class="flex justify-end lg:justify-start">
                         <Link href="/duplicates/connect" class="btn btn-primary px-8">

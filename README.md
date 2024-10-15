@@ -15,6 +15,7 @@
       - [Prod](#prod)
     - [Testing](#testing)
     - [Troubleshooting](#troubleshooting)
+      - [Web: After Notion connect, it redirects back to `/duplicates` instead of `/duplicates/create-account`](#web-after-notion-connect-it-redirects-back-to-duplicates-instead-of-duplicatescreate-account)
       - [Web: Inertia route opens in iframe](#web-inertia-route-opens-in-iframe)
     - [Laravel Model: BadMethodCallException \[...\] Method \[nethodName in model\] does not exist](#laravel-model-badmethodcallexception--method-nethodname-in-model-does-not-exist)
       - [DBeaver: Column has dot and on hover says `read-only no corresponding table column`](#dbeaver-column-has-dot-and-on-hover-says-read-only-no-corresponding-table-column)
@@ -288,6 +289,12 @@ Vite (frontend) must be running.
 - Specific file `./sail.sh debug test tests/Feature/AuthorizationTest.php`
 
 ### Troubleshooting
+
+#### Web: After Notion connect, it redirects back to `/duplicates` instead of `/duplicates/create-account`
+
+Check that you've cleared users from the database AND cleared all cookies locally.
+
+Encountered this when I forgot to clear cookies every time I cleared the database. It redirected from `/duplicates/connect` to `/duplicates/create-account` to `/login` to `/duplicates`. I believe the second redirect was a authentication error, hence the /login redirect and then /duplicates.
 
 #### Web: Inertia route opens in iframe
 
