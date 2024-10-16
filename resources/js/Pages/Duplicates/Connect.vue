@@ -5,7 +5,8 @@ import AppLayoutNoUser from '@/Layouts/AppLayoutNoUser.vue';
 import { Head, Link, router } from "@inertiajs/vue3";
 import { computed, onBeforeMount, ref } from 'vue';
 
-const waiting = ref(window.location.search.includes('status=waiting'));
+const isWaiting = ref(window.location.search.includes('status=waiting'));
+const isError = ref(window.location.search.includes('status=error'));
 
 const props = defineProps({
     user: {
@@ -51,7 +52,7 @@ const scheduleReload = () => {
 
 const openNewWindow = () => {
     authWindow.value = window.open(authUrl, '_blank');
-    waiting.value = true;
+    isWaiting.value = true;
 
     // Set waiting=true in URL
     const url = new URL(window.location);
@@ -62,6 +63,10 @@ const openNewWindow = () => {
 };
 
 onBeforeMount(() => {
+    const url = new URL(window.location);
+    url.searchParams.delete('status');
+    window.history.replaceState({}, document.title, url);
+
     window.notionAuthSuccess = () => {
         clearTimeout(reloadTimeout);
 
@@ -83,7 +88,12 @@ onBeforeMount(() => {
         console.log('xyz error!');
         authWindow.value.close();
 
-        // TODO: Repeat same as above
+        isError.value = true;
+
+        // Remove 'waiting' request param
+        const url = new URL(window.location);
+        url.searchParams.delete('status');
+        window.history.replaceState({}, document.title, url);
     };
 });
 
@@ -94,8 +104,15 @@ onBeforeMount(() => {
 
         <Head title="Duplicates - Exnota Tools - Find/delete duplicate Notion database rows" />
 
-
-        <template v-if="waiting">
+        <template v-if="isError">
+            <div class="flex flex-col justify-center items-center h-1/2 mt-32">
+                <p class="text-center">There was an error connecting to Notion.</p>
+                <button @click="hardReload" class="btn btn-primary mt-8">
+                    Try again
+                </button>
+            </div>
+        </template>
+        <template v-else-if="isWaiting">
             <div class="flex flex-col justify-center items-center h-1/2 mt-32">
                 <span class="loading loading-spinner loading-lg"></span>
                 <p class="text-center mt-8">Opening Notion so you can connect.</p>
