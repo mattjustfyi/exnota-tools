@@ -30,7 +30,6 @@ class DuplicatesConnectController extends Controller
         $workspaces = $user ? $user->workspaces : null;
 
         return Inertia::render('Duplicates/Connect', [
-            'workspaces' => $workspaces,
             'notionClientId' => env('NOTION_CLIENT_ID'),
             'notionRedirectUri' => url('/api/notion/auth/redirect'),
         ]);

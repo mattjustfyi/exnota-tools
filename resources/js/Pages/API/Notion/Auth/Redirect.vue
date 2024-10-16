@@ -21,8 +21,11 @@ fetch('/api/notion/auth/save', {
         return json;
     })
     .finally(() => {
-        window.opener.location.reload(); // Reload parent window
-        window.close(); // Close current window
+        // TODO: On error, call the other one if can
+        // TODO: If no window.opener, redirect to /duplicates/connect
+        if (window.opener?.notionAuthSuccess) {
+            window.opener.notionAuthSuccess();
+        }
     })
 </script>
 
@@ -31,6 +34,6 @@ fetch('/api/notion/auth/save', {
         <div class="flex items-center justify-center space-x-2">
             <span class="loading loading-spinner loading-lg"></span>
         </div>
-        <p class="mt-4 text-center">Taking you back to Exnota Tools</p>
+        <p class="mt-4 text-center">Saving and taking you back to Exnota Tools</p>
     </div>
 </template>
