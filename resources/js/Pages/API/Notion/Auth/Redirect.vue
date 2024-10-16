@@ -1,5 +1,6 @@
 <script setup>
 import { router } from '@inertiajs/vue3';
+import { route } from "../../../../../../vendor/tightenco/ziggy";
 
 
 // Get "code" request param
@@ -15,6 +16,11 @@ fetch('/api/notion/auth/save', {
     body: JSON.stringify({ code })
 })
     .then(async (response) => {
+        if (!response.ok) {
+            // Throw so it goes to the catch block
+            throw new Error(response.statusText);
+        }
+
         if (window.opener?.notionAuthSuccess) {
             window.opener.notionAuthSuccess();
         } else {
@@ -25,13 +31,8 @@ fetch('/api/notion/auth/save', {
         if (window.opener?.notionAuthError) {
             window.opener.notionAuthError();
         } else {
-            // TODO: Add error param
-            router.visit(route('duplicates.connect'));
+            router.visit(route('duplicates.connect', { status: 'error' }));
         }
-    })
-    .finally(() => {
-        // TODO: On error, call the other one if can
-        // TODO: If no window.opener, redirect to /duplicates/connect
     })
 </script>
 
