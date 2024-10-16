@@ -1,6 +1,5 @@
 <script setup>
-import ApiTokenManager from '@/Pages/API/Partials/ApiTokenManager.vue';
-import AppLayout from '@/Layouts/AppLayout.vue';
+import { router } from '@inertiajs/vue3';
 
 
 // Get "code" request param
@@ -16,16 +15,23 @@ fetch('/api/notion/auth/save', {
     body: JSON.stringify({ code })
 })
     .then(async (response) => {
-        console.log(response);
-        const json = await response.json();
-        return json;
+        if (window.opener?.notionAuthSuccess) {
+            window.opener.notionAuthSuccess();
+        } else {
+            router.visit(route('duplicates.connect'));
+        }
+    })
+    .catch(error => {
+        if (window.opener?.notionAuthError) {
+            window.opener.notionAuthError();
+        } else {
+            // TODO: Add error param
+            router.visit(route('duplicates.connect'));
+        }
     })
     .finally(() => {
         // TODO: On error, call the other one if can
         // TODO: If no window.opener, redirect to /duplicates/connect
-        if (window.opener?.notionAuthSuccess) {
-            window.opener.notionAuthSuccess();
-        }
     })
 </script>
 
