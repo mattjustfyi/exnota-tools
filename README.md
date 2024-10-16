@@ -8,13 +8,17 @@
     - [Running](#running)
       - [Automatic](#automatic)
       - [Commands](#commands)
+    - [Debug on mobile](#debug-on-mobile)
+      - [Setup](#setup)
+      - [Use](#use)
+      - [Troubleshooting](#troubleshooting)
     - [Redis](#redis)
-    - [Setup](#setup)
+    - [Setup](#setup-1)
     - [Database UI](#database-ui)
       - [Local](#local)
       - [Prod](#prod)
     - [Testing](#testing)
-    - [Troubleshooting](#troubleshooting)
+    - [Troubleshooting](#troubleshooting-1)
       - [Web: After Notion connect, it redirects back to `/duplicates` instead of `/duplicates/create-account`](#web-after-notion-connect-it-redirects-back-to-duplicates-instead-of-duplicatescreate-account)
       - [Web: Inertia route opens in iframe](#web-inertia-route-opens-in-iframe)
     - [Laravel Model: BadMethodCallException \[...\] Method \[nethodName in model\] does not exist](#laravel-model-badmethodcallexception--method-nethodname-in-model-does-not-exist)
@@ -99,6 +103,7 @@
     ```
 
 5. Deploy app
+
    TODO: Migrations technically need to be run first to avoid issues. When site
    starts getting traffic, need to find a way to run migrations first. This
    currently isn't possible using the deploy method below because until the git
@@ -200,6 +205,28 @@ npm run dev
 ./vendor/bin/sail debug queue:listen -vvv --queue=delete-1 --timeout=180
 ./vendor/bin/sail debug queue:listen -vvv --queue=delete-2 --timeout=180
 ```
+
+### Debug on mobile
+
+#### Setup
+
+1. Vite must be running with `--host 0.0.0.0` (not sure why)
+2. Follow steps in [Remote debug Android Devices](https://developer.chrome.com/docs/devtools/remote-debugging).
+3. On host, setup port forwarding in [chrome://inspect/#devices](chrome://inspect/#devices)
+    - 5173 -> localhost:5173
+    - 8000 -> localhost:80
+
+#### Use
+
+1. On host open [chrome://inspect/#devices](chrome://inspect/#devices)
+   - This turns on port forwarding
+2. Connect phone to USB
+3. On phone open [http://localhost:8000](http://localhost:8000)
+4. Click `Inspect` on Devices tab on host
+
+#### Troubleshooting
+
+- Vite will connect on 5174 if default is in use. So add 5174 to port forwarding.
 
 ### Redis
 
