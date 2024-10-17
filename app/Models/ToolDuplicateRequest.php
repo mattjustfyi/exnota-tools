@@ -11,6 +11,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+enum DeleteLogic: string
+{
+    case KEEP_OLDEST = 'keep_oldest';
+    case KEEP_LATEST = 'keep_latest';
+}
+
 class ToolDuplicateRequest extends Model
 {
     use HasFactory;
@@ -35,6 +41,7 @@ class ToolDuplicateRequest extends Model
         'search_results_count',
         'search_failed',
         'delete_cancelled',
+        'delete_logic',
     ];
 
     /**
@@ -62,6 +69,11 @@ class ToolDuplicateRequest extends Model
         'delete_list_count' => 'integer',
         'delete_results_count' => 'integer',
         'not_deleted_count' => 'integer',
+        'delete_logic' => DeleteLogic::class,
+    ];
+
+    protected $attributes = [
+        'delete_logic' => DeleteLogic::KEEP_OLDEST,
     ];
 
     protected function duplicates(): Attribute
