@@ -132,7 +132,7 @@ onBeforeMount(() => {
                 <p>Select your database in Notion and press <strong>Allow Access</strong>.</p>
             </div>
 
-            <img src="/images/duplicates/notion-auth-short.gif"
+            <img src="/images/duplicates/notion-auth-short-slow.gif"
                 alt="On the next screen, login to Notion, select your database, and select Allow Access"
                 class="w-full max-w-2xl mx-auto mb-6 border border-gray-300" />
 
