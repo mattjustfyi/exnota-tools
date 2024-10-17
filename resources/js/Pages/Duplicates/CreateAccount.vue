@@ -16,6 +16,8 @@ const form = useForm({
     email: props.user.email,
 });
 
+const initialEmail = props.user.email;
+
 const tempEmail = ref();
 
 const submitForm = () => {
@@ -47,18 +49,28 @@ const updateEmail = () => {
                 2/4 Create account
             </Heading>
         </div>
-        <div class="prose">
+        <div>
             <p>One-step sign up to save your Notion details. No spam.</p>
         </div>
         <form @submit.prevent="submitForm">
             <div class="mb-16 mt-16">
-                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                <div class="mt-1 flex rounded-md shadow-sm">
-                    <input disabled type="email" name="email" id="email" v-model="form.email"
-                        class="flex-1 input input-bordered" placeholder="Enter your email address..." required>
+                <!-- <label for="email" class="block text-sm font-medium text-gray-700">Email</label> -->
+                <p v-if="initialEmail === form.email" class="mb-4">We'll use your Notion email for signup, unless you
+                    change it below.</p>
+                <p v-if="initialEmail !== form.email" class="mb-4">We'll use this email instead of your Notion email.
+                </p>
+                <div class="mt-1 flex rounded-md justify-between border p-4">
+                    <div>
+                        <p class="font-bold">Email address</p>
+                        <p>{{ form.email }}</p>
+                        <input type="hidden" name="email" id="email" v-model="form.email"
+                            class="flex-1 input input-bordered" placeholder="Enter your email address..." required>
+
+                    </div>
+
                     <button type="button" @click="openModal"
                         class="ml-3 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        Change
+                        Change email
                     </button>
                 </div>
                 <div v-if="errors.email" role="alert" class="alert alert-error mt-4">
