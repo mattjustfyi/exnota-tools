@@ -1,6 +1,11 @@
--- Tool Duplicate Requests
---
--- Without huge fields (to save time)
+-- ------------------------------
+-- Searches
+-- ------------------------------
+
+-- ----------
+-- Faster select of Tool Duplicate Requests (without large columns)
+-- ----------
+
 SELECT id, created_at, updated_at, notion_object_id,
 --  duplicates,
   search_started_at, search_ended_at, delete_started_at, delete_ended_at,
@@ -12,8 +17,9 @@ SELECT id, created_at, updated_at, notion_object_id,
 FROM public.tool_duplicate_requests
 order by created_at asc;
 
-
--- Search/Delete counts and durations
+-- ----------
+-- Durations and counts of duplicate search/delete requests
+-- ----------
 SELECT 
     id, created_at,
     COALESCE(jsonb_array_length(search_results), 0) AS search_count,
@@ -121,4 +127,4 @@ delete from tool_duplicate_requests;
 delete from notion_objects;
 DELETE FROM workspaces;
 DELETE FROM users;
-commit;
+rollback;
