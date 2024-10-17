@@ -6,6 +6,7 @@ use App\Enums\SyncStatus;
 use App\Jobs\WorkspaceRefresh;
 use App\Models\Workspace;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 
 class WorkspaceRefreshController extends Controller
 {
@@ -18,7 +19,7 @@ class WorkspaceRefreshController extends Controller
     public function refresh(Workspace $workspace)
     {
         $workspace->update(['sync_status' => SyncStatus::QUEUED]);
-        WorkspaceRefresh::dispatch($workspace);
+        WorkspaceRefresh::dispatch(Auth::user(), $workspace);
 
         return to_route('duplicates.workspace', ['workspace' => $workspace->id]);
     }

@@ -17,11 +17,13 @@ use Notion\Infrastructure\Http;
 use Notion\Pages\Page;
 use Illuminate\Support\Facades\Redis;
 use App\Jobs\DuplicateDeleteDelay;
+use App\Models\User;
 
 class DuplicateDelete implements ShouldQueue
 {
     use Queueable, Batchable;
 
+    protected $user;
     protected $toolDuplicateRequest;
     protected $notion_ids;
 
@@ -34,9 +36,13 @@ class DuplicateDelete implements ShouldQueue
 
     /**
      * Create a new job instance.
+     * 
+     * @param User $user The user who initiated the request. Used so jobs can
+     * be searched by user ID.
      */
-    public function __construct(ToolDuplicateRequest $toolDuplicateRequest, array $notion_ids)
+    public function __construct(User $user, ToolDuplicateRequest $toolDuplicateRequest, array $notion_ids)
     {
+        $this->user = $user;
         $this->toolDuplicateRequest = $toolDuplicateRequest;
         $this->notion_ids = $notion_ids;
         Log::debug('Duplicate delete job created for request: ' . $toolDuplicateRequest->id);

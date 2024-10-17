@@ -7,6 +7,7 @@ use App\Enums\SyncStatus;
 use App\Helpers\NotionHelper;
 use App\Models\Workspace;
 use App\Models\NotionObject;
+use App\Models\User;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
@@ -21,6 +22,7 @@ class WorkspaceRefresh implements ShouldQueue
 {
     use Queueable;
 
+    protected $user;
     protected $workspace;
 
     /**
@@ -32,9 +34,13 @@ class WorkspaceRefresh implements ShouldQueue
 
     /**
      * Create a new job instance.
+     * 
+     * @param User $user The user who initiated the request. Used so jobs can
+     * be searched by user ID.
      */
-    public function __construct(Workspace $workspace)
+    public function __construct(User $user, Workspace $workspace)
     {
+        $this->user = $user;
         $this->workspace = $workspace;
         logger('Workspace refresh job created for workspace: ' . $workspace->id);
     }

@@ -42,10 +42,79 @@ WHERE
     search_started_at IS NOT NULL
 ORDER BY 
     created_at ASC;
+
+
+-- ------------------------------
+-- 🚨 DELETIONS / CLEANUPS
+-- ------------------------------
+
+-- ----------
+-- Clear consent
+-- ----------
+update users set consent = null where id = <id>;
    
-   
-   
--- Clear local data
+-- ----------
+-- Delete a user and related data
+-- ----------
+select * from users;
+-- FIRST, check for jobs
+-- 1. Get user ID(s)
+SELECT id, email 
+FROM users 
+WHERE email IN ('email@matt.fyi', 'matt@maki.world');
+
+-- 2. Use user IDs to find jobs (UPDATE INLINE)
+SELECT *
+FROM jobs
+WHERE payload ~ (':\\"App\\\\Models\\\\User\\";s:\d+:\\"id\\";i:' ||
+	'40' -- User ID (UPDATE!) 
+	|| ';');
+
+
+-- 3. If no jobs, then delete
+BEGIN;
+CREATE TEMP TABLE temp_user_ids on commit drop AS
+SELECT id, email 
+FROM users 
+WHERE email IN ('email@matt.fyi', 'matt@maki.world');
+select * from temp_user_ids;
+
+CREATE TEMP TABLE temp_user_workspaces on commit drop AS
+SELECT id, workspace_name, user_id 
+FROM workspaces 
+WHERE user_id IN (SELECT id FROM temp_user_ids);
+select * from temp_user_workspaces;
+
+CREATE TEMP TABLE temp_user_notion_objects on commit drop AS
+SELECT id, workspace_id, name 
+FROM notion_objects 
+WHERE workspace_id IN (SELECT id FROM temp_user_workspaces);
+select * from temp_user_notion_objects;
+
+CREATE TEMP TABLE temp_user_tool_duplicate_requests on commit drop AS
+SELECT id, notion_object_id 
+FROM tool_duplicate_requests 
+WHERE notion_object_id IN (SELECT id FROM temp_user_notion_objects);
+select * from temp_user_tool_duplicate_requests;
+
+-- Perform deletions in reverse order
+DELETE FROM tool_duplicate_requests tdr
+WHERE tdr.id IN (SELECT id FROM temp_user_tool_duplicate_requests);
+
+DELETE FROM notion_objects no
+WHERE no.id IN (SELECT id FROM temp_user_notion_objects);
+
+DELETE FROM workspaces w
+WHERE w.id IN (SELECT id FROM temp_user_workspaces);
+
+DELETE FROM users u
+WHERE u.id IN (SELECT id FROM temp_user_ids);
+
+ROLLBACK;
+
+-- ----------
+-- 🟨 Delete ALL users and related data 🟨
+-- ----------
 begin;
 delete from jobs;
 delete from tool_duplicate_requests;
@@ -53,4 +122,3 @@ delete from notion_objects;
 DELETE FROM workspaces;
 DELETE FROM users;
 commit;
-    
