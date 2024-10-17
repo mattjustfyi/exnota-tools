@@ -57,11 +57,11 @@ const fetchUserData = () => {
         <div class="flex justify-between">
             <div class="stats stats-vertical sm:stats-horizontal shadow">
                 <div class="stat">
-                    <div class="stat-title">100 duplicates</div>
+                    <div class="stat-title text-primary">100 duplicates</div>
                     <div class="stat-value">~20 sec</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-title">1,000 duplicates</div>
+                    <div class="stat-title text-primary">1,000 duplicates</div>
                     <div class="stat-value">~20 min</div>
                 </div>
             </div>
