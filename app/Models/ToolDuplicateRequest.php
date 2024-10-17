@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\DTOs\NotionDTO;
+use App\Enums\DeleteLogic;
 use App\Enums\NotionObjectType;
 use App\Helpers\NotionHelper;
 use Carbon\Carbon;
@@ -10,12 +11,6 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
-enum DeleteLogic: string
-{
-    case KEEP_OLDEST = 'keep_oldest';
-    case KEEP_LATEST = 'keep_latest';
-}
 
 class ToolDuplicateRequest extends Model
 {
