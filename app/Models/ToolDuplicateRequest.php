@@ -28,6 +28,7 @@ class ToolDuplicateRequest extends Model
         'duplicates_count',
         'search_started_at',
         'search_ended_at',
+        'delete_logic',
         'delete_started_at',
         'delete_ended_at',
         'delete_results',
@@ -41,7 +42,6 @@ class ToolDuplicateRequest extends Model
         'search_results_count',
         'search_failed',
         'delete_cancelled',
-        'delete_logic',
     ];
 
     /**

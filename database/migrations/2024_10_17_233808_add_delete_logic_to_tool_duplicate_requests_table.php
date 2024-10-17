@@ -13,9 +13,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tool_duplicate_requests', function (Blueprint $table) {
-            $table->enum('delete_logic', [DeleteLogic::KEEP_OLDEST->value, DeleteLogic::KEEP_LATEST->value])
-                  ->default(DeleteLogic::KEEP_OLDEST->value)
-                  ->after('delete_cancelled');
+            $table->enum('delete_logic', ['keep_oldest', 'keep_latest'])
+                ->default('keep_oldest')
+                ->after('search_ended_at');
         });
     }
 
