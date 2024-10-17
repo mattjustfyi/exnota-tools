@@ -58,11 +58,11 @@ const fetchUserData = () => {
             <div class="stats stats-vertical sm:stats-horizontal shadow">
                 <div class="stat">
                     <div class="stat-title">100 duplicates</div>
-                    <div class="stat-value">~5 min</div>
+                    <div class="stat-value">~20 sec</div>
                 </div>
                 <div class="stat">
                     <div class="stat-title">1,000 duplicates</div>
-                    <div class="stat-value">~30 min</div>
+                    <div class="stat-value">~20 min</div>
                 </div>
             </div>
         </div>
