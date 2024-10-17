@@ -11,7 +11,10 @@ class DuplicatesConnectController extends Controller
 {
     public function show()
     {
-        Log::channel('slack')->info('[User] Pressed connect.');
+        // Client pings periodically with status 'waiting'. Ignore those.
+        if (!request()->has('status')) {
+            Log::channel('slack')->info('[User] Pressed connect.');
+        }
 
         /** @var \App\Models\User $user */
         $user = Auth::user();
