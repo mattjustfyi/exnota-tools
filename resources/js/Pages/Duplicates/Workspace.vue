@@ -125,7 +125,7 @@ console.log('Script setup completed');
 <template>
     <AppLayout>
 
-        <Head title="Workspace" />
+        <Head title="Delete duplicates in Notion databases - Exnota Tools" />
 
 
         <div class="mb-6">

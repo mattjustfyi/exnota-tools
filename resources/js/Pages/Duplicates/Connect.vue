@@ -102,7 +102,7 @@ onBeforeMount(() => {
 <template>
     <AppLayout>
 
-        <Head title="Duplicates - Exnota Tools - Find/delete duplicate Notion database rows" />
+        <Head title="Delete duplicates in Notion databases - Exnota Tools" />
 
         <template v-if="isError">
             <div class="flex flex-col justify-center items-center h-1/2 mt-32">

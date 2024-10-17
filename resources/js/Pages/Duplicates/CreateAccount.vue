@@ -37,7 +37,7 @@ const updateEmail = () => {
 <template>
     <AppLayout>
 
-        <Head title="Create Account - Exnota Tools" />
+        <Head title="Delete duplicates in Notion databases - Exnota Tools" />
         <!--
                         🚨🚨🚨
                         If updating any of this page, also update consent grant
