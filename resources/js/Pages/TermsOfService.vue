@@ -8,7 +8,8 @@ defineProps({
 </script>
 
 <template>
-    <Head title="Terms of Service" />
+
+    <Head title="Terms of Service - Exnota Tools" />
 
     <div class="font-sans text-gray-900 antialiased">
         <div class="pt-4 bg-gray-100">
@@ -17,7 +18,8 @@ defineProps({
                     <AuthenticationCardLogo />
                 </div>
 
-                <div class="w-full sm:max-w-2xl mt-6 p-6 bg-white shadow-md overflow-hidden sm:rounded-lg prose" v-html="terms" />
+                <div class="w-full sm:max-w-2xl mt-6 p-6 bg-white shadow-md overflow-hidden sm:rounded-lg prose"
+                    v-html="terms" />
             </div>
         </div>
     </div>

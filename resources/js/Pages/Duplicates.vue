@@ -29,7 +29,7 @@ const fetchUserData = () => {
 <template>
     <AppLayout>
 
-        <Head title="Duplicates - Exnota Tools - Find/delete duplicate Notion database rows" />
+        <Head title="Delete duplicates in Notion databases - Exnota Tools" />
         <div class="hero">
             <div class="hero-content p-0 flex-col lg:flex-row-reverse">
                 <img src="/images/duplicates/search-results-sample2.png" class="max-w-full w-64 shadow-lg rounded-xl" />

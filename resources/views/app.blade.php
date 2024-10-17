@@ -7,6 +7,32 @@
 
     <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
+    @if (Request::is('') || Request::is('/'))
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Free Notion tools - Exnota Tools">
+    <meta property="og:url" content="{{ url()->full() }}">
+    <meta property="og:image" content="{{ Request::root() }}/images/social-1200x600.png">
+    <meta property="og:description" content="Free Notion tools. Delete duplicates in a database, and more.">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="twitter:domain" content="tools.exnota.com">
+    <meta property="twitter:url" content="{{ url()->full() }}">
+    <meta name="twitter:title" content="Free Notion tools - Exnota Tools">
+    <meta name="twitter:description" content="Free Notion tools. Delete duplicates in a database, and more.">
+    <meta name="twitter:image" content="{{ Request::root() }}/images/social-1200x600.png">
+    @elseif (Request::is('duplicates/*') || Request::is('duplicates'))
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Delete duplicates in Notion databases - Exnota Tools">
+    <meta property="og:url" content="{{ url()->full() }}">
+    <meta property="og:image" content="{{ Request::root() }}/images/duplicates/social-1200x600.png">
+    <meta property="og:description" content="Delete duplicates in Notion databases, in just a few clicks.">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="twitter:domain" content="tools.exnota.com">
+    <meta property="twitter:url" content="{{ url()->full() }}">
+    <meta name="twitter:title" content="Delete duplicates in Notion databases - Exnota Tools">
+    <meta name="twitter:description" content="Delete duplicates in Notion databases, in just a few clicks.">
+    <meta name="twitter:image" content="{{ Request::root() }}/images/duplicates/social-1200x600.png">
+    @endif
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />

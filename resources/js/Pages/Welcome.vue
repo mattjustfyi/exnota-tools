@@ -5,7 +5,7 @@ import { Head, Link } from '@inertiajs/vue3';
 
 <template>
 
-    <Head title="Welcome" />
+    <Head title="Exnota Tools - Delete duplicates in Notion, and more." />
     <div class="container xl:max-w-5xl mx-auto px-4">
         <h1 class="text-4xl font-bold text-center mt-24">Exnota Tools</h1>
         <p class=" text-center mt-4">Free tools for Notion.</p>

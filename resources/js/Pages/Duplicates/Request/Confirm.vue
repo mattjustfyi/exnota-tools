@@ -190,7 +190,7 @@ onUnmounted(() => {
 <template>
     <AppLayout>
 
-        <Head title="Confirm Duplicate Request" />
+        <Head title="Delete duplicates in Notion databases - Exnota Tools" />
 
         <!-- Back to Workspace Link -->
         <div class="mb-4">
