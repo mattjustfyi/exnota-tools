@@ -39,7 +39,7 @@ class DuplicateCreateController extends Controller
         ]);
 
         Log::debug('Dispatching DuplicateSearch job for request: ' . $toolDuplicateRequest->id);
-        DuplicateSearch::dispatch($toolDuplicateRequest)->onQueue('default');
+        DuplicateSearch::dispatch($request->user(), $toolDuplicateRequest)->onQueue('default');
 
         return to_route('duplicates.request.confirm', ['toolDuplicateRequest' => $toolDuplicateRequest->id]);
     }

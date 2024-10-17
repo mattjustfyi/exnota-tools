@@ -98,10 +98,10 @@ class NotionAuthSaveController extends Controller
 
                     // Create multiple jobs as search results appear gradually over
                     // 30 seconds or so.
-                    WorkspaceRefresh::dispatch($existingWorkspace);
-                    WorkspaceRefresh::dispatch($existingWorkspace)
+                    WorkspaceRefresh::dispatch($loggedInUser, $existingWorkspace);
+                    WorkspaceRefresh::dispatch($loggedInUser, $existingWorkspace)
                         ->delay(now()->addSeconds(5));
-                    WorkspaceRefresh::dispatch($existingWorkspace)
+                    WorkspaceRefresh::dispatch($loggedInUser, $existingWorkspace)
                         ->delay(now()->addSeconds(10));
 
                     return response()->json([
@@ -123,10 +123,10 @@ class NotionAuthSaveController extends Controller
 
                 // Create multiple jobs as search results appear gradually over
                 // 30 seconds or so.
-                WorkspaceRefresh::dispatch($workspace);
-                WorkspaceRefresh::dispatch($workspace)
+                WorkspaceRefresh::dispatch($loggedInUser, $workspace);
+                WorkspaceRefresh::dispatch($loggedInUser, $workspace)
                     ->delay(now()->addSeconds(5));
-                WorkspaceRefresh::dispatch($workspace)
+                WorkspaceRefresh::dispatch($loggedInUser, $workspace)
                     ->delay(now()->addSeconds(10));
 
 
@@ -167,10 +167,10 @@ class NotionAuthSaveController extends Controller
 
                 // Create multiple jobs as search results appear gradually over
                 // 30 seconds or so.
-                WorkspaceRefresh::dispatch($existingWorkspace);
-                WorkspaceRefresh::dispatch($existingWorkspace)
+                WorkspaceRefresh::dispatch($existingUser, $existingWorkspace);
+                WorkspaceRefresh::dispatch($existingUser, $existingWorkspace)
                     ->delay(now()->addSeconds(5));
-                WorkspaceRefresh::dispatch($existingWorkspace)
+                WorkspaceRefresh::dispatch($existingUser, $existingWorkspace)
                     ->delay(now()->addSeconds(10));
 
                 return response()->json([
@@ -204,10 +204,10 @@ class NotionAuthSaveController extends Controller
 
             // Create multiple jobs as search results appear gradually over
             // 30 seconds or so.
-            WorkspaceRefresh::dispatch($workspace);
-            WorkspaceRefresh::dispatch($workspace)
+            WorkspaceRefresh::dispatch($user, $workspace);
+            WorkspaceRefresh::dispatch($user, $workspace)
                 ->delay(now()->addSeconds(5));
-            WorkspaceRefresh::dispatch($workspace)
+            WorkspaceRefresh::dispatch($user, $workspace)
                 ->delay(now()->addSeconds(10));
 
 

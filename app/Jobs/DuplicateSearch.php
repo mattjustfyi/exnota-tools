@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Log;
 use Notion\Databases\Query;
 use Notion\Notion;
 use App\Models\DuplicateResultsDTO;
+use App\Models\User;
 use Illuminate\Foundation\Queue\Queueable;
 use Throwable;
 
@@ -22,6 +23,7 @@ class DuplicateSearch implements ShouldQueue
 {
     use Queueable;
 
+    protected $user;
     protected $toolDuplicateRequest;
     protected $nextCursor;
 
@@ -34,9 +36,13 @@ class DuplicateSearch implements ShouldQueue
 
     /**
      * Create a new job instance.
+     * 
+     * @param User $user The user who initiated the request. Used so jobs can
+     * be searched by user ID.
      */
-    public function __construct(ToolDuplicateRequest $toolDuplicateRequest, $nextCursor = null)
+    public function __construct(User $user, ToolDuplicateRequest $toolDuplicateRequest, $nextCursor = null)
     {
+        $this->user = $user;
         $this->toolDuplicateRequest = $toolDuplicateRequest;
         $this->nextCursor = $nextCursor;
         Log::debug('Duplicate search job created for request: ' . $toolDuplicateRequest->id . ' with cursor: ' . $nextCursor);
@@ -110,7 +116,7 @@ class DuplicateSearch implements ShouldQueue
 
         if ($hasMore) {
             Log::debug('Dispatching new job for remaining results. Request: ' . $this->toolDuplicateRequest->id . ' Next cursor: ' . $nextCursor . ' (Job ID: ' . $this->job->getJobId() . ')');
-            self::dispatch($this->toolDuplicateRequest, $nextCursor)->onQueue('default');
+            self::dispatch($this->user, $this->toolDuplicateRequest, $nextCursor)->onQueue('default');
         } else {
             $this->processDuplicates();
             $this->toolDuplicateRequest->update([

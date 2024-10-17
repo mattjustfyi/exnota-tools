@@ -43,21 +43,24 @@ class DuplicateDeleteController extends Controller
         $remainingList = $deleteList;
 
         // Create initial jobs with size 5, up to 4 jobs or until we run out of items
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
         while (count($jobs) < 4 && !empty($remainingList)) {
             $chunk = array_slice($remainingList, 0, 5);
             $remainingList = array_slice($remainingList, 5);
-            $jobs[] = new DuplicateDelete($toolDuplicateRequest, $chunk);
+            $jobs[] = new DuplicateDelete($user, $toolDuplicateRequest, $chunk);
         }
 
         // Remaining jobs with size 10
         $remainingChunks = array_chunk($remainingList, 10);
         foreach ($remainingChunks as $chunk) {
-            $jobs[] = new DuplicateDelete($toolDuplicateRequest, $chunk);
+            $jobs[] = new DuplicateDelete($user, $toolDuplicateRequest, $chunk);
         }
 
         // Check if user has delete jobs already in a queue. If so, add to the
         // same queue.
-        $workspaces = Auth::user()->workspaces;
+
+        $workspaces = $user->workspaces;
         $notionObjects = NotionObject::whereIn('workspace_id', $workspaces->pluck('id'))->get();
         $deletionsInProgress = ToolDuplicateRequest::whereIn('notion_object_id', $notionObjects->pluck('id'))
             ->whereNotNull('delete_batch_id')
