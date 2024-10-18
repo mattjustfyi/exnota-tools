@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\ToolDuplicateRequest;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use App\Enums\DeleteLogic;
+use Illuminate\Http\RedirectResponse;
 
 class DuplicatesUpdateController extends Controller
 {
-    public function update(Request $request, ToolDuplicateRequest $toolDuplicateRequest): JsonResponse
+    public function update(Request $request, ToolDuplicateRequest $toolDuplicateRequest): RedirectResponse
     {
         $request->validate([
             'delete_logic' => ['required', 'string', 'in:' . implode(',', DeleteLogic::getValues())],
@@ -19,9 +19,6 @@ class DuplicatesUpdateController extends Controller
             'delete_logic' => DeleteLogic::from($request->delete_logic),
         ]);
 
-        return response()->json([
-            'message' => 'Tool duplicate request updated successfully',
-            'tool_duplicate_request' => $toolDuplicateRequest,
-        ]);
+        return to_route('duplicates.request.confirm', ['toolDuplicateRequest' => $toolDuplicateRequest->id]);
     }
 }
