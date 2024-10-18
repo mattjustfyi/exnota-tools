@@ -199,6 +199,19 @@ class AuthorizationTest extends TestCase
         $response = $this->get('/duplicates/request/' . $duplicateRequestUserOne->id . '/confirm');
         $response->assertStatus(403);
 
+        // Try to update
+        // - Sanity test own
+        $response = $this->patch('/duplicates/request/' . $duplicateRequestUserTwo->id, [
+            'delete_logic' => 'keep_oldest',
+        ]);
+        $response->assertStatus(302);
+
+        // - Request other user's
+        $response = $this->patch('/duplicates/request/' . $duplicateRequestUserOne->id, [
+            'delete_logic' => 'keep_oldest',
+        ]);
+        $response->assertStatus(403);
+
         // Try to cancel
         // - Sanity test own
         $response = $this->post('/duplicates/request/' . $duplicateRequestUserTwo->id . '/cancel');
