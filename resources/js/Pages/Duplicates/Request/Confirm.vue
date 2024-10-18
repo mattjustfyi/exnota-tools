@@ -16,6 +16,47 @@ const props = defineProps({
     },
 });
 
+// Delete logic
+
+const deleteLogic = ref(props.toolDuplicateRequest.delete_logic);
+const deletedLogicUpdateStarted = ref(false);
+
+watch(() => props.toolDuplicateRequest.delete_logic, (newValue) => {
+    deleteLogic.value = newValue;
+});
+
+const updateDeleteLogic = (value) => {
+    deleteLogic.value = value;
+
+    // If this errors, it will show a standard Inertia error modal. Can't use
+    // `onError` callback because it is only called with handled errors (e.g.
+    // validation errors).
+    router.patch(
+        route('duplicates.update-request', props.toolDuplicateRequest.id),
+        {
+            delete_logic: value,
+        }, {
+        preserveState: true,
+        preserveScroll: true,
+        onStart: () => {
+            console.log('Updating delete logic');
+            deletedLogicUpdateStarted.value = true;
+        },
+        onSuccess: () => {
+            console.log('Updated delete logic');
+            deletedLogicUpdateStarted.value = false;
+        },
+        onFinish: () => {
+            console.log('Finished updating delete logic');
+            // Revert state change if it failed
+            if (deletedLogicUpdateStarted.value) {
+                deleteLogic.value = props.toolDuplicateRequest.delete_logic;
+            }
+            deletedLogicUpdateStarted.value = false;
+        },
+    });
+};
+
 const workspaceId = computed(() => {
     return props.toolDuplicateRequest.notion_object?.workspace_id;
 });
@@ -264,9 +305,28 @@ onUnmounted(() => {
                             <p class="text-2xl font-bold text-primary">{{ duplicatesCount }}</p>
                         </div>
                     </div>
+                    <div class="divider my-2" v-if="duplicatesCount > 0"></div>
+                    <div class="flex justify-center mb-4" v-if="duplicatesCount > 0">
+                        <div class="w-60">
+                            <div class="form-control">
+                                <label class="label cursor-pointer">
+                                    <span class="label-text">Keep newest</span>
+                                    <input type="radio" name="keep_logic" class="radio" value="keep_latest"
+                                        v-model="deleteLogic" @change="updateDeleteLogic('keep_latest')" />
+                                </label>
+                            </div>
+                            <div class="form-control">
+                                <label class="label cursor-pointer">
+                                    <span class="label-text">Keep oldest</span>
+                                    <input type="radio" name="keep_logic" class="radio" value="keep_oldest"
+                                        v-model="deleteLogic" @change="updateDeleteLogic('keep_oldest')" />
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                     <div class="flex justify-center items-center">
                         <button v-if="duplicatesCount > 0" @click="showDeleteConfirmModal()"
-                            :disabled="toolDuplicateRequest.delete_cancelled" :class="[
+                            :disabled="toolDuplicateRequest.delete_cancelled || deletedLogicUpdateStarted" :class="[
                                 'btn w-full max-w-md mx-auto',
                                 toolDuplicateRequest.delete_cancelled ? 'btn-disabled' : 'btn-primary'
                             ]">
@@ -296,7 +356,7 @@ onUnmounted(() => {
 
             <Heading :level="2">Sample duplicates</Heading>
             <div v-if="duplicatesSample.length" class="space-y-4">
-                <a v-for="(result, index) in duplicatesSample" :key="index" :href="result.keep.url" target="_blank"
+                <a v-for="(dtos, index) in duplicatesSample" :key="index" :href="dtos[0].url" target="_blank"
                     rel="noopener noreferrer"
                     class="card bg-base-100 no-underline hover:no-underline flex justify-between items-center">
                     <div class="card-body p-4 w-full">
@@ -304,14 +364,15 @@ onUnmounted(() => {
                             <div class="flex-grow mr-6 overflow-hidden">
                                 <div class="card-title">
                                     <h2 class="text-primary font-medium text-sm truncate">
-                                        {{ titleOrUndefined(result.keep.title) }}
+                                        {{ titleOrUndefined(dtos[0].title) }}
                                     </h2>
                                 </div>
                                 <p class="text-sm text-gray-500 mt-1">
-                                    Copies: {{ result.delete.length + 1 }}
+                                    Copies: {{ dtos.length }}
                                 </p>
                             </div>
-                            <div class="flex items-center">
+                            <div class="flex items-center justify-end w-24 sm:w-40 flex-shrink-0">
+                                <span class="text-gray-400 text-sm mr-2 text-center">Open one version</span>
                                 <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -407,9 +468,17 @@ onUnmounted(() => {
                 <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
             </form>
             <h3 class="font-bold text-lg">Confirm Deletion</h3>
-            <p class="py-4">{{ duplicatesCount }} duplicates will be moved to your Trash in Notion. You can manually
+            <p class="pt-4">{{ duplicatesCount }} duplicates will be moved to your Trash in Notion. You can manually
                 restore them in Notion if necessary.</p>
-            <p>Duplicate means <strong>the titles are the same</strong>. Properties and content may be different.</p>
+            <p class="pt-4">Duplicate means <strong>the titles are the same</strong>. Properties and content may be
+                different.</p>
+            <p class="pt-4" v-if="props.toolDuplicateRequest.delete_logic === 'keep_latest'">The most recently created
+                page (<strong>newest</strong>)
+                will be
+                kept.</p>
+            <p class="pt-4" v-else-if="props.toolDuplicateRequest.delete_logic === 'keep_oldest'">The
+                earliest created page (<strong>oldest</strong>) will be kept.
+            </p>
             <div class="modal-action">
                 <form method="dialog">
                     <button class="btn btn-outline mr-2">Cancel</button>

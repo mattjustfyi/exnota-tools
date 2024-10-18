@@ -70,8 +70,6 @@ onBeforeMount(() => {
     window.notionAuthSuccess = () => {
         clearTimeout(reloadTimeout);
 
-        console.log('xyz success!');
-
         authWindow.value.close();
 
         // Remove 'waiting' request param
@@ -85,7 +83,6 @@ onBeforeMount(() => {
     window.notionAuthError = () => {
         clearTimeout(reloadTimeout);
 
-        console.log('xyz error!');
         authWindow.value.close();
 
         isError.value = true;

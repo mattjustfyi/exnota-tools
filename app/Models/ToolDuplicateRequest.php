@@ -67,10 +67,6 @@ class ToolDuplicateRequest extends Model
         'delete_logic' => DeleteLogic::class,
     ];
 
-    protected $attributes = [
-        'delete_logic' => DeleteLogic::KEEP_OLDEST,
-    ];
-
     protected function duplicates(): Attribute
     {
         return $this->getDupeDTOAttribute('duplicates');
@@ -190,4 +186,3 @@ class ToolDuplicateRequest extends Model
         return $this->belongsTo(NotionObject::class);
     }
 }
-

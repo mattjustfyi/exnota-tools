@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Constants\QueueConstants;
+use App\Enums\DeleteLogic;
 use App\Jobs\DuplicateDelete;
 use App\Models\NotionObject;
 use App\Models\ToolDuplicateRequest;
@@ -27,11 +28,29 @@ class DuplicateDeleteController extends Controller
         }
 
         $deleteList = [];
-        foreach ($toolDuplicateRequest->duplicates as $result) {
-            $dtos = $result->delete;
-            $notion_ids = array_map(function ($dto) {
-                return $dto->notion_id;
-            }, $dtos);
+        foreach ($toolDuplicateRequest->duplicates as $dtos) {
+            switch ($toolDuplicateRequest->delete_logic) {
+                case DeleteLogic::KEEP_OLDEST:
+                    usort($dtos, function ($a, $b) {
+                        return $a->created_date <=> $b->created_date;
+                    });
+                    $notion_ids = array_map(function ($dto) {
+                        return $dto->notion_id;
+                    }, array_slice($dtos, 1)); // Keep all but the oldest
+                    break;
+
+                case DeleteLogic::KEEP_LATEST:
+                    usort($dtos, function ($a, $b) {
+                        return $b->created_date <=> $a->created_date;
+                    });
+                    $notion_ids = array_map(function ($dto) {
+                        return $dto->notion_id;
+                    }, array_slice($dtos, 1)); // Keep all but the latest
+                    break;
+
+                default:
+                    throw new \Exception('Invalid delete logic.');
+            }
             $deleteList = array_merge($deleteList, $notion_ids);
         }
 
