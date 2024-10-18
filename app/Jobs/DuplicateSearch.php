@@ -145,38 +145,25 @@ class DuplicateSearch implements ShouldQueue
             return $group->count() > 1;
         });
 
-        // Create the list of duplicate pairs
+        // Create the list of duplicate pairs (array of arrays with duplicates)
         $duplicatePairs = $duplicates->map(function ($group) {
             return $group->values()->all();
         })->values()->all();
 
-        $duplicateResults = [];
-        $duplicatesCount = 0;
-        foreach ($duplicatePairs as $pair) {
-            $oldest = null;
-            foreach ($pair as $item) {
-                if ($oldest === null || $item->created_date < $oldest->created_date) {
-                    $oldest = $item;
-                }
-            }
 
-            $remainingDuplicates = array_values(array_filter($pair, function ($item) use ($oldest) {
-                return $item !== $oldest;
-            }));
-
-            array_push($duplicateResults, new DuplicateResultsDTO($oldest, $remainingDuplicates));
-            $duplicatesCount += count($remainingDuplicates);
-        }
-
-        // Update the toolDuplicateRequest with the final duplicate results
-        $sortedDuplicates = is_array($duplicateResults) ? $duplicateResults : [];
-        usort($sortedDuplicates, function ($a, $b) {
-            return (is_array($b->delete) ? count($b->delete) : 0) - (is_array($a->delete) ? count($a->delete) : 0);
+        usort($duplicatePairs, function ($a, $b) {
+            return count($b) - count($a);
         });
-        $duplicatesSample = array_slice($sortedDuplicates, 0, 5);
+        $duplicatesSample = array_slice($duplicatePairs, 0, 5);
 
+
+        $duplicatesCount = array_reduce($duplicatePairs, function ($carry, $group) {
+            return $carry + (count($group) - 1);
+        }, 0);
+
+        // Persist duplicate info
         $this->toolDuplicateRequest->update([
-            'duplicates' => $duplicateResults,
+            'duplicates' => $duplicatePairs,
             'duplicates_count' => $duplicatesCount,
             'duplicates_sample' => $duplicatesSample,
         ]);

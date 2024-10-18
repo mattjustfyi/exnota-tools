@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\DTOs\NotionDTO;
+use App\Enums\DeleteLogic;
 use App\Enums\NotionObjectType;
 use App\Helpers\NotionHelper;
 use Carbon\Carbon;
@@ -22,6 +23,7 @@ class ToolDuplicateRequest extends Model
         'duplicates_count',
         'search_started_at',
         'search_ended_at',
+        'delete_logic',
         'delete_started_at',
         'delete_ended_at',
         'delete_results',
@@ -62,6 +64,7 @@ class ToolDuplicateRequest extends Model
         'delete_list_count' => 'integer',
         'delete_results_count' => 'integer',
         'not_deleted_count' => 'integer',
+        'delete_logic' => DeleteLogic::class,
     ];
 
     protected function duplicates(): Attribute
@@ -84,61 +87,32 @@ class ToolDuplicateRequest extends Model
 
                 $arr = json_decode($value, true);
 
-                $duplicateResultsDTOs = array_map(function ($entry) {
-                    $keep = new NotionDTO(
-                        $entry['keep']['notion_id'],
-                        $entry['keep']['title'],
-                        NotionHelper::getNotionObjectType($entry['keep']['type']),
-                        $entry['keep']['url'],
-                        Carbon::parse($entry['keep']['created_date']),
-                        Carbon::parse($entry['keep']['updated_date']),
-                    );
-
-                    $delete = array_map(function ($notionDTO) {
+                return array_map(function ($group) {
+                    return array_map(function ($notionData) {
                         return new NotionDTO(
-                            $notionDTO['notion_id'],
-                            $notionDTO['title'],
-                            NotionHelper::getNotionObjectType($notionDTO['type']),
-                            $notionDTO['url'],
-                            Carbon::parse($notionDTO['created_date']),
-                            Carbon::parse($notionDTO['updated_date']),
+                            $notionData['notion_id'],
+                            $notionData['title'],
+                            NotionHelper::getNotionObjectType($notionData['type']),
+                            $notionData['url'],
+                            Carbon::parse($notionData['created_date']),
+                            Carbon::parse($notionData['updated_date'])
                         );
-                    }, $entry['delete']);
-
-                    return new DuplicateResultsDTO($keep, $delete);
+                    }, $group);
                 }, $arr);
-
-                return $duplicateResultsDTOs;
             },
-            set: function (array $value) use ($attributeName) {
-                $duplicateResultsDTOs = array_map(function (DuplicateResultsDTO $entry) {
-                    $keep = new NotionDTO(
-                        $entry->keep->notion_id,
-                        $entry->keep->title,
-                        $entry->keep->type,
-                        $entry->keep->url,
-                        $entry->keep->created_date,
-                        $entry->keep->updated_date,
-                    );
-
-                    $delete = array_map(function (NotionDTO $notionDTO) {
+            set: function (array $value) {
+                return json_encode(array_map(function ($group) {
+                    return array_map(function (NotionDTO $notionDTO) {
                         return [
                             'notion_id' => $notionDTO->notion_id,
                             'title' => $notionDTO->title,
-                            'type' => $notionDTO->type,
+                            'type' => $notionDTO->type->value,
                             'url' => $notionDTO->url,
                             'created_date' => $notionDTO->created_date->toDateTimeString(),
                             'updated_date' => $notionDTO->updated_date->toDateTimeString(),
                         ];
-                    }, $entry->delete);
-
-                    return [
-                        'keep' => $keep,
-                        'delete' => $delete,
-                    ];
-                }, $value);
-
-                return json_encode($duplicateResultsDTOs);
+                    }, $group);
+                }, $value));
             }
         );
     }
@@ -211,18 +185,4 @@ class ToolDuplicateRequest extends Model
     {
         return $this->belongsTo(NotionObject::class);
     }
-}
-
-readonly class DuplicateResultsDTO
-{
-    public function __construct(
-        /**
-         * Represents a Tool Duplicate Request.
-         *
-         * @property array<NotionDTO> $keep The items to keep in the duplicate request.
-         * @property array<NotionDTO> $delete The items to delete in the duplicate request.
-         */
-        public NotionDTO $keep,
-        public array $delete,
-    ) {}
 }
