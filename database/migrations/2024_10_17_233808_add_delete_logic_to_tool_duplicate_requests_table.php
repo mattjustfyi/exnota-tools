@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::table('tool_duplicate_requests', function (Blueprint $table) {
             $table->enum('delete_logic', ['keep_oldest', 'keep_latest'])
-                ->default('keep_oldest')
+                ->default('keep_latest')
                 ->after('search_ended_at');
         });
     }
