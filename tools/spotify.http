@@ -1,0 +1,39 @@
+### Get access token (app)
+curl -X POST "https://accounts.spotify.com/api/token" \
+     -H "Content-Type: application/x-www-form-urlencoded" \
+     -d "grant_type=client_credentials&client_id={{spotifyClientId}}&client_secret={{spotifyClientSecret}}"
+
+### Get code (user)
+curl -X GET "https://accounts.spotify.com/authorize?response_type=code&client_id={{spotifyClientId}}&scope=user-read-private%20user-read-email%20user-read-playback-state%20user-modify-playback-state%20user-read-currently-playing%20user-read-playback-position%20user-read-recently-played&redirect_uri=https%3A%2F%2Fmelodash.matt.fyi%2Fspotify%2Fredirect"
+
+
+### Get access token (user)
+curl -X POST "https://accounts.spotify.com/api/token" \
+-H "Content-Type: application/x-www-form-urlencoded" \
+-H "Authorization: Basic {{spotifyClientId}}:{{spotifyClientSecret}}" \
+-d "code={{spotifyClientLastCode}}" \
+-d "redirect_uri=https%3A%2F%2Fmelodash.matt.fyi%2Fspotify%2Fredirect" \
+-d "grant_type=authorization_code"
+
+### Refresh token (https://developer.spotify.com/documentation/web-api/tutorials/refreshing-tokens)
+
+### Get artist
+curl "https://api.spotify.com/v1/artists/76xrrejizyQpKukBIhnf3D" \
+     -H "Authorization: Bearer  {{spotifyClientLastAccessToken}}"
+
+
+### Get player state
+curl --request GET \
+  --url https://api.spotify.com/v1/me/player \
+  --header 'Authorization: Bearer {{spotifyClientLastAccessToken}}'
+
+### Get current song
+curl --request GET \
+  --url https://api.spotify.com/v1/me/player/currently-playing \
+  --header 'Authorization: Bearer {{spotifyClientLastAccessToken}}'
+
+### Get user info
+curl --request GET \
+  --url https://api.spotify.com/v1/me \
+  --header 'Authorization: Bearer {{spotifyClientLastAccessToken}}'
+   
