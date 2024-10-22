@@ -2,9 +2,13 @@
 
 namespace App\Console\Commands;
 
+use App\Models\SpotifyArtist;
+use App\Models\SpotifyDashboard;
 use App\Models\User;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
+use Notion\Notion;
 use SpotifyWebAPI\SpotifyWebAPI;
 
 class SpotifyFetchHistory extends Command
@@ -32,7 +36,8 @@ class SpotifyFetchHistory extends Command
 
         // Later this scheduler will create a job for each user. For now, the
         // user is hardcoded.
-        $user = User::findOrFail(43);
+        $dashboard = SpotifyDashboard::first();
+        $workspace = $dashboard->workspace;
         // -----
         // History
         // -----
@@ -44,7 +49,7 @@ class SpotifyFetchHistory extends Command
         // );
 
         $api = new SpotifyWebAPI();
-        $api->setAccessToken(env('SPOTIFY_ACCESS_TOKEN'));
+        $api->setAccessToken($dashboard->access_token);
 
 
 
@@ -87,14 +92,54 @@ class SpotifyFetchHistory extends Command
 
         // For each entry, in reverse order, from spotify...
 
-        $tracks = $api->getMyRecentTracks([
-            'limit' => 50,
-        ]);
+        try {
+            $tracks = $api->getMyRecentTracks([
+                // TODO: Update to 50
+                'limit' => 5,
+            ]);
+        } catch (Exception $e) {
+            Log::error('Error fetching recent tracks: ' . $e->getMessage());
+            throw $e;
+        }
+
+        $notion = Notion::create($workspace->authData['access_token']);
 
         foreach (array_reverse($tracks->items) as $track) {
             // If 'played_at' from Spotify for the user already exists in
             // spotify_play_history, skip (if that's there, assume the rest is too)
             Log::debug('Track: ' . $track->played_at);
+
+            // Add artist
+            foreach ($track->track->artists as $spotifyArtist) {
+                $spotifyArtistId = $spotifyArtist->id;
+                Log::debug('Artist ID: ' . $spotifyArtistId);
+                $artist = SpotifyArtist::where('spotify_dashboard_id', $dashboard->id)
+                    ->where('spotify_id', $spotifyArtistId)
+                    ->first();
+
+                if ($artist && $artist->notion_id) {
+                    Log::debug('Artist exists in DB and Notion');
+                    continue;
+                } else if ($artist) {
+                    Log::debug('Artist exists in DB, but not Notion');
+
+                    $this->createArtistInNotion($notion, $dashboard, $spotifyArtist);
+                } else {
+                    Log::debug('Artist does not exist in DB');
+                    // Save to DB
+                    $artist = SpotifyArtist::create([
+                        'spotify_dashboard_id' => $dashboard->id,
+                        'spotify_id' => $spotifyArtistId,
+                        'name' => $spotifyArtist->name,
+                    ]);
+
+                    // Create in Notion
+                    $notionId = $this->createArtistInNotion($notion, $dashboard, $spotifyArtist);
+                    $artist->update([
+                        'notion_id' => $notionId,
+                    ]);
+                }
+            }
         }
 
 
@@ -109,5 +154,20 @@ class SpotifyFetchHistory extends Command
 
         // Create Play History entry in Notion, save record in DB
         // - get db id from spotify_dashboard.play_history_notion_object_id
+    }
+
+    private function createArtistInNotion($notion, $dashboard, $spotifyArtist): string
+    {
+        $databaseId = $dashboard->artist_db_notion_id;
+        $parent = \Notion\Pages\PageParent::database($databaseId);
+
+        $title    = \Notion\Pages\Properties\Title::fromString($spotifyArtist->name);
+
+        $page = \Notion\Pages\Page::create($parent)
+            ->addProperty("Name", $title);
+
+        $page = $notion->pages()->create($page);
+
+        return $page->id;
     }
 }
