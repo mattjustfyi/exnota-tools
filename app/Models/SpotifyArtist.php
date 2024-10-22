@@ -14,6 +14,7 @@ class SpotifyArtist extends Model
         'spotify_id',
         'name',
         'spotify_dashboard_id',
+        'notion_id',
     ];
 
     public function spotifyDashboard(): BelongsTo
