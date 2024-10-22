@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('spotify_id')->unique()->index();
             $table->string('name');
+            $table->foreignId('spotify_dashboard_id')->constrained('spotify_dashboards')->onDelete('cascade');
             $table->timestamps();
         });
     }
