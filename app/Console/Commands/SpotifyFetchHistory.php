@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\SpotifyAlbum;
 use App\Models\SpotifyArtist;
 use App\Models\SpotifyDashboard;
+use App\Models\SpotifyTrack;
 use App\Models\User;
 use DateTimeImmutable;
 use Exception;
@@ -107,25 +108,33 @@ class SpotifyFetchHistory extends Command
 
         $notion = Notion::create($workspace->authData['access_token']);
 
+        // TODO:
+        // Please keep in mind that metadata, cover art and artist images must
+        // be accompanied by a link back to the applicable artist, album, track,
+        // or playlist on the Spotify Service. You must also attribute content
+        // from Spotify with the logo.
         foreach (array_reverse($tracks->items) as $track) {
             // If 'played_at' from Spotify for the user already exists in
             // spotify_play_history, skip (if that's there, assume the rest is too)
             Log::debug('Track: ' . $track->played_at);
 
-            // Add artist
+            // Save artist
             foreach ($track->track->artists as $spotifyArtist) {
                 $this->saveArtist($notion, $dashboard, $spotifyArtist);
             }
 
-            // Add album
+            // Save album
             $spotifyAlbum = $track->track->album;
+            $spotifyAlbumId = $spotifyAlbum->id;
+            Log::debug('Album ID: ' . $spotifyAlbumId);
             foreach ($spotifyAlbum->artists as $spotifyArtist) {
                 $this->saveArtist($notion, $dashboard, $spotifyArtist);
             }
-            $spotifyAlbumId = $spotifyAlbum->id;
-
-            Log::debug('Album ID: ' . $spotifyAlbumId);
             $this->saveAlbum($notion, $dashboard, $spotifyAlbum);
+
+            // Save track
+            $spotifyTrack = $track->track;
+            $this->saveTrack($notion, $dashboard, $spotifyTrack);
         }
 
 
@@ -144,6 +153,7 @@ class SpotifyFetchHistory extends Command
 
     private function saveArtist($notion, $dashboard, $spotifyArtist)
     {
+        // TODO: Get image from artist endpoint and save as well
         $spotifyArtistId = $spotifyArtist->id;
         Log::debug('Artist ID: ' . $spotifyArtistId);
         $artist = SpotifyArtist::where('spotify_dashboard_id', $dashboard->id)
@@ -270,6 +280,78 @@ class SpotifyFetchHistory extends Command
         $page = $notion->pages()->create($page);
 
         // TODO: Add relation to Artists
+
+        return $page->id;
+    }
+
+    private function saveTrack($notion, $dashboard, $spotifyTrack)
+    {
+        $spotifyTrackId = $spotifyTrack->id;
+        Log::debug('Track ID: ' . $spotifyTrackId);
+
+        $track = SpotifyTrack::where('spotify_dashboard_id', $dashboard->id)
+            ->where('spotify_id', $spotifyTrackId)->first();
+
+        if ($track && $track->notion_id) {
+            Log::debug('Track exists in DB and Notion');
+            return;
+        } else if ($track) {
+            Log::debug('Track exists in DB, but not Notion');
+
+            $this->saveTrackToNotion($notion, $dashboard, $track);
+        } else {
+            Log::debug('Track does not exist in DB');
+
+            // Save to DB
+            $track = SpotifyTrack::create([
+                'spotify_dashboard_id' => $dashboard->id,
+                'spotify_id' => $spotifyTrackId,
+                'name' => $spotifyTrack->name,
+                'duration_ms' => $spotifyTrack->duration_ms,
+                'spotify_artist_ids' => array_map(fn($a) => $a->id, $spotifyTrack->artists),
+                'spotify_album_id' => $spotifyTrack->album->id,
+                'popularity' => $spotifyTrack->popularity,
+            ]);
+
+            // Create in Notion
+            $notionId = $this->saveTrackToNotion($notion, $dashboard, $track);
+            $track->update([
+                'notion_id' => $notionId,
+            ]);
+        }
+    }
+
+    private function saveTrackToNotion($notion, $dashboard, $track): string
+    {
+        $databaseId = $dashboard->track_db_notion_id;
+        $parent = \Notion\Pages\PageParent::database($databaseId);
+
+        $title    = \Notion\Pages\Properties\Title::fromString($track->name);
+        $spotifyId = \Notion\Pages\Properties\RichTextProperty::fromString($track->spotify_id);
+        $durationMs = \Notion\Pages\Properties\Number::create($track->duration_ms);
+        $popularity = \Notion\Pages\Properties\Number::create($track->popularity);
+
+        $artists = SpotifyArtist::where('spotify_dashboard_id', $dashboard->id)
+            ->whereIn('spotify_id', $track->spotify_artist_ids)
+            ->get();
+        $artistNotionIDs = $artists->map(fn($a) => $a->notion_id)->toArray();
+        $artistRelation = \Notion\Pages\Properties\Relation::create(...$artistNotionIDs);
+
+        $album = SpotifyAlbum::where('spotify_dashboard_id', $dashboard->id)
+            ->where('spotify_id', $track->spotify_album_id)
+            ->first();
+        $albumNotionID = $album->notion_id;
+        $albumRelation = \Notion\Pages\Properties\Relation::create($albumNotionID);
+
+        $page = \Notion\Pages\Page::create($parent)
+            ->addProperty("Name", $title)
+            ->addProperty("Spotify ID", $spotifyId)
+            ->addProperty("Duration", $durationMs)
+            ->addProperty("Popularity", $popularity)
+            ->addProperty("Artists", $artistRelation)
+            ->addProperty("Album", $albumRelation);
+
+        $page = $notion->pages()->create($page);
 
         return $page->id;
     }
