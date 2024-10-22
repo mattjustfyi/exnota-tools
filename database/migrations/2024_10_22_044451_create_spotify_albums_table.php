@@ -13,6 +13,15 @@ return new class extends Migration
     {
         Schema::create('spotify_albums', function (Blueprint $table) {
             $table->id();
+            $table->string('spotify_id');
+            $table->string('name');
+            $table->foreignId('spotify_dashboard_id')->constrained('spotify_dashboards');
+            $table->string('notion_id')->nullable();
+            $table->string('image_url')->nullable();
+            $table->string('album_type')->nullable();
+            $table->string('type')->nullable();
+            $table->date('release_date')->nullable();
+            $table->json('spotify_artist_ids')->nullable();
             $table->timestamps();
         });
     }
