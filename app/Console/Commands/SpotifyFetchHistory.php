@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\SpotifyAlbum;
 use App\Models\SpotifyArtist;
 use App\Models\SpotifyDashboard;
+use App\Models\SpotifyPlayHistory;
 use App\Models\SpotifyTrack;
 use App\Models\User;
 use DateTimeImmutable;
@@ -99,7 +100,7 @@ class SpotifyFetchHistory extends Command
         try {
             $tracks = $api->getMyRecentTracks([
                 // TODO: Update to 50
-                'limit' => 5,
+                'limit' => 10,
             ]);
         } catch (Exception $e) {
             Log::error('Error fetching recent tracks: ' . $e->getMessage());
@@ -135,8 +136,12 @@ class SpotifyFetchHistory extends Command
             // Save track
             $spotifyTrack = $track->track;
             $this->saveTrack($notion, $dashboard, $spotifyTrack);
+
+            // Save play history
+            $this->savePlayHistory($notion, $dashboard, $track);
         }
 
+        // TODO: Genres
 
         // Otherwise, check locally if there's a spotify_artist.notion_id entry
         // - If so, skip this step
@@ -350,6 +355,81 @@ class SpotifyFetchHistory extends Command
             ->addProperty("Popularity", $popularity)
             ->addProperty("Artists", $artistRelation)
             ->addProperty("Album", $albumRelation);
+
+        $page = $notion->pages()->create($page);
+
+        return $page->id;
+    }
+
+    private function savePlayHistory($notion, $dashboard, $track)
+    {
+        $playedAt = new DateTimeImmutable($track->played_at);
+        $spotifyTrackId = $track->track->id;
+
+        $playHistory = SpotifyPlayHistory::where('spotify_dashboard_id', $dashboard->id)
+            ->where('played_at', $playedAt)
+            ->first();
+
+        if ($playHistory && $playHistory->notion_id) {
+            Log::debug('Track exists in DB');
+            return;
+        } else if ($playHistory) {
+            Log::debug('Track exists in DB, but not Notion');
+
+            $this->savePlayHistoryToNotion($notion, $dashboard, $playHistory);
+        } else {
+            Log::debug('Track does not exist in DB');
+
+            // Save to DB
+            $playHistory = SpotifyPlayHistory::create([
+                'spotify_dashboard_id' => $dashboard->id,
+                'played_at' => $playedAt,
+                'spotify_track_id' => $spotifyTrackId,
+            ]);
+
+            // Create in Notion
+            $notionId = $this->savePlayHistoryToNotion($notion, $dashboard, $playHistory);
+            $playHistory->update([
+                'notion_id' => $notionId,
+            ]);
+        }
+    }
+
+    private function savePlayHistoryToNotion($notion, $dashboard, $playHistory): string
+    {
+        $databaseId = $dashboard->play_history_db_notion_id;
+        $parent = \Notion\Pages\PageParent::database($databaseId);
+
+        $playedAt = \Notion\Pages\Properties\Date::create(new DateTimeImmutable($playHistory->played_at));
+        $track = SpotifyTrack::where('spotify_dashboard_id', $dashboard->id)
+            ->where('spotify_id', $playHistory->spotify_track_id)
+            ->first();
+        $trackNotionID = $track->notion_id;
+        $trackRelation = \Notion\Pages\Properties\Relation::create($trackNotionID);
+
+        $album = SpotifyAlbum::where('spotify_dashboard_id', $dashboard->id)
+            ->where('spotify_id', $track->spotify_album_id)
+            ->first();
+        $albumNotionID = $album->notion_id;
+        $albumRelation = \Notion\Pages\Properties\Relation::create($albumNotionID);
+
+        $artists = SpotifyArtist::where('spotify_dashboard_id', $dashboard->id)
+            ->whereIn('spotify_id', $track->spotify_artist_ids)
+            ->get(['name', 'notion_id']);
+        $artistNotionIDs = $artists->pluck('notion_id')->toArray();
+        $artistRelation = \Notion\Pages\Properties\Relation::create(...$artistNotionIDs);
+
+        $artistNames = $artists->pluck('name')->toArray();
+        $trackName = $track->name;
+        $artistNamesString = implode(', ', $artistNames);
+        $name = \Notion\Pages\Properties\Title::fromString("$trackName - $artistNamesString");
+
+        $page = \Notion\Pages\Page::create($parent)
+            ->addProperty("Played At", $playedAt)
+            ->addProperty("Song", $trackRelation)
+            ->addProperty("Album", $albumRelation)
+            ->addProperty("Artists", $artistRelation)
+            ->addProperty("Name", $name);
 
         $page = $notion->pages()->create($page);
 
