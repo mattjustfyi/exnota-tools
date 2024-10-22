@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('spotify_artists', function (Blueprint $table) {
             $table->id();
+            $table->string('spotify_id')->unique()->index();
+            $table->string('name');
             $table->timestamps();
         });
     }
