@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('notion', function (Blueprint $table) {
-            //
+        Schema::table('spotify_dashboards', function (Blueprint $table) {
+            $table->string('spotify_track_id_in_notion')->nullable();
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('notion', function (Blueprint $table) {
-            //
+        Schema::table('spotify_dashboards', function (Blueprint $table) {
+            $table->dropColumn('spotify_track_id_in_notion');
         });
     }
 };
