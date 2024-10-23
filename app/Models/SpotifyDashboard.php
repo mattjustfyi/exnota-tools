@@ -15,6 +15,7 @@ class SpotifyDashboard extends Model
     protected $fillable = [
         'workspace_id',
         'access_token',
+        'refresh_token',
         'access_token_expires_at',
         'artist_db_notion_id',
         'album_db_notion_id',

@@ -11,7 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::table('spotify_dashboards', function (Blueprint $table) {
+            $table->string('refresh_token')->nullable();
+        });
     }
 
     /**
@@ -19,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::table('spotify_dashboards', function (Blueprint $table) {
+            $table->dropColumn('refresh_token');
+        });
     }
 };
