@@ -11,7 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::table('spotify_dashboards', function (Blueprint $table) {
+            $table->string('play_status')->nullable();
+            $table->jsonb('current_track')->nullable();
+        });
     }
 
     /**
@@ -19,6 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::table('spotify_dashboards', function (Blueprint $table) {
+            $table->dropColumn(['play_status', 'current_track']);
+        });
     }
 };
