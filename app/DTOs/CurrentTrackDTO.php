@@ -9,6 +9,7 @@ class CurrentTrackDTO
         public string $spotify_id,
         public string $url,
         public int $duration_ms,
+        /** @var ArtistDTO[] */
         public array $artists,
         public string $album_name,
         public string $album_spotify_id,
@@ -19,7 +20,7 @@ class CurrentTrackDTO
     public static function fromArray(array $data): self
     {
         $artists = array_map(
-            fn (array $artistData) => ArtistDTO::fromArray($artistData),
+            fn(array $artistData) => ArtistDTO::fromArray($artistData),
             $data['artists']
         );
 
@@ -44,7 +45,7 @@ class CurrentTrackDTO
             'url' => $this->url,
             'duration_ms' => $this->duration_ms,
             'artists' => array_map(
-                fn (ArtistDTO $artist) => $artist->toArray(),
+                fn(ArtistDTO $artist) => $artist->toArray(),
                 $this->artists
             ),
             'album_name' => $this->album_name,

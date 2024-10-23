@@ -43,59 +43,9 @@ class SpotifyFetchHistory extends Command
         // user is hardcoded.
         $dashboard = SpotifyDashboard::first();
         $workspace = $dashboard->workspace;
-        // -----
-        // History
-        // -----
-
-        // $session = new Session(
-        //     env('SPOTIFY_CLIENT_ID'),
-        //     env('SPOTIFY_CLIENT_SECRET'),
-        //     env('SPOTIFY_REDIRECT_URI')
-        // );
 
         $api = new SpotifyWebAPI();
         $api->setAccessToken($dashboard->access_token);
-
-
-
-
-        // Every 1 minute
-
-        // Get recently played from Spotify
-        // TODO: Is there an SDK?
-        // Get spotify auth id from spotify_dashboard.authData->access_token (for user)
-
-        // Starting from oldest, compare to entries in out DB
-        // - spotify_artist database with columns
-        //   - spotify_id
-        //   - notion_id
-        //   - user_id
-        //   - name
-        // - spotify_album database with columns
-        //   - spotify_id
-        //   - notion_id
-        //   - user_id
-        //   - name
-        //   - image_url
-        //   - album_type
-        //   - type
-        //   - release_date
-        //   - spotify_artist (has many)
-        // - spotify_track database with columns
-        //   - spotify_id
-        //   - notion_id
-        //   - user_id
-        //   - name
-        //   - duration_ms
-        //   - spotify_artist (has many)
-        //   - spotify_album (has one)
-        //   - popularity
-        // - spotify_play_history database with columns
-        //   - played_at (index)
-        //   - spotify_track_id
-        //   - user_id
-
-        // For each entry, in reverse order, from spotify...
 
         try {
             $tracks = $api->getMyRecentTracks([
@@ -142,18 +92,6 @@ class SpotifyFetchHistory extends Command
         }
 
         // TODO: Genres
-
-        // Otherwise, check locally if there's a spotify_artist.notion_id entry
-        // - If so, skip this step
-        // - If not, but there's a spotify_artist.spotify_id entry, create in Notion, save to DB
-        // - If not, save to DB and save to Notion
-        // Get notion database ID from spotify_dashboard.artist_notion_object_id->data->id
-
-        // Repeat for spotify_album and spotify_track
-        // - Get notion database ID from spotify_dashboard.album_notion_object_id->data->id, track_notion_object_id
-
-        // Create Play History entry in Notion, save record in DB
-        // - get db id from spotify_dashboard.play_history_notion_object_id
     }
 
     private function saveArtist($notion, $dashboard, $spotifyArtist)
@@ -271,8 +209,6 @@ class SpotifyFetchHistory extends Command
         $artistNotionIDs = $artists->map(fn($a) => $a->notion_id)->toArray();
         $artistRelation = \Notion\Pages\Properties\Relation::create(...$artistNotionIDs);
 
-        // TODO: Update to add as cover image
-
         $page = \Notion\Pages\Page::create($parent)
             ->addProperty("Name", $title)
             ->addProperty("Spotify ID", $spotifyId)
@@ -283,8 +219,6 @@ class SpotifyFetchHistory extends Command
             ->changeCover($imageFile);
 
         $page = $notion->pages()->create($page);
-
-        // TODO: Add relation to Artists
 
         return $page->id;
     }
