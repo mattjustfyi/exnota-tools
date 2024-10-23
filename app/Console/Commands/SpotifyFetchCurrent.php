@@ -10,6 +10,7 @@ use App\Models\SpotifyDashboard;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Notion\Notion;
 
@@ -162,33 +163,88 @@ class SpotifyFetchCurrent extends Command
 
     private function updateNotionToNotPlaying($dashboard)
     {
-        $notion = Notion::create($dashboard->workspace->authData['access_token']);
-        // // Update dashboard title, icon, cover image
-        // $page = $notion->pages()->retrieve($dashboard->notion_id);
-        // $page->update([
-        //     'properties' => [
-        //         'Name' => $dashboard->name,
-        //         'Icon' => $dashboard->icon,
-        //         'Cover Image' => $dashboard->cover_image,
-        //     ],
-        // ]);
+        // $notion = Notion::create($dashboard->workspace->authData['access_token']);
 
-        // TODO: Update spotify_track_id_in_notion
+        // // Prepare changes
+        // $page = $notion->pages()->find($dashboard->dashboard_page_notion_id);
+        // $title    = \Notion\Pages\Properties\Title::fromString("Music");
+        // $page = $page->addProperty("Title", $title);
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $dashboard->workspace->authData['access_token'],
+            'Content-Type' => 'application/json',
+            'Notion-Version' => '2022-06-28',
+        ])->patch('https://api.notion.com/v1/pages/' . $dashboard->dashboard_page_notion_id, [
+            'properties' => [
+                'title' => [
+                    'title' => [
+                        [
+                            'text' => [
+                                'content' => 'Music'
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]);
+
+        if ($response->successful()) {
+            // Handle successful response
+            Log::debug('Notion page updated successfully.');
+        } else {
+            // Handle error response
+            Log::error('Error updating Notion page: ' . $response->body());
+            throw new Exception('Error updating Notion page: ' . $response->body());
+        }
+
+        // Flag as successful in DB
+        $dashboard->spotify_track_id_in_notion = null;
+        $dashboard->save();
     }
 
     private function updateNotionToPlaying($dashboard)
     {
-        $notion = Notion::create($dashboard->workspace->authData['access_token']);
-        // // Update dashboard title, icon, cover image
-        // $page = $notion->pages()->retrieve($dashboard->notion_id);
-        // $page->update([
-        //     'properties' => [
-        //         'Name' => $dashboard->name,
-        //         'Icon' => $dashboard->icon,
-        //         'Cover Image' => $dashboard->cover_image,
-        //     ],
-        // ]);
+        // $notion = Notion::create($dashboard->workspace->authData['access_token']);
 
-        // TODO: Update spotify_track_id_in_notion
+        // Prepare changes
+        // $page = $notion->pages()->find($dashboard->dashboard_page_notion_id);
+        // $title = \Notion\Pages\Properties\Title::fromString($dashboard->current_track->name);
+        // $page = $page->addProperty("Title", $title);
+
+        // // Save to Notion
+        // $notion->pages()->update($page);
+
+        // Using the SDK didn't work. It errored commenting about missing properties.
+        $title = $dashboard->current_track->name;
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $dashboard->workspace->authData['access_token'],
+            'Content-Type' => 'application/json',
+            'Notion-Version' => '2022-06-28',
+        ])->patch('https://api.notion.com/v1/pages/' . $dashboard->dashboard_page_notion_id, [
+            'properties' => [
+                'title' => [
+                    'title' => [
+                        [
+                            'text' => [
+                                'content' => $title
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]);
+
+        if ($response->successful()) {
+            // Handle successful response
+            Log::debug('Notion page updated successfully.');
+        } else {
+            // Handle error response
+            Log::error('Error updating Notion page: ' . $response->body());
+            throw new Exception('Error updating Notion page: ' . $response->body());
+        }
+
+        // Flag as successful in DB
+        $dashboard->spotify_track_id_in_notion = $dashboard->current_track->spotify_id;
+        $dashboard->save();
     }
 }
