@@ -25,6 +25,6 @@ Artisan::command('inspire', function () {
 // Debugging:
 // - Stop in Docker: docker exec -it exnota-tools-local service cron stop
 // - Host: ./sail.sh debug schedule:run >> /dev/null 2>&1
-Schedule::command('spotify:fetch-current')->everyFiveSeconds();
-Schedule::command('spotify:fetch-history')->everyThirtySeconds();
+Schedule::command('spotify:fetch-current')->everyThirtySeconds();
+// Schedule::command('spotify:fetch-history')->everyThirtySeconds();
 // })->everySecond();
