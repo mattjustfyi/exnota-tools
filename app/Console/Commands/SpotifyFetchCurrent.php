@@ -5,13 +5,13 @@ namespace App\Console\Commands;
 use App\DTOs\ArtistDTO;
 use App\DTOs\CurrentTrackDTO;
 use App\Enums\PlayStatus;
+use App\Helpers\SpotifyHelper;
 use App\Models\SpotifyDashboard;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Notion\Notion;
-use SpotifyWebAPI\SpotifyWebAPI;
 
 class SpotifyFetchCurrent extends Command
 {
@@ -46,10 +46,8 @@ class SpotifyFetchCurrent extends Command
         // Later this scheduler will create a job for each user. For now, the
         // user is hardcoded.
         $dashboard = SpotifyDashboard::first();
-        $workspace = $dashboard->workspace;
 
-        $api = new SpotifyWebAPI();
-        $api->setAccessToken($dashboard->access_token);
+        $api = SpotifyHelper::getAPIForDashboard($dashboard);
 
 
         try {
@@ -58,9 +56,49 @@ class SpotifyFetchCurrent extends Command
             // SDK doesn't seem to.
             // TODO: handle null
             $playbackInfo = $api->getMyCurrentPlaybackInfo();
+        } catch (Exception $e) {
+            Log::error('Error fetching playback info: ' . $e->getMessage());
+            throw $e;
+        }
 
+        // Not playing
+        if (!$playbackInfo || !$playbackInfo->is_playing) {
+            // Update DB if it hasn't already been.
+            if ($dashboard->current_track) {
+                Log::debug('No playback is happening, clearing current track data.');
+                $dashboard->play_status = PlayStatus::NOT_PLAYING;
+                $dashboard->current_track = null;
+                $dashboard->save();
+            }
 
-            // TODO: For speed reasons we probably wanna skip this if the track hasn't changed
+            // Update Notion if it hasn't already been.
+            if ($dashboard->spotify_track_id_in_notion) {
+                $this->updateNotionToNotPlaying($dashboard);
+            }
+
+            return;
+        }
+
+        // Playing
+
+        // If DB has same track, no need to update
+        if (
+            $dashboard->current_track &&
+            $dashboard->current_track->spotify_id === $playbackInfo->item->id
+        ) {
+            Log::debug('Current track has not changed, skipping updates.');
+
+            // Update Notion if it hasn't already been.
+            if ($dashboard->spotify_track_id_in_notion !== $playbackInfo->item->id) {
+                Log::debug('Current track has not changed, but track ID in Notion is different, updating.');
+                $this->updateNotionToPlaying($dashboard);
+            }
+
+            return;
+        }
+
+        // Get artist images
+        try {
             $artistDTOs = [];
             foreach ($playbackInfo->item->artists as $artist) {
                 $artistData = $api->getArtist($artist->id);
@@ -77,7 +115,7 @@ class SpotifyFetchCurrent extends Command
             throw $e;
         }
 
-        // Persist
+        // Persist dashboard updates
         $dashboard = DB::transaction(function () use ($playbackInfo, $artistDTOs, $dashboard) {
             $dto = new CurrentTrackDTO(
                 $playbackInfo->item->name,
@@ -98,40 +136,7 @@ class SpotifyFetchCurrent extends Command
             return $dashboard;
         });
 
-        // Update Notion
-        $notion = Notion::create($workspace->authData['access_token']);
-
-
-
-        // SpotifyDashboard
-        // - play_status
-        // - current_track
-        //   - name
-        //   - spotify_id
-        //   - url
-        //   - duration_ms
-        //   - artist_name
-        //   - artist_spotify_id
-        //   - artist_url
-        //   - artist_image_url
-        //   - album_name
-        //   - album_spotify_id
-        //   - album_url
-        //   - album_image_url
-
-        // If currently_playing_type is not 'track' or is_playing is false
-        // - if our local status is not_playing, do nothing
-        // - if our local status is playing, update to not_playing and
-        //   - Update dashboard title, icon, cover image
-
-        // If local status is not_playing, update to playing with track ID
-        // - Update dashboard title, icon, cover image
-
-        // If local status is playing, compare track ID
-        // - If same, do nothing
-        // - If different, update to playing with new track ID and
-        //   - Update dashboard title, icon, cover image
-
+        $this->updateNotionToPlaying($dashboard);
     }
 
     /**
@@ -153,5 +158,37 @@ class SpotifyFetchCurrent extends Command
         }
 
         return $largestImageURL;
+    }
+
+    private function updateNotionToNotPlaying($dashboard)
+    {
+        $notion = Notion::create($dashboard->workspace->authData['access_token']);
+        // // Update dashboard title, icon, cover image
+        // $page = $notion->pages()->retrieve($dashboard->notion_id);
+        // $page->update([
+        //     'properties' => [
+        //         'Name' => $dashboard->name,
+        //         'Icon' => $dashboard->icon,
+        //         'Cover Image' => $dashboard->cover_image,
+        //     ],
+        // ]);
+
+        // TODO: Update spotify_track_id_in_notion
+    }
+
+    private function updateNotionToPlaying($dashboard)
+    {
+        $notion = Notion::create($dashboard->workspace->authData['access_token']);
+        // // Update dashboard title, icon, cover image
+        // $page = $notion->pages()->retrieve($dashboard->notion_id);
+        // $page->update([
+        //     'properties' => [
+        //         'Name' => $dashboard->name,
+        //         'Icon' => $dashboard->icon,
+        //         'Cover Image' => $dashboard->cover_image,
+        //     ],
+        // ]);
+
+        // TODO: Update spotify_track_id_in_notion
     }
 }
