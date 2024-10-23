@@ -22,6 +22,7 @@ class SpotifyDashboard extends Model
         'dashboard_page_notion_id',
         'play_status',
         'current_track',
+        'spotify_track_id_in_notion',
     ];
 
     protected $casts = [
