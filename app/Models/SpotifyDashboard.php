@@ -15,6 +15,7 @@ class SpotifyDashboard extends Model
     protected $fillable = [
         'workspace_id',
         'access_token',
+        'access_token_expires_at',
         'artist_db_notion_id',
         'album_db_notion_id',
         'track_db_notion_id',
@@ -27,6 +28,7 @@ class SpotifyDashboard extends Model
 
     protected $casts = [
         'play_status' => PlayStatus::class,
+        'access_token_expires_at' => 'datetime',
     ];
 
     protected function currentTrack(): Attribute
