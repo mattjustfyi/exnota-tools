@@ -12,6 +12,7 @@ use App\Http\Controllers\NotionAuthSaveController;
 use App\Http\Controllers\WorkspaceController;
 use App\Http\Controllers\WorkspaceRefreshController;
 use App\Http\Middleware\CreateDuplicateRequestPolicyMiddleware;
+use App\Models\SpotifyDashboard;
 use App\Models\ToolDuplicateRequest;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -30,6 +31,12 @@ Route::get('/api/notion/auth/redirect', function () {
 
 // TODO: This probably shouldn't be "api"
 Route::post('/api/notion/auth/save', NotionAuthSaveController::class)->middleware('api');
+
+Route::get('/spotify/dashboard/{spotifyDashboard}/widget', function (SpotifyDashboard $spotifyDashboard) {
+    return Inertia::render('Spotify/Dashboard/Widget', [
+        'spotifyDashboard' => $spotifyDashboard,
+    ]);
+})->name('spotify.embed.widget');
 
 // Routes requiring login
 Route::middleware([

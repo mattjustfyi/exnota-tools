@@ -27,6 +27,12 @@ class SpotifyDashboard extends Model
         'spotify_track_id_in_notion',
     ];
 
+    protected $hidden = [
+        'access_token',
+        'refresh_token',
+        'access_token_expires_at',
+    ];
+
     protected $casts = [
         'play_status' => PlayStatus::class,
         'access_token_expires_at' => 'datetime',
@@ -35,8 +41,8 @@ class SpotifyDashboard extends Model
     protected function currentTrack(): Attribute
     {
         return Attribute::make(
-            get: fn (?string $value) => $value ? CurrentTrackDTO::fromArray(json_decode($value, true)) : null,
-            set: fn (?CurrentTrackDTO $value) => $value ? json_encode($value->toArray()) : null
+            get: fn(?string $value) => $value ? CurrentTrackDTO::fromArray(json_decode($value, true)) : null,
+            set: fn(?CurrentTrackDTO $value) => $value ? json_encode($value->toArray()) : null
         );
     }
 
