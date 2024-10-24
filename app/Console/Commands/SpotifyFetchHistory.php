@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Helpers\SpotifyHelper;
 use App\Models\SpotifyAlbum;
 use App\Models\SpotifyArtist;
 use App\Models\SpotifyDashboard;
@@ -41,23 +42,30 @@ class SpotifyFetchHistory extends Command
 
         // Later this scheduler will create a job for each user. For now, the
         // user is hardcoded.
-        $dashboard = SpotifyDashboard::first();
-        $workspace = $dashboard->workspace;
+        $dashboard = SpotifyDashboard::where('active', true)->first();
+        if (!$dashboard) {
+            Log::debug('No active dashboards found.');
+            return;
+        }
 
-        $api = new SpotifyWebAPI();
-        $api->setAccessToken($dashboard->access_token);
+        $api = SpotifyHelper::getAPIForDashboard($dashboard);
 
         try {
             $tracks = $api->getMyRecentTracks([
                 // TODO: Update to 50
-                'limit' => 10,
+                'limit' => 50,
             ]);
         } catch (Exception $e) {
             Log::error('Error fetching recent tracks: ' . $e->getMessage());
             throw $e;
         }
 
+        $workspace = $dashboard->workspace;
         $notion = Notion::create($workspace->authData['access_token']);
+
+        // TODO: Optimization: Make sure we loop through play history in reverse
+        // chronological order and when we reach one that's already in the
+        // database AND has been exported to Notion, then stop.
 
         // TODO:
         // Please keep in mind that metadata, cover art and artist images must
@@ -109,7 +117,10 @@ class SpotifyFetchHistory extends Command
         } else if ($artist) {
             Log::debug('Artist exists in DB, but not Notion');
 
-            $this->saveArtistToNotion($notion, $dashboard, $spotifyArtist);
+            $notionId = $this->saveArtistToNotion($notion, $dashboard, $spotifyArtist);
+            $artist->update([
+                'notion_id' => $notionId,
+            ]);
         } else {
             Log::debug('Artist does not exist in DB');
             // Save to DB
@@ -120,7 +131,10 @@ class SpotifyFetchHistory extends Command
             ]);
 
             // Create in Notion
+            Log::debug('About to save artist to Notion');
             $notionId = $this->saveArtistToNotion($notion, $dashboard, $spotifyArtist);
+
+            Log::debug('About to update with Notion ID: ' . $notionId);
             $artist->update([
                 'notion_id' => $notionId,
             ]);
@@ -158,7 +172,10 @@ class SpotifyFetchHistory extends Command
         } else if ($album) {
             Log::debug('Album exists in DB, but not Notion');
 
-            $this->saveAlbumToNotion($notion, $dashboard, $album);
+            $notionId = $this->saveAlbumToNotion($notion, $dashboard, $album);
+            $album->update([
+                'notion_id' => $notionId,
+            ]);
         } else {
             Log::debug('Album does not exist in DB');
 
@@ -237,7 +254,10 @@ class SpotifyFetchHistory extends Command
         } else if ($track) {
             Log::debug('Track exists in DB, but not Notion');
 
-            $this->saveTrackToNotion($notion, $dashboard, $track);
+            $notionId = $this->saveTrackToNotion($notion, $dashboard, $track);
+            $track->update([
+                'notion_id' => $notionId,
+            ]);
         } else {
             Log::debug('Track does not exist in DB');
 
@@ -310,7 +330,10 @@ class SpotifyFetchHistory extends Command
         } else if ($playHistory) {
             Log::debug('Track exists in DB, but not Notion');
 
-            $this->savePlayHistoryToNotion($notion, $dashboard, $playHistory);
+            $notionId = $this->savePlayHistoryToNotion($notion, $dashboard, $playHistory);
+            $playHistory->update([
+                'notion_id' => $notionId,
+            ]);
         } else {
             Log::debug('Track does not exist in DB');
 

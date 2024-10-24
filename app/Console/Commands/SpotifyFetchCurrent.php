@@ -46,7 +46,11 @@ class SpotifyFetchCurrent extends Command
         // Ping spotify API for current status
         // Later this scheduler will create a job for each user. For now, the
         // user is hardcoded.
-        $dashboard = SpotifyDashboard::first();
+        $dashboard = SpotifyDashboard::where('active', true)->first();
+        if (!$dashboard) {
+            Log::debug('No active dashboards found.');
+            return;
+        }
 
         $api = SpotifyHelper::getAPIForDashboard($dashboard);
 
