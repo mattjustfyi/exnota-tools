@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+  <style>
+    .wave {
+      animation: wave 1s ease-in-out infinite alternate;
+      transform-origin: center;
+    }
+    @keyframes wave {
+      0% { transform: scaleY(0.8); }
+      100% { transform: scaleY(1); }
+    }
+  </style>
+  
+  <!-- Background -->
+  <rect x="0" y="0" width="50" height="50" rx="10" ry="10" fill="#8447FF" />
+  
+  <rect class="wave" x="7.5" y="25" width="5" height="14" fill="white">
+    <animate attributeName="height" values="14;20;14" dur="0.8s" repeatCount="indefinite" />
+    <animate attributeName="y" values="18;15;18" dur="0.8s" repeatCount="indefinite" />
+  </rect>
+  
+  <rect class="wave" x="17.5" y="25" width="5" height="20" fill="white">
+    <animate attributeName="height" values="20;26;20" dur="1s" repeatCount="indefinite" />
+    <animate attributeName="y" values="15;12;15" dur="1s" repeatCount="indefinite" />
+  </rect>
+  
+  <rect class="wave" x="27.5" y="25" width="5" height="8" fill="white">
+    <animate attributeName="height" values="8;16;8" dur="1.2s" repeatCount="indefinite" />
+    <animate attributeName="y" values="21;17;21" dur="1.2s" repeatCount="indefinite" />
+  </rect>
+  
+  <rect class="wave" x="37.5" y="25" width="5" height="16" fill="white">
+    <animate attributeName="height" values="16;22;16" dur="0.9s" repeatCount="indefinite" />
+    <animate attributeName="y" values="17;14;17" dur="0.9s" repeatCount="indefinite" />
+  </rect>
+</svg>

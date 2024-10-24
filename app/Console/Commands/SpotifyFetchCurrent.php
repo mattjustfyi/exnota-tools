@@ -163,13 +163,7 @@ class SpotifyFetchCurrent extends Command
 
     private function updateNotionToNotPlaying($dashboard)
     {
-        // $notion = Notion::create($dashboard->workspace->authData['access_token']);
-
-        // // Prepare changes
-        // $page = $notion->pages()->find($dashboard->dashboard_page_notion_id);
-        // $title    = \Notion\Pages\Properties\Title::fromString("Music");
-        // $page = $page->addProperty("Title", $title);
-
+        // Using the SDK didn't work. It errored commenting about missing properties.
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $dashboard->workspace->authData['access_token'],
             'Content-Type' => 'application/json',
@@ -185,6 +179,9 @@ class SpotifyFetchCurrent extends Command
                         ]
                     ]
                 ]
+            ],
+            'icon' => [
+                'emoji' => '🎧'
             ]
         ]);
 
@@ -204,18 +201,13 @@ class SpotifyFetchCurrent extends Command
 
     private function updateNotionToPlaying($dashboard)
     {
-        // $notion = Notion::create($dashboard->workspace->authData['access_token']);
-
-        // Prepare changes
-        // $page = $notion->pages()->find($dashboard->dashboard_page_notion_id);
-        // $title = \Notion\Pages\Properties\Title::fromString($dashboard->current_track->name);
-        // $page = $page->addProperty("Title", $title);
-
-        // // Save to Notion
-        // $notion->pages()->update($page);
-
         // Using the SDK didn't work. It errored commenting about missing properties.
-        $title = $dashboard->current_track->name;
+        $artistName = $dashboard->current_track->artists[0]->name;
+        if (strlen($artistName) > 15) {
+            $artistName = substr($artistName, 0, 12) . '...';
+        }
+        $title = $artistName . ' • ' . $dashboard->current_track->name;
+        $iconUrl = config('app.url') . '/images/spotify/icon-playing-short.svg';
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $dashboard->workspace->authData['access_token'],
             'Content-Type' => 'application/json',
@@ -231,6 +223,13 @@ class SpotifyFetchCurrent extends Command
                         ]
                     ]
                 ]
+            ],
+            'icon' => [
+                'emoji' => '🎵'
+                // 'type' => 'external',
+                // 'external' => [
+                //     'url' => $iconUrl
+                // ]
             ]
         ]);
 
