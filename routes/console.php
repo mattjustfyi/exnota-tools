@@ -25,6 +25,8 @@ Artisan::command('inspire', function () {
 // Debugging:
 // - Stop in Docker: docker exec -it exnota-tools-local service cron stop
 // - Host: ./sail.sh debug schedule:run >> /dev/null 2>&1
-Schedule::command('spotify:fetch-current')->withoutOverlapping()->everyFiveSeconds();
-Schedule::command('spotify:fetch-history')->withoutOverlapping()->everyThirtySeconds();
+
+// runInBackground ensures fetch-history doesn't block fetch-current
+Schedule::command('spotify:fetch-current')->runInBackground()->withoutOverlapping()->everyFiveSeconds();
+Schedule::command('spotify:fetch-history')->runInBackground()->withoutOverlapping()->everyThirtySeconds();
 // })->everySecond();
