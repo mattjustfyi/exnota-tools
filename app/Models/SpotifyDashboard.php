@@ -25,6 +25,7 @@ class SpotifyDashboard extends Model
         'play_status',
         'current_track',
         'spotify_track_id_in_notion',
+        'active',
     ];
 
     protected $hidden = [
