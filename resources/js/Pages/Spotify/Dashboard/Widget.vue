@@ -40,19 +40,22 @@ const firstArtistName = computed(() => {
 <template>
 
     <Head title="Melodash" />
-    <div v-if="currentTrack" class="spotify-widget">
-        <div class="widget-content">
+    <div class="spotify-widget">
+        <div v-if="currentTrack" class="widget-content">
             <img class="album-art" :src="currentTrack.album_image_url" :alt="albumName">
             <div class="track-info">
                 <h2 class="track-title">{{ currentTrack.name }}</h2>
                 <p class="artist-name">{{ firstArtistName }}</p>
             </div>
-            <!-- <div class="controls">
-        <button class="more-options">•••</button>
-        <button class="play-button">
-          <span class="play-icon">▶</span>
-        </button>
-      </div> -->
+            <div class="controls">
+                <button class="more-options">•••</button>
+                <button class="play-button">
+                    <span class="play-icon">▶</span>
+                </button>
+            </div>
+        </div>
+        <div v-else class="widget-content">
+            <p class="not-playing">Not Playing</p>
         </div>
     </div>
 </template>
@@ -136,5 +139,12 @@ const firstArtistName = computed(() => {
 .more-options:hover,
 .play-button:hover {
     transform: scale(1.1);
+}
+
+.not-playing {
+    font-size: 16px;
+    color: #a0a0a0;
+    text-align: center;
+    width: 100%;
 }
 </style>
