@@ -42,10 +42,12 @@ const firstArtistName = computed(() => {
     <Head title="Melodash" />
     <div class="spotify-widget">
         <div v-if="currentTrack" class="widget-content">
-            <img class="album-art" :src="currentTrack.album_image_url" :alt="albumName">
-            <div class="track-info">
-                <h2 class="track-title">{{ currentTrack.name }}</h2>
-                <p class="artist-name">{{ firstArtistName }}</p>
+            <div class="track-details">
+                <img class="album-art" :src="currentTrack.album_image_url" :alt="albumName">
+                <div class="track-info">
+                    <h2 class="track-title">{{ currentTrack.name }}</h2>
+                    <p class="artist-name">{{ firstArtistName }}</p>
+                </div>
             </div>
             <div class="controls">
                 <button class="more-options">•••</button>
@@ -75,6 +77,14 @@ const firstArtistName = computed(() => {
 }
 
 .widget-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 16px;
+}
+
+.track-details {
     display: flex;
     align-items: center;
     gap: 16px;
