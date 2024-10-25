@@ -185,7 +185,12 @@ class SpotifyFetchCurrent extends Command
                 ]
             ],
             'icon' => [
-                'emoji' => '🎧'
+                // 'emoji' => '🎧'
+                'type' => 'external',
+                'external' => [
+                    // 'url' => 'https://raw.githubusercontent.com/mttschltz/exnota-tools/refs/heads/59-spotify-dashboard-poc/public/images/spotify/icon-vinyl.svg?token=GHSAT0AAAAAACWL3FXBCRMFLZASOQNPC5VYZY3H6MQ'
+                    'url' => 'https://raw.githubusercontent.com/mttschltz/exnota-tools/refs/heads/59-spotify-dashboard-poc/public/images/spotify/icon-headphones.svg?token=GHSAT0AAAAAACWL3FXAOLWMK2IATUC2VTTIZY3HQZA'
+                ]
             ]
         ]);
 
@@ -229,11 +234,11 @@ class SpotifyFetchCurrent extends Command
                 ]
             ],
             'icon' => [
-                'emoji' => '🎵'
-                // 'type' => 'external',
-                // 'external' => [
-                //     'url' => $iconUrl
-                // ]
+                // 'emoji' => '🎵'
+                'type' => 'external',
+                'external' => [
+                    'url' => 'https://raw.githubusercontent.com/mttschltz/exnota-tools/refs/heads/59-spotify-dashboard-poc/public/images/spotify/icon-playing-short.svg?token=GHSAT0AAAAAACWL3FXAZUREHDC2S6NUZT5UZY3HPGA'
+                ]
             ]
         ]);
 
