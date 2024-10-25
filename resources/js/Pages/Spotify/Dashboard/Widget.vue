@@ -96,6 +96,7 @@ const toggleTheme = () => {
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
 }
 
 .widget-content {
@@ -156,6 +157,12 @@ const toggleTheme = () => {
     font-size: 16px;
     cursor: pointer;
     padding: 8px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.spotify-widget:hover .theme-toggle {
+    opacity: 1;
 }
 
 .more-options {
