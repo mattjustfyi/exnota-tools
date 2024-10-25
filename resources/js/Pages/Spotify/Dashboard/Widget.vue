@@ -31,8 +31,8 @@ const props = defineProps({
 
 const currentTrack = ref(props.spotifyDashboard.current_track);
 
-const firstArtistName = computed(() => {
-    return (currentTrack.value?.artists.length ?? 0) > 0 ? currentTrack.value.artists[0].name : 'Unknown Artist';
+const artistNames = computed(() => {
+    return currentTrack.value?.artists.map(artist => artist.name).join(', ') || 'Unknown Artist';
 });
 
 const isDarkMode = ref(true);
@@ -53,7 +53,7 @@ const toggleTheme = () => {
                 <img class="album-art" :src="currentTrack.album_image_url" :alt="albumName">
                 <div class="track-info">
                     <h2 class="track-title">{{ currentTrack.name }}</h2>
-                    <p class="artist-name">{{ firstArtistName }}</p>
+                    <p class="artist-name">{{ artistNames }}</p>
                 </div>
             </div>
             <div class="controls">
