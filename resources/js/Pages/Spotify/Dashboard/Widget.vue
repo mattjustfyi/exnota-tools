@@ -67,8 +67,11 @@ const firstArtistName = computed(() => {
     border-radius: 8px;
     padding: 8px;
     color: white;
-    width: 100%;
-    max-width: 600px;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .widget-content {
@@ -146,5 +149,11 @@ const firstArtistName = computed(() => {
     color: #a0a0a0;
     text-align: center;
     width: 100%;
+}
+</style>
+
+<style>
+body {
+    background-color: #191919;
 }
 </style>
