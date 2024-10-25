@@ -190,6 +190,10 @@ Deploy improvement ideas:
 5. Select `iterm2-exnota-tools-local`
 6. Go to `http://localhost`
 
+More
+
+- Scheduler: `./artisan.sh schedule:work`
+
 #### Commands
 
 ```bash
@@ -359,8 +363,9 @@ Reference: <https://laravel.com/docs/11.x/csrf#csrf-excluding-uris>
 
 ### Testing prod build locally
 
-1. In `docker-compose-yml`, comment out `laravel.local` and uncomment `laravel.prod`
-2. Run
+1. In `.env` set `APP_URL=http://localhost:8000`, `ASSET_URL=http://localhost:8000`
+2. In `docker-compose-yml`, comment out `laravel.local` and uncomment `laravel.prod`
+3. Run
 
     ```bash
     # "--force-recreate" fixes network issues that may arise, probably due to
@@ -368,7 +373,7 @@ Reference: <https://laravel.com/docs/11.x/csrf#csrf-excluding-uris>
     docker-compose up --build --force-recreate
     ```  
   
-3. Start workers
+4. Start workers
 
     ```bash
     docker exec -it exnota-tools-prod php /var/www/html/artisan queue:work -vvv --queue=default --timeout=180 --max-time=3600
@@ -376,7 +381,14 @@ Reference: <https://laravel.com/docs/11.x/csrf#csrf-excluding-uris>
     docker exec -it exnota-tools-prod php /var/www/html/artisan queue:work -vvv --queue=delete-2 --timeout=180 --max-time=3600
     ```
 
-4. Access via <http://localhost:8000/duplicates>
+5. Start scheduler
+
+    ```bash
+    docker exec -it exnota-tools-prod cron -f
+    docker exec -it exnota-tools-prod tail -f --retry /var/log/cron.log
+    ```
+
+6. Access via <http://localhost:8000/duplicates>
 
 ## Initial prod setup
 

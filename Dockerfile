@@ -32,6 +32,13 @@ RUN apt-get install -y libpq-dev \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
     && docker-php-ext-install pdo pdo_pgsql pgsql pcntl
 
+# Scheduler
+RUN apt-get -y install cron vim
+ADD cron.txt .
+RUN crontab -u root cron.txt && \
+    rm cron.txt
+RUN touch /var/log/cron.log
+
 # Enable redis PHP extension
 RUN printf "\n" | pecl install redis
 RUN docker-php-ext-enable redis

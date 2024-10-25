@@ -25,6 +25,9 @@ Artisan::command('inspire', function () {
 // Debugging:
 // - Stop in Docker: docker exec -it exnota-tools-local service cron stop
 // - Host: ./sail.sh debug schedule:run >> /dev/null 2>&1
+//
+// locally they suggest to use this instead of installing cron:
+// - php artisan schedule:work
 
 // runInBackground ensures fetch-history doesn't block fetch-current
 Schedule::command('spotify:fetch-current')->runInBackground()->withoutOverlapping()->everyFiveSeconds();
