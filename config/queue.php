@@ -46,6 +46,8 @@ return [
             # processing a frozen job is always terminated before the job is retried. If
             # your --timeout option is longer than your retry_after configuration value,
             # your jobs may be processed twice.
+            #
+            # Keep these aligned: timeout, retry_after, and stopwaitsecs.
             'retry_after' => (int) env('DB_QUEUE_RETRY_AFTER', 185),
             'after_commit' => false,
         ],

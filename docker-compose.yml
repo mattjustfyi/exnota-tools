@@ -31,7 +31,7 @@ services:
     # Uses ./Dockerfile to mimic prod environment
 #     laravel.prod:
 #         container_name: exnota-tools-prod
-#         image: app-name:latest
+#         # image: app-name:latest
 #         build:
 #             target: prod
 #             context: .
@@ -45,8 +45,9 @@ services:
 #         ports:
 #             - "8000:80"
 # #         - '${APP_PORT:-80}:80'
-#         volumes:
-#             - .:/var/www/html
+#         # No volumes! It causes problems with building the frontend.
+#         # volumes:
+#         #     - .:/var/www/html
 #         depends_on:
 #             - pgsql
 #         networks:

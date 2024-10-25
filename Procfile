@@ -14,3 +14,6 @@ web: apache2-foreground
 
 # This should be the same as in docker-compose.yml
 worker: /usr/bin/supervisord -c /etc/supervisor/conf.d/supervised-worker.conf -l /var/log/supervisor/supervisor.log
+
+# Untested!
+scheduler: /usr/bin/supervisord -c /etc/supervisor/conf.d/supervised-scheduler.conf -l /var/log/supervisor/supervisor.log
