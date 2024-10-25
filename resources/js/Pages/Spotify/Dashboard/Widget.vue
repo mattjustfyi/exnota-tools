@@ -35,6 +35,13 @@ const firstArtistName = computed(() => {
     return (currentTrack.value?.artists.length ?? 0) > 0 ? currentTrack.value.artists[0].name : 'Unknown Artist';
 });
 
+const isDarkMode = ref(true);
+
+const toggleTheme = () => {
+    isDarkMode.value = !isDarkMode.value;
+    document.body.style.backgroundColor = isDarkMode.value ? '#191919' : '#ffffff';
+};
+
 </script>
 
 <template>
@@ -50,6 +57,9 @@ const firstArtistName = computed(() => {
                 </div>
             </div>
             <div class="controls">
+                <button class="theme-toggle" @click="toggleTheme">
+                    {{ isDarkMode ? '🌙' : '☀️' }}
+                </button>
                 <button class="more-options">•••</button>
                 <button class="play-button">
                     <span class="play-icon">▶</span>
@@ -122,6 +132,15 @@ const firstArtistName = computed(() => {
     gap: 16px;
 }
 
+.theme-toggle {
+    background: none;
+    border: none;
+    color: #a0a0a0;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 8px;
+}
+
 .more-options {
     background: none;
     border: none;
@@ -150,7 +169,8 @@ const firstArtistName = computed(() => {
 }
 
 .more-options:hover,
-.play-button:hover {
+.play-button:hover,
+.theme-toggle:hover {
     transform: scale(1.1);
 }
 
