@@ -19,6 +19,7 @@
       - [Prod](#prod)
     - [Testing](#testing)
     - [Troubleshooting](#troubleshooting-1)
+      - [Pages/endpoints aren't working as expected (including using ngrok)](#pagesendpoints-arent-working-as-expected-including-using-ngrok)
       - [Web: After Notion connect, it redirects back to `/duplicates` instead of `/duplicates/create-account`](#web-after-notion-connect-it-redirects-back-to-duplicates-instead-of-duplicatescreate-account)
       - [Web: Inertia route opens in iframe](#web-inertia-route-opens-in-iframe)
     - [Laravel Model: BadMethodCallException \[...\] Method \[nethodName in model\] does not exist](#laravel-model-badmethodcallexception--method-nethodname-in-model-does-not-exist)
@@ -193,6 +194,7 @@ Deploy improvement ideas:
 More
 
 - Scheduler: `./artisan.sh schedule:work`
+  - Another one I've used: `./sail.sh debug schedule:run >> /dev/null 2>&1`
 
 #### Commands
 
@@ -321,6 +323,12 @@ Vite (frontend) must be running.
 
 ### Troubleshooting
 
+#### Pages/endpoints aren't working as expected (including using ngrok)
+
+Check that the correct hostname and port are in .env.
+
+For ngrok using `npm build` instead of `npm run dev` may be required.
+
 #### Web: After Notion connect, it redirects back to `/duplicates` instead of `/duplicates/create-account`
 
 Check that you've cleared users from the database AND cleared all cookies locally.
@@ -389,6 +397,10 @@ Reference: <https://laravel.com/docs/11.x/csrf#csrf-excluding-uris>
     ```
 
 6. Access via <http://localhost:8000/duplicates>
+
+Other
+
+- Debugging and live updates: I think this worked when the volume `.:/var/www/html` was configured in docker-compose.yml. Now it's disabled so I don't think it will.
 
 ## Initial prod setup
 
