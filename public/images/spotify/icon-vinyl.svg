@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+  <!-- Background -->
+  <rect x="0" y="0" width="50" height="50" rx="10" ry="10" fill="#8447FF" />
+  
+  <!-- Vinyl Record -->
+  <circle cx="25" cy="25" r="20" stroke="white" stroke-width="2" fill="none" />
+  
+  <!-- Donut-shaped center with smaller hole -->
+  <circle cx="25" cy="25" r="3" stroke="white" stroke-width="10" fill="#8447FF" />
+  <circle cx="25" cy="25" r="3" fill="#8447FF" />
+  
+  <!-- Adjusted Arcs -->
+  <path d="M11.5 25 A13.5 13.5 0 0 1 25 11.5" stroke="white" stroke-width="2" fill="none" />
+  <path d="M38.5 25 A13.5 13.5 0 0 1 25 38.5" stroke="white" stroke-width="2" fill="none" />
+</svg>
