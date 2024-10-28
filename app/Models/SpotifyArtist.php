@@ -16,6 +16,7 @@ class SpotifyArtist extends Model
         'spotify_dashboard_id',
         'notion_id',
         'genres',
+        'image_url',
     ];
 
     protected $casts = [
