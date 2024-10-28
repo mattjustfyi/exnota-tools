@@ -19,6 +19,7 @@ class SpotifyTrack extends Model
         'spotify_artist_ids',
         'spotify_album_id',
         'popularity',
+        'url',
     ];
 
     protected $casts = [

@@ -11,7 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::table('spotify_artists', function (Blueprint $table) {
+            $table->string('url')->nullable();
+        });
+
+        Schema::table('spotify_albums', function (Blueprint $table) {
+            $table->string('url')->nullable();
+        });
+
+        Schema::table('spotify_tracks', function (Blueprint $table) {
+            $table->string('url')->nullable();
+        });
     }
 
     /**
@@ -19,6 +29,16 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::table('spotify_artists', function (Blueprint $table) {
+            $table->dropColumn('url');
+        });
+
+        Schema::table('spotify_albums', function (Blueprint $table) {
+            $table->dropColumn('url');
+        });
+
+        Schema::table('spotify_tracks', function (Blueprint $table) {
+            $table->dropColumn('url');
+        });
     }
 };
