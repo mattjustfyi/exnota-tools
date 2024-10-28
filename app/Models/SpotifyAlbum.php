@@ -21,6 +21,7 @@ class SpotifyAlbum extends Model
         'release_date',
         'spotify_artist_ids',
         'genres',
+        'url',
     ];
 
     protected $casts = [
