@@ -143,6 +143,7 @@ class SpotifyFetchHistory extends Command
                 'name' => $spotifyArtistFull->name,
                 'genres' => $spotifyArtistFull->genres,
                 'image_url' => $imageUrl,
+                'url' => $spotifyArtistFull->external_urls->spotify,
             ]);
 
             // Create in Notion
@@ -167,12 +168,14 @@ class SpotifyFetchHistory extends Command
         $genres = \Notion\Pages\Properties\MultiSelect::fromNames(...$spotifyArtist->genres);
         $imageFile = File::createExternal($spotifyArtist->image_url);
         $imageFiles = \Notion\Pages\Properties\Files::create($imageFile);
+        $url = \Notion\Pages\Properties\Url::create($spotifyArtist->url);
 
         $page = \Notion\Pages\Page::create($parent)
             ->addProperty("Name", $title)
             ->addProperty("Spotify ID", $spotifyId)
             ->addProperty("Genres", $genres)
             ->addProperty("Image", $imageFiles)
+            ->addProperty("URL", $url)
             ->changeCover($imageFile);
 
         $page = $notion->pages()->create($page);
@@ -227,6 +230,7 @@ class SpotifyFetchHistory extends Command
                 'release_date' => $spotifyAlbumFull->release_date,
                 'spotify_artist_ids' => array_map(fn($a) => $a->id, $spotifyAlbumFull->artists),
                 'genres' => $spotifyAlbumFull->genres,
+                'url' => $spotifyAlbumFull->external_urls->spotify,
             ]);
 
             // Create in Notion
@@ -256,6 +260,7 @@ class SpotifyFetchHistory extends Command
             ->get();
         $artistNotionIDs = $artists->map(fn($a) => $a->notion_id)->toArray();
         $artistRelation = \Notion\Pages\Properties\Relation::create(...$artistNotionIDs);
+        $url = \Notion\Pages\Properties\Url::create($album->url);
 
         $page = \Notion\Pages\Page::create($parent)
             ->addProperty("Name", $title)
@@ -265,6 +270,7 @@ class SpotifyFetchHistory extends Command
             ->addProperty("Genres", $genres)
             ->addProperty("Image", $imageFiles)
             ->addProperty("Artists", $artistRelation)
+            ->addProperty("URL", $url)
             ->changeCover($imageFile);
 
         $page = $notion->pages()->create($page);
@@ -302,6 +308,7 @@ class SpotifyFetchHistory extends Command
                 'spotify_artist_ids' => array_map(fn($a) => $a->id, $spotifyTrack->artists),
                 'spotify_album_id' => $spotifyTrack->album->id,
                 'popularity' => $spotifyTrack->popularity,
+                'url' => $spotifyTrack->external_urls->spotify,
             ]);
 
             // Create in Notion
@@ -333,6 +340,7 @@ class SpotifyFetchHistory extends Command
             ->first();
         $albumNotionID = $album->notion_id;
         $albumRelation = \Notion\Pages\Properties\Relation::create($albumNotionID);
+        $url = \Notion\Pages\Properties\Url::create($track->url);
 
         $page = \Notion\Pages\Page::create($parent)
             ->addProperty("Name", $title)
@@ -340,7 +348,8 @@ class SpotifyFetchHistory extends Command
             ->addProperty("Duration", $durationMs)
             ->addProperty("Popularity", $popularity)
             ->addProperty("Artists", $artistRelation)
-            ->addProperty("Album", $albumRelation);
+            ->addProperty("Album", $albumRelation)
+            ->addProperty("URL", $url);
 
         $page = $notion->pages()->create($page);
 
