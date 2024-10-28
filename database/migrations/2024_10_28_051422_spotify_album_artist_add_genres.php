@@ -11,7 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::table('spotify_albums', function (Blueprint $table) {
+            $table->jsonb('genres')->nullable();
+        });
+
+        Schema::table('spotify_artists', function (Blueprint $table) {
+            $table->jsonb('genres')->nullable();
+        });
     }
 
     /**
@@ -19,6 +25,12 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::table('spotify_albums', function (Blueprint $table) {
+            $table->dropColumn('genres');
+        });
+
+        Schema::table('spotify_artists', function (Blueprint $table) {
+            $table->dropColumn('genres');
+        });
     }
 };

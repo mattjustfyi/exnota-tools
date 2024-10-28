@@ -20,11 +20,13 @@ class SpotifyAlbum extends Model
         'type',
         'release_date',
         'spotify_artist_ids',
+        'genres',
     ];
 
     protected $casts = [
         'release_date' => 'date',
         'spotify_artist_ids' => 'array',
+        'genres' => 'array',
     ];
 
     public function spotifyDashboard(): BelongsTo

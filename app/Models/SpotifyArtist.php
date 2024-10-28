@@ -15,6 +15,11 @@ class SpotifyArtist extends Model
         'name',
         'spotify_dashboard_id',
         'notion_id',
+        'genres',
+    ];
+
+    protected $casts = [
+        'genres' => 'array',
     ];
 
     public function spotifyDashboard(): BelongsTo
