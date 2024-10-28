@@ -79,7 +79,7 @@ class SpotifyFetchHistory extends Command
 
             // Save artist
             foreach ($track->track->artists as $spotifyArtist) {
-                $this->saveArtist($notion, $dashboard, $spotifyArtist);
+                $this->saveArtist($api, $notion, $dashboard, $spotifyArtist->id);
             }
 
             // Save album
@@ -87,9 +87,9 @@ class SpotifyFetchHistory extends Command
             $spotifyAlbumId = $spotifyAlbum->id;
             Log::debug('Album ID: ' . $spotifyAlbumId);
             foreach ($spotifyAlbum->artists as $spotifyArtist) {
-                $this->saveArtist($notion, $dashboard, $spotifyArtist);
+                $this->saveArtist($api, $notion, $dashboard, $spotifyArtist->id);
             }
-            $this->saveAlbum($notion, $dashboard, $spotifyAlbum);
+            $this->saveAlbum($api, $notion, $dashboard, $spotifyAlbum->id);
 
             // Save track
             $spotifyTrack = $track->track;
@@ -98,14 +98,10 @@ class SpotifyFetchHistory extends Command
             // Save play history
             $this->savePlayHistory($notion, $dashboard, $track);
         }
-
-        // TODO: Genres
     }
 
-    private function saveArtist($notion, $dashboard, $spotifyArtist)
+    private function saveArtist(SpotifyWebAPI $api, $notion, $dashboard, string $spotifyArtistId)
     {
-        // TODO: Get image from artist endpoint and save as well
-        $spotifyArtistId = $spotifyArtist->id;
         Log::debug('Artist ID: ' . $spotifyArtistId);
         $artist = SpotifyArtist::where('spotify_dashboard_id', $dashboard->id)
             ->where('spotify_id', $spotifyArtistId)
@@ -117,22 +113,41 @@ class SpotifyFetchHistory extends Command
         } else if ($artist) {
             Log::debug('Artist exists in DB, but not Notion');
 
-            $notionId = $this->saveArtistToNotion($notion, $dashboard, $spotifyArtist);
+            $notionId = $this->saveArtistToNotion($notion, $dashboard, $artist);
             $artist->update([
                 'notion_id' => $notionId,
             ]);
         } else {
             Log::debug('Artist does not exist in DB');
+
+            try {
+                $spotifyArtistFull = $api->getArtist($spotifyArtistId);
+            } catch (Exception $e) {
+                Log::error('Error fetching artist with ID ' . $spotifyArtistId . ': ' . $e->getMessage());
+                throw $e;
+            }
+
+            $imageUrl = null;
+            $maxWidth = 0;
+            foreach ($spotifyArtistFull->images as $image) {
+                if ($image->width > $maxWidth) {
+                    $maxWidth = $image->width;
+                    $imageUrl = $image->url;
+                }
+            }
+
             // Save to DB
             $artist = SpotifyArtist::create([
                 'spotify_dashboard_id' => $dashboard->id,
                 'spotify_id' => $spotifyArtistId,
-                'name' => $spotifyArtist->name,
+                'name' => $spotifyArtistFull->name,
+                'genres' => $spotifyArtistFull->genres,
+                'image_url' => $imageUrl,
             ]);
 
             // Create in Notion
             Log::debug('About to save artist to Notion');
-            $notionId = $this->saveArtistToNotion($notion, $dashboard, $spotifyArtist);
+            $notionId = $this->saveArtistToNotion($notion, $dashboard, $artist);
 
             Log::debug('About to update with Notion ID: ' . $notionId);
             $artist->update([
@@ -141,26 +156,32 @@ class SpotifyFetchHistory extends Command
         }
     }
 
-    private function saveArtistToNotion($notion, $dashboard, $spotifyArtist): string
+    private function saveArtistToNotion($notion, $dashboard, SpotifyArtist $spotifyArtist): string
     {
         $databaseId = $dashboard->artist_db_notion_id;
         $parent = \Notion\Pages\PageParent::database($databaseId);
 
         $title    = \Notion\Pages\Properties\Title::fromString($spotifyArtist->name);
-        $spotifyId = \Notion\Pages\Properties\RichTextProperty::fromString($spotifyArtist->id);
+        $spotifyId = \Notion\Pages\Properties\RichTextProperty::fromString($spotifyArtist->spotify_id);
+
+        $genres = \Notion\Pages\Properties\MultiSelect::fromNames(...$spotifyArtist->genres);
+        $imageFile = File::createExternal($spotifyArtist->image_url);
+        $imageFiles = \Notion\Pages\Properties\Files::create($imageFile);
 
         $page = \Notion\Pages\Page::create($parent)
             ->addProperty("Name", $title)
-            ->addProperty("Spotify ID", $spotifyId);
+            ->addProperty("Spotify ID", $spotifyId)
+            ->addProperty("Genres", $genres)
+            ->addProperty("Image", $imageFiles)
+            ->changeCover($imageFile);
 
         $page = $notion->pages()->create($page);
 
         return $page->id;
     }
 
-    private function saveAlbum($notion, $dashboard, $spotifyAlbum)
+    private function saveAlbum(SpotifyWebAPI $api, $notion, $dashboard, string $spotifyAlbumId)
     {
-        $spotifyAlbumId = $spotifyAlbum->id;
         Log::debug('Album ID: ' . $spotifyAlbumId);
 
         $album = SpotifyAlbum::where('spotify_dashboard_id', $dashboard->id)
@@ -179,9 +200,16 @@ class SpotifyFetchHistory extends Command
         } else {
             Log::debug('Album does not exist in DB');
 
+            try {
+                $spotifyAlbumFull = $api->getAlbum($spotifyAlbumId);
+            } catch (Exception $e) {
+                Log::error('Error fetching album with ID ' . $spotifyAlbumId . ': ' . $e->getMessage());
+                throw $e;
+            }
+
             $imageUrl = null;
             $maxWidth = 0;
-            foreach ($spotifyAlbum->images as $image) {
+            foreach ($spotifyAlbumFull->images as $image) {
                 if ($image->width > $maxWidth) {
                     $maxWidth = $image->width;
                     $imageUrl = $image->url;
@@ -192,12 +220,13 @@ class SpotifyFetchHistory extends Command
             $album = SpotifyAlbum::create([
                 'spotify_dashboard_id' => $dashboard->id,
                 'spotify_id' => $spotifyAlbumId,
-                'name' => $spotifyAlbum->name,
+                'name' => $spotifyAlbumFull->name,
                 'image_url' => $imageUrl,
-                'album_type' => $spotifyAlbum->album_type,
-                'type' => $spotifyAlbum->type,
-                'release_date' => $spotifyAlbum->release_date,
-                'spotify_artist_ids' => array_map(fn($a) => $a->id, $spotifyAlbum->artists),
+                'album_type' => $spotifyAlbumFull->album_type,
+                'type' => $spotifyAlbumFull->type,
+                'release_date' => $spotifyAlbumFull->release_date,
+                'spotify_artist_ids' => array_map(fn($a) => $a->id, $spotifyAlbumFull->artists),
+                'genres' => $spotifyAlbumFull->genres,
             ]);
 
             // Create in Notion
@@ -208,7 +237,7 @@ class SpotifyFetchHistory extends Command
         }
     }
 
-    private function saveAlbumToNotion($notion, $dashboard, $album): string
+    private function saveAlbumToNotion($notion, $dashboard, SpotifyAlbum $album): string
     {
         $databaseId = $dashboard->album_db_notion_id;
         $parent = \Notion\Pages\PageParent::database($databaseId);
@@ -217,6 +246,8 @@ class SpotifyFetchHistory extends Command
         $spotifyId = \Notion\Pages\Properties\RichTextProperty::fromString($album->spotify_id);
         $albumType = \Notion\Pages\Properties\RichTextProperty::fromString($album->album_type);
         $releaseDate  = \Notion\Pages\Properties\Date::create(new DateTimeImmutable($album->release_date));
+
+        $genres = \Notion\Pages\Properties\MultiSelect::fromNames(...$album->genres);
         $imageFile = File::createExternal($album->image_url);
         $imageFiles = \Notion\Pages\Properties\Files::create($imageFile);
 
@@ -231,6 +262,7 @@ class SpotifyFetchHistory extends Command
             ->addProperty("Spotify ID", $spotifyId)
             ->addProperty("Type", $albumType)
             ->addProperty("Release Date", $releaseDate)
+            ->addProperty("Genres", $genres)
             ->addProperty("Image", $imageFiles)
             ->addProperty("Artists", $artistRelation)
             ->changeCover($imageFile);
