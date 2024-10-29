@@ -167,6 +167,12 @@ class SpotifyFetchCurrent extends Command
 
     private function updateNotionToNotPlaying($dashboard)
     {
+        // Some icons
+        // - https://tabler.io/icons/icon/playlist
+        // - https://tabler.io/icons/icon/device-audio-tape
+        // - https://tabler.io/icons/icon/disc
+        // - https://tabler.io/icons/icon/device-speaker
+        $iconUrl = config('app.url') . '/images/spotify/vinyl.svg';
         // Using the SDK didn't work. It errored commenting about missing properties.
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $dashboard->workspace->authData['access_token'],
@@ -188,8 +194,7 @@ class SpotifyFetchCurrent extends Command
                 // 'emoji' => '🎧'
                 'type' => 'external',
                 'external' => [
-                    // 'url' => 'https://raw.githubusercontent.com/mttschltz/exnota-tools/refs/heads/59-spotify-dashboard-poc/public/images/spotify/icon-vinyl.svg?token=GHSAT0AAAAAACWL3FXBCRMFLZASOQNPC5VYZY3H6MQ'
-                    'url' => 'https://raw.githubusercontent.com/mttschltz/exnota-tools/refs/heads/59-spotify-dashboard-poc/public/images/spotify/icon-headphones.svg?token=GHSAT0AAAAAACWL3FXAOLWMK2IATUC2VTTIZY3HQZA'
+                    'url' => $iconUrl
                 ]
             ]
         ]);
@@ -215,8 +220,18 @@ class SpotifyFetchCurrent extends Command
         if (strlen($artistName) > 15) {
             $artistName = substr($artistName, 0, 12) . '...';
         }
-        $title = $artistName . ' • ' . $dashboard->current_track->name;
-        $iconUrl = config('app.url') . '/images/spotify/icon-playing-short.svg';
+        $title = $artistName . ' • ' . $dashboard->current_track->name . ' (Music)';
+
+        // TODO: Add credit perhaps like this: https://opensource.stackexchange.com/questions/11864/using-icons-with-mit-licensing-on-the-website
+        //
+        // Some icons:
+        // - https://tabler.io/icons/icon/volume
+        // - https://tabler.io/icons/icon/wave-sine
+        // - https://tabler.io/icons/icon/headphones
+        // - https://tabler.io/icons/icon/music
+        // - https://tabler.io/icons/icon/file-music
+
+        $iconUrl = config('app.url') . '/images/spotify/headphones.svg';
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $dashboard->workspace->authData['access_token'],
             'Content-Type' => 'application/json',
@@ -237,7 +252,7 @@ class SpotifyFetchCurrent extends Command
                 // 'emoji' => '🎵'
                 'type' => 'external',
                 'external' => [
-                    'url' => 'https://raw.githubusercontent.com/mttschltz/exnota-tools/refs/heads/59-spotify-dashboard-poc/public/images/spotify/icon-playing-short.svg?token=GHSAT0AAAAAACWL3FXAZUREHDC2S6NUZT5UZY3HPGA'
+                    'url' => $iconUrl
                 ]
             ]
         ]);
