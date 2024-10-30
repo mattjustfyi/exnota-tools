@@ -334,13 +334,18 @@ class SpotifyFetchHistory extends Command
         $parent = \Notion\Pages\PageParent::database($databaseId);
 
         $title    = \Notion\Pages\Properties\Title::fromString($track->name);
+        $artists = SpotifyArtist::where('spotify_dashboard_id', $dashboard->id)
+            ->whereIn('spotify_id', $track->spotify_artist_ids)
+            ->get();
+        $artistNames = $artists->pluck('name')->toArray();
+        $artistNamesString = implode(', ', $artistNames);
+        $fullNameString = $track->name . ' - ' . $artistNamesString;
+        $fullName = \Notion\Pages\Properties\RichTextProperty::fromString($fullNameString);
+
         $spotifyId = \Notion\Pages\Properties\RichTextProperty::fromString($track->spotify_id);
         $durationMs = \Notion\Pages\Properties\Number::create($track->duration_ms);
         $popularity = \Notion\Pages\Properties\Number::create($track->popularity);
 
-        $artists = SpotifyArtist::where('spotify_dashboard_id', $dashboard->id)
-            ->whereIn('spotify_id', $track->spotify_artist_ids)
-            ->get();
         $artistNotionIDs = $artists->map(fn($a) => $a->notion_id)->toArray();
         $artistRelation = \Notion\Pages\Properties\Relation::create(...$artistNotionIDs);
 
@@ -353,6 +358,7 @@ class SpotifyFetchHistory extends Command
 
         $page = \Notion\Pages\Page::create($parent)
             ->addProperty("Name", $title)
+            ->addProperty("Full Name", $fullName)
             ->addProperty("Spotify ID", $spotifyId)
             ->addProperty("Duration", $durationMs)
             ->addProperty("Popularity", $popularity)
@@ -427,10 +433,8 @@ class SpotifyFetchHistory extends Command
         $artistNotionIDs = $artists->pluck('notion_id')->toArray();
         $artistRelation = \Notion\Pages\Properties\Relation::create(...$artistNotionIDs);
 
-        $artistNames = $artists->pluck('name')->toArray();
         $trackName = $track->name;
-        $artistNamesString = implode(', ', $artistNames);
-        $name = \Notion\Pages\Properties\Title::fromString("$trackName - $artistNamesString");
+        $name = \Notion\Pages\Properties\Title::fromString("$trackName");
 
         $page = \Notion\Pages\Page::create($parent)
             ->addProperty("Played At", $playedAt)
