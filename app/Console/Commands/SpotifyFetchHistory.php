@@ -12,6 +12,7 @@ use App\Models\User;
 use DateTimeImmutable;
 use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Notion\Common\File;
 use Notion\Notion;
@@ -98,6 +99,10 @@ class SpotifyFetchHistory extends Command
             // Save play history
             $this->savePlayHistory($notion, $dashboard, $track);
         }
+
+        if (count($tracks->items) > 1) {
+            $this->updateLast5PlayedInNotion($notion, $dashboard);
+        }
     }
 
     private function saveArtist(SpotifyWebAPI $api, $notion, $dashboard, string $spotifyArtistId)
@@ -166,17 +171,21 @@ class SpotifyFetchHistory extends Command
         $spotifyId = \Notion\Pages\Properties\RichTextProperty::fromString($spotifyArtist->spotify_id);
 
         $genres = \Notion\Pages\Properties\MultiSelect::fromNames(...$spotifyArtist->genres);
-        $imageFile = File::createExternal($spotifyArtist->image_url);
-        $imageFiles = \Notion\Pages\Properties\Files::create($imageFile);
         $url = \Notion\Pages\Properties\Url::create($spotifyArtist->url);
 
         $page = \Notion\Pages\Page::create($parent)
             ->addProperty("Name", $title)
             ->addProperty("Spotify ID", $spotifyId)
             ->addProperty("Genres", $genres)
-            ->addProperty("Image", $imageFiles)
-            ->addProperty("URL", $url)
-            ->changeCover($imageFile);
+            ->addProperty("URL", $url);
+
+        // Have encountered an artist without an image
+        if ($spotifyArtist->image_url) {
+            $imageFile = File::createExternal($spotifyArtist->image_url);
+            $imageFiles = \Notion\Pages\Properties\Files::create($imageFile);
+            $page = $page->addProperty("Image", $imageFiles)
+                ->changeCover($imageFile);
+        }
 
         $page = $notion->pages()->create($page);
 
@@ -399,6 +408,7 @@ class SpotifyFetchHistory extends Command
         $parent = \Notion\Pages\PageParent::database($databaseId);
 
         $playedAt = \Notion\Pages\Properties\Date::create(new DateTimeImmutable($playHistory->played_at));
+        $playedAtTimestamp = \Notion\Pages\Properties\Number::create($playHistory->played_at->getTimestamp() * 1000);
         $track = SpotifyTrack::where('spotify_dashboard_id', $dashboard->id)
             ->where('spotify_id', $playHistory->spotify_track_id)
             ->first();
@@ -424,6 +434,10 @@ class SpotifyFetchHistory extends Command
 
         $page = \Notion\Pages\Page::create($parent)
             ->addProperty("Played At", $playedAt)
+            // Dates don't keep second precision in Notion, so we need to
+            // save the timestamp as a number to do proper sorting and
+            // comparisons, e.g. for the "last 5 played" formula.
+            ->addProperty("Played At Timestamp", $playedAtTimestamp)
             ->addProperty("Song", $trackRelation)
             ->addProperty("Album", $albumRelation)
             ->addProperty("Artists", $artistRelation)
@@ -432,5 +446,56 @@ class SpotifyFetchHistory extends Command
         $page = $notion->pages()->create($page);
 
         return $page->id;
+    }
+
+    private function updateLast5PlayedInNotion($notion, $dashboard)
+    {
+        $databaseId = $dashboard->play_history_db_notion_id;
+
+        $last5Played = SpotifyPlayHistory::where('spotify_dashboard_id', $dashboard->id)
+            ->orderBy('played_at', 'desc')
+            ->take(5)
+            ->get();
+
+        if ($last5Played->count() == 0) {
+            Log::debug('No play history to update last 5 played.');
+            return;
+        }
+
+        $oldestPlayedAt = $last5Played->last()->played_at;
+        $oldestPlayedAtTimestamp = $oldestPlayedAt->getTimestamp() * 1000;
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $dashboard->workspace->authData['access_token'],
+            'Content-Type' => 'application/json',
+            'Notion-Version' => '2022-06-28',
+        ])->patch('https://api.notion.com/v1/databases/' . $databaseId, [
+            'properties' => [
+                'In last 5' => [
+                    'formula' => [
+                        // Dates don't keep second precision in Notion, so we
+                        // need to compare timestamps that we've saved as
+                        // numbers.
+                        //
+                        // Also, date compares like `prop("Played At") >
+                        // parseDate("2024-10-29T00:00Z")` work in the Notion UI
+                        // but seem to give a type error when updating via API.
+                        // They work when comparing two dates from parseDate or
+                        // two dates from prop(), but not when mixed. Even when
+                        // I formatted the prop() to a string and parsed it back
+                        // again.
+                        'expression' => "toNumber(prop(\"Played At Timestamp\")) >= toNumber(" . $oldestPlayedAtTimestamp . ")"
+                    ]
+                ]
+            ]
+        ]);
+
+
+        if ($response->failed()) {
+            Log::error('Failed to update Notion database: ' . $response->body());
+            throw new Exception('Failed to update Notion database: ' . $response->body());
+        } else {
+            Log::debug('Successfully updated Notion database with last 5 played formula.');
+        }
     }
 }
