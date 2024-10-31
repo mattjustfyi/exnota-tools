@@ -278,7 +278,7 @@ class SpotifyFetchHistory extends Command
             ->addProperty("Release Date", $releaseDate)
             ->addProperty("Genres", $genres)
             ->addProperty("Image", $imageFiles)
-            ->addProperty("Artists", $artistRelation)
+            ->addProperty("Artist Pages", $artistRelation)
             ->addProperty("URL", $url)
             ->changeCover($imageFile);
 
@@ -362,8 +362,8 @@ class SpotifyFetchHistory extends Command
             ->addProperty("Spotify ID", $spotifyId)
             ->addProperty("Duration", $durationMs)
             ->addProperty("Popularity", $popularity)
-            ->addProperty("Artists", $artistRelation)
-            ->addProperty("Album", $albumRelation)
+            ->addProperty("Artist Pages", $artistRelation)
+            ->addProperty("Album Page", $albumRelation)
             ->addProperty("URL", $url);
 
         $page = $notion->pages()->create($page);
@@ -437,14 +437,14 @@ class SpotifyFetchHistory extends Command
         $name = \Notion\Pages\Properties\Title::fromString("$trackName");
 
         $page = \Notion\Pages\Page::create($parent)
-            ->addProperty("Played At", $playedAt)
+            ->addProperty("Played At Date", $playedAt)
             // Dates don't keep second precision in Notion, so we need to
             // save the timestamp as a number to do proper sorting and
             // comparisons, e.g. for the "last 5 played" formula.
             ->addProperty("Played At Timestamp", $playedAtTimestamp)
-            ->addProperty("Song", $trackRelation)
-            ->addProperty("Album", $albumRelation)
-            ->addProperty("Artists", $artistRelation)
+            ->addProperty("Song Page", $trackRelation)
+            ->addProperty("Album Page", $albumRelation)
+            ->addProperty("Artist Pages", $artistRelation)
             ->addProperty("Name", $name);
 
         $page = $notion->pages()->create($page);
