@@ -84,6 +84,13 @@ class SpotifyFetchCurrent extends Command
             return;
         }
 
+        // When an ad is playing, there is no `item` property. Can also be
+        // detected with currently_playing_type == 'ad'.
+        if (!$playbackInfo->item) {
+            Log::debug('An ad is playing, skipping updates.');
+            return;
+        }
+
         // Playing
 
         // If DB has same track, no need to update
