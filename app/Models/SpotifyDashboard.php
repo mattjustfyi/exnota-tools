@@ -26,6 +26,7 @@ class SpotifyDashboard extends Model
         'current_track',
         'spotify_track_id_in_notion',
         'active',
+        'fetch_history_after',
     ];
 
     protected $hidden = [
@@ -37,6 +38,7 @@ class SpotifyDashboard extends Model
     protected $casts = [
         'play_status' => PlayStatus::class,
         'access_token_expires_at' => 'datetime',
+        'fetch_history_after' => 'timestamp',
     ];
 
     protected function currentTrack(): Attribute

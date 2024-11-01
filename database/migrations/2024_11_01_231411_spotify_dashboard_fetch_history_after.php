@@ -11,7 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::table('spotify_dashboards', function (Blueprint $table) {
+            $table->timestamp('fetch_history_after')->nullable();
+        });
     }
 
     /**
@@ -19,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::table('spotify_dashboards', function (Blueprint $table) {
+            $table->dropColumn('fetch_history_after');
+        });
     }
 };
