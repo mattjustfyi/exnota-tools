@@ -172,12 +172,14 @@ class SpotifyFetchHistory extends Command
 
         $genres = \Notion\Pages\Properties\MultiSelect::fromNames(...$spotifyArtist->genres);
         $url = \Notion\Pages\Properties\Url::create($spotifyArtist->url);
+        $icon = \Notion\Common\Icon::fromFile(\Notion\Common\File::createExternal("https://www.notion.so/icons/user_gray.svg"));
 
         $page = \Notion\Pages\Page::create($parent)
             ->addProperty("Name", $title)
             ->addProperty("Spotify ID", $spotifyId)
             ->addProperty("Genres", $genres)
-            ->addProperty("URL", $url);
+            ->addProperty("URL", $url)
+            ->changeIcon($icon);
 
         // Have encountered an artist without an image
         if ($spotifyArtist->image_url) {
@@ -271,6 +273,8 @@ class SpotifyFetchHistory extends Command
         $artistRelation = \Notion\Pages\Properties\Relation::create(...$artistNotionIDs);
         $url = \Notion\Pages\Properties\Url::create($album->url);
 
+        $icon = \Notion\Common\Icon::fromFile(\Notion\Common\File::createExternal("https://www.notion.so/icons/music-album_gray.svg"));
+
         $page = \Notion\Pages\Page::create($parent)
             ->addProperty("Name", $title)
             ->addProperty("Spotify ID", $spotifyId)
@@ -280,7 +284,8 @@ class SpotifyFetchHistory extends Command
             ->addProperty("Image", $imageFiles)
             ->addProperty("Artist Pages", $artistRelation)
             ->addProperty("URL", $url)
-            ->changeCover($imageFile);
+            ->changeCover($imageFile)
+            ->changeIcon($icon);
 
         $page = $notion->pages()->create($page);
 
@@ -356,6 +361,8 @@ class SpotifyFetchHistory extends Command
         $albumRelation = \Notion\Pages\Properties\Relation::create($albumNotionID);
         $url = \Notion\Pages\Properties\Url::create($track->url);
 
+        $icon = \Notion\Common\Icon::fromFile(\Notion\Common\File::createExternal("https://www.notion.so/icons/note-eighth_gray.svg"));
+
         $page = \Notion\Pages\Page::create($parent)
             ->addProperty("Name", $title)
             ->addProperty("Full Name", $fullName)
@@ -364,7 +371,8 @@ class SpotifyFetchHistory extends Command
             ->addProperty("Popularity", $popularity)
             ->addProperty("Artist Pages", $artistRelation)
             ->addProperty("Album Page", $albumRelation)
-            ->addProperty("URL", $url);
+            ->addProperty("URL", $url)
+            ->changeIcon($icon);
 
         $page = $notion->pages()->create($page);
 
@@ -436,6 +444,8 @@ class SpotifyFetchHistory extends Command
         $trackName = $track->name;
         $name = \Notion\Pages\Properties\Title::fromString("$trackName");
 
+        $icon = \Notion\Common\Icon::fromFile(\Notion\Common\File::createExternal("https://www.notion.so/icons/note-eighth_gray.svg"));
+
         $page = \Notion\Pages\Page::create($parent)
             ->addProperty("Played At Date", $playedAt)
             // Dates don't keep second precision in Notion, so we need to
@@ -445,7 +455,8 @@ class SpotifyFetchHistory extends Command
             ->addProperty("Song Page", $trackRelation)
             ->addProperty("Album Page", $albumRelation)
             ->addProperty("Artist Pages", $artistRelation)
-            ->addProperty("Name", $name);
+            ->addProperty("Name", $name)
+            ->changeIcon($icon);
 
         $page = $notion->pages()->create($page);
 
