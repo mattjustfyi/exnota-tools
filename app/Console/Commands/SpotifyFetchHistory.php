@@ -259,7 +259,8 @@ class SpotifyFetchHistory extends Command
 
         $title    = \Notion\Pages\Properties\Title::fromString($album->name);
         $spotifyId = \Notion\Pages\Properties\RichTextProperty::fromString($album->spotify_id);
-        $albumType = \Notion\Pages\Properties\RichTextProperty::fromString($album->album_type);
+        $albumType = \Notion\Pages\Properties\Select::fromName($album->album_type);
+        $genres = \Notion\Pages\Properties\MultiSelect::fromNames(...$album->genres);
         $releaseDate  = \Notion\Pages\Properties\Date::create(new DateTimeImmutable($album->release_date));
 
         $genres = \Notion\Pages\Properties\MultiSelect::fromNames(...$album->genres);
@@ -279,7 +280,7 @@ class SpotifyFetchHistory extends Command
             ->addProperty("Name", $title)
             ->addProperty("Spotify ID", $spotifyId)
             ->addProperty("Type", $albumType)
-            ->addProperty("Release Date", $releaseDate)
+            ->addProperty("Release Date with Time", $releaseDate)
             ->addProperty("Genres", $genres)
             ->addProperty("Image", $imageFiles)
             ->addProperty("Artist Pages", $artistRelation)
