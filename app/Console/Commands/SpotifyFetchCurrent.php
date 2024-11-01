@@ -179,7 +179,10 @@ class SpotifyFetchCurrent extends Command
         // - https://tabler.io/icons/icon/device-audio-tape
         // - https://tabler.io/icons/icon/disc
         // - https://tabler.io/icons/icon/device-speaker
-        $iconUrl = config('app.url') . '/images/spotify/vinyl.svg';
+        // $iconUrl = config('app.url') . '/images/spotify/vinyl.svg';
+        $icon = \Notion\Common\Icon::fromFile(\Notion\Common\File::createExternal("https://www.notion.so/icons/music_gray.svg"));
+
+
         // Using the SDK didn't work. It errored commenting about missing properties.
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $dashboard->workspace->authData['access_token'],
@@ -201,7 +204,13 @@ class SpotifyFetchCurrent extends Command
                 // 'emoji' => '🎧'
                 'type' => 'external',
                 'external' => [
-                    'url' => $iconUrl
+                    // Using standard icons means Notion applies light/dark mode
+                    // themes automatically.
+                    'url' => 'https://www.notion.so/icons/music_gray.svg'
+                    // 'url' => 'https://www.notion.so/icons/volume-high_gray.svg'
+                    // 'url' => 'https://www.notion.so/icons/headphones_gray.svg'
+                    // 'url' => 'https://www.notion.so/icons/music_gray.svg'
+                    // 'url' => 'https://www.notion.so/icons/playlist_gray.svg'
                 ]
             ]
         ]);
@@ -259,7 +268,9 @@ class SpotifyFetchCurrent extends Command
                 // 'emoji' => '🎵'
                 'type' => 'external',
                 'external' => [
-                    'url' => $iconUrl
+                    // Using standard icons means Notion applies light/dark mode
+                    // themes automatically.
+                    'url' => 'https://www.notion.so/icons/volume-high_gray.svg'
                 ]
             ]
         ]);
