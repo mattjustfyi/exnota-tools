@@ -40,8 +40,9 @@ curl --request GET \
 
 ### Recently played
 curl --request GET \
-  --url https://api.spotify.com/v1/me/player/recently-played \
-  --header 'Authorization: Bearer {{spotifyClientLastAccessToken}}'
+  --url https://api.spotify.com/v1/me/player/recently-played?limit=50&before=1730273991101 \
+  --header 'Authorization: Bearer {{spotifyClientLastAccessToken}}' \
+  --header 'Content-Type: application/json'
 
 ### Get user info
 curl --request GET \

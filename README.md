@@ -193,8 +193,8 @@ Deploy improvement ideas:
 
 More
 
-- Scheduler: `./artisan.sh schedule:work`
-  - Another one I've used: `./sail.sh debug schedule:run >> /dev/null 2>&1`
+- Scheduler: `./sail.sh debug schedule:work -vvv`
+  - After cancelling, run `./sail.sh debug schedule:clear-cache` before starting again.
 
 #### Commands
 
