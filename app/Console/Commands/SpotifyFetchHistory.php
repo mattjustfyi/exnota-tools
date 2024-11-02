@@ -41,43 +41,41 @@ class SpotifyFetchHistory extends Command
     {
         Log::debug('Fetch history!');
 
-        // Later this scheduler will create a job for each user. For now, the
-        // user is hardcoded.
+        // Later this scheduler will create a job for each user. For now, it
+        // gets the first active one.
         $dashboard = SpotifyDashboard::where('active', true)->first();
         if (!$dashboard) {
             Log::debug('No active dashboards found.');
             return;
         }
-
         $api = SpotifyHelper::getAPIForDashboard($dashboard);
-
-        try {
-            $tracks = $api->getMyRecentTracks([
-                // TODO: Update to 50
-                'limit' => 50,
-            ]);
-        } catch (Exception $e) {
-            Log::error('Error fetching recent tracks: ' . $e->getMessage());
-            throw $e;
-        }
-
         $workspace = $dashboard->workspace;
         $notion = Notion::create($workspace->authData['access_token']);
 
-        // TODO: Optimization: Make sure we loop through play history in reverse
-        // chronological order and when we reach one that's already in the
-        // database AND has been exported to Notion, then stop.
+        $fetchAfter = $dashboard->fetch_history_after;
+        if (!$fetchAfter) {
+            $fetchAfter = now()->subDays(30)->timestamp * 1000;
+            Log::debug('No fetch history after timestamp found. Setting to ' . $fetchAfter);
+        } else {
+            Log::debug('Fetch history after timestamp: ' . $fetchAfter);
+        }
 
-        // TODO:
-        // Please keep in mind that metadata, cover art and artist images must
-        // be accompanied by a link back to the applicable artist, album, track,
-        // or playlist on the Spotify Service. You must also attribute content
-        // from Spotify with the logo.
+        $this->fetchAfter($api, $dashboard, $notion, $fetchAfter);
+    }
+
+    /**
+     * Recursively fetches recent tracks from Spotify after a given timestamp.
+     */
+    private function fetchAfter(SpotifyWebAPI $api, SpotifyDashboard $dashboard, Notion $notion, $after)
+    {
+        $batchSize = 5;
+        $tracks = $api->getMyRecentTracks([
+            'after' => $after,
+            'limit' => $batchSize,
+        ]);
+        $lastBatch = count($tracks->items) < $batchSize;
+
         foreach (array_reverse($tracks->items) as $track) {
-            // If 'played_at' from Spotify for the user already exists in
-            // spotify_play_history, skip (if that's there, assume the rest is too)
-            Log::debug('Track: ' . $track->played_at);
-
             // Save artist
             foreach ($track->track->artists as $spotifyArtist) {
                 $this->saveArtist($api, $notion, $dashboard, $spotifyArtist->id);
@@ -102,6 +100,26 @@ class SpotifyFetchHistory extends Command
 
         if (count($tracks->items) > 1) {
             $this->updateLast5PlayedInNotion($notion, $dashboard);
+        }
+
+        // Save progress in database
+        if ($lastBatch) {
+            Log::debug('Last batch.');
+
+            // `cursors` seems to be empty when no tracks were returned.
+            if ($tracks->cursors) {
+                $dashboard->update([
+                    'fetch_history_after' => $tracks->cursors->after,
+                ]);
+            }
+        } else {
+            Log::debug('Next batch.');
+
+            $nextFetchAfter = $tracks->cursors->after;
+            $dashboard->update([
+                'fetch_history_after' => $nextFetchAfter,
+            ]);
+            $this->fetchAfter($api, $dashboard, $notion, $nextFetchAfter);
         }
     }
 

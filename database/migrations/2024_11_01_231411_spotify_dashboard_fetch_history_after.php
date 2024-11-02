@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('spotify_dashboards', function (Blueprint $table) {
-            $table->timestamp('fetch_history_after')->nullable();
+            $table->bigInteger('fetch_history_after')->nullable();
         });
     }
 
