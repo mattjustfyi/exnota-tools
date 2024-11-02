@@ -38,7 +38,7 @@ class SpotifyDashboard extends Model
     protected $casts = [
         'play_status' => PlayStatus::class,
         'access_token_expires_at' => 'datetime',
-        'fetch_history_after' => 'timestamp',
+        'fetch_history_after' => 'integer', // Change this line to cast as bigint
     ];
 
     protected function currentTrack(): Attribute
