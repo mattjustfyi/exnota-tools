@@ -1,9 +1,4 @@
-### Get access token (app)
-curl -X POST "https://accounts.spotify.com/api/token" \
-     -H "Content-Type: application/x-www-form-urlencoded" \
-     -d "grant_type=client_credentials&client_id={{spotifyClientId}}&client_secret={{spotifyClientSecret}}"
-
-### Get code (user)
+### Get code (user - paste this in browser with correct Spotify account logged in)
 curl -X GET "https://accounts.spotify.com/authorize?response_type=code&client_id={{spotifyClientId}}&scope=user-read-private%20user-read-email%20user-read-playback-state%20user-modify-playback-state%20user-read-currently-playing%20user-read-playback-position%20user-read-recently-played&redirect_uri=https%3A%2F%2Fmelodash.matt.fyi%2Fspotify%2Fredirect"
 
 
@@ -40,7 +35,19 @@ curl --request GET \
 
 ### Recently played
 curl --request GET \
+  --url https://api.spotify.com/v1/me/player/recently-played \
+  --header 'Authorization: Bearer {{spotifyClientLastAccessToken}}' \
+  --header 'Content-Type: application/json'
+
+### Recently played (with before)
+curl --request GET \
   --url https://api.spotify.com/v1/me/player/recently-played?limit=50&before=1730273991101 \
+  --header 'Authorization: Bearer {{spotifyClientLastAccessToken}}' \
+  --header 'Content-Type: application/json'
+
+### Queue (might only work for paid users)
+curl --request GET \
+  --url https://api.spotify.com/v1/me/player/queue \
   --header 'Authorization: Bearer {{spotifyClientLastAccessToken}}' \
   --header 'Content-Type: application/json'
 
