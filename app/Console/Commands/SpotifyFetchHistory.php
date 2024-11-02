@@ -73,6 +73,7 @@ class SpotifyFetchHistory extends Command
             'after' => $after,
             'limit' => $batchSize,
         ]);
+
         $lastBatch = count($tracks->items) < $batchSize;
 
         foreach (array_reverse($tracks->items) as $track) {
@@ -98,7 +99,7 @@ class SpotifyFetchHistory extends Command
             $this->savePlayHistory($notion, $dashboard, $track);
         }
 
-        if (count($tracks->items) > 1) {
+        if (count($tracks->items) > 0) {
             $this->updateLast5PlayedInNotion($notion, $dashboard);
         }
 
