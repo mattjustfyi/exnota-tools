@@ -54,13 +54,16 @@ class SpotifyFetchCurrent extends Command
 
         $api = SpotifyHelper::getAPIForDashboard($dashboard);
 
-
         try {
             // `getMyCurrentPlaybackInfo` can return null if no playback is
             // happening. The actual endpoint still returns data, however the
             // SDK doesn't seem to.
-            // TODO: handle null
             $playbackInfo = $api->getMyCurrentPlaybackInfo();
+
+            // Calling this results in a 403 with my free test account but not
+            // with my personal paid account. A thread on the Spotify forums
+            // suggest that you can't use this with users on free accounts.
+            // $queueInfo = $api->getMyQueue();
         } catch (Exception $e) {
             Log::error('Error fetching playback info: ' . $e->getMessage());
             throw $e;
