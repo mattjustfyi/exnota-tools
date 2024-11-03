@@ -60,11 +60,11 @@ onMounted(() => {
 
 onMounted(() => {
     const channel = window.Echo.channel('spotify.dashboard.3')
-    const listener = channel.listen('.CurrentPlaying', (event) => {
-        console.log('CurrentPlaying event received:', event);
+    const listener = channel.listen('.CurrentPlayingUpdated', (event) => {
+        console.log('CurrentPlayingUpdated event received:', event);
         // Handle the event data here
     });
-    console.log('Listening for CurrentPlaying events');
+    console.log('Listening for CurrentPlayingUpdated events');
 });
 
 onUnmounted(() => {

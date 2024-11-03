@@ -1,6 +1,6 @@
 <?php
 
-use App\Events\SpotifyDashboardCurrentPlayingEvent;
+use App\Events\SpotifyDashboardCurrentPlayingUpdated;
 use App\Http\Controllers\DuplicatesController;
 use App\Http\Controllers\DuplicatesConnectController;
 use App\Http\Controllers\DuplicateCreateController;
@@ -34,8 +34,7 @@ Route::get('/api/notion/auth/redirect', function () {
 Route::post('/spotify/test-event', function () {
     $spotifyDashboard = SpotifyDashboard::where('active', true)->first();
 
-    SpotifyDashboardCurrentPlayingEvent::dispatch($spotifyDashboard);
-    // event(new \App\Events\SpotifyDashboardCurrentPlayingEvent());
+    SpotifyDashboardCurrentPlayingUpdated::dispatch($spotifyDashboard);
 
     return response()->json(['success' => true]);
 });
