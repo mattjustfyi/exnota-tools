@@ -22,6 +22,11 @@ curl -X POST \
     -H "Content-Type: application/json" \
     https://tools.exnota.com/test/workspace/1/refresh
 
+### Test event dispatch
+curl -X POST \
+    -H "Content-Type: application/json" \
+    http://localhost/spotify/test-event
+
 
 ### Slack webhook
 # https://api.slack.com/apps/A07QLH0RKV5/incoming-webhooks

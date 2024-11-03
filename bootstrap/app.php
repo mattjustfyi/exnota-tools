@@ -33,6 +33,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->validateCsrfTokens(except: [
             '/api/notion/auth/save',
+            '/spotify/test-event',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

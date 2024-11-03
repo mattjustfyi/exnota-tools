@@ -1,6 +1,19 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
+import { onMounted, onUnmounted } from 'vue';
 
+onMounted(() => {
+    const channel = window.Echo.channel('spotify-dashboard-current-playing')
+    const listener = channel.listen('.CurrentPlaying', (event) => {
+        console.log('CurrentPlaying event received:', event);
+        // Handle the event data here
+    });
+    console.log('Listening for CurrentPlaying events');
+});
+
+onUnmounted(() => {
+    window.Echo.leave('spotify-dashboard-current-playing');
+});
 </script>
 
 <template>
