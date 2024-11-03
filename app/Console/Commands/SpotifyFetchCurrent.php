@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\DTOs\ArtistDTO;
 use App\DTOs\CurrentTrackDTO;
 use App\Enums\PlayStatus;
+use App\Events\SpotifyDashboardCurrentPlayingUpdated;
 use App\Helpers\SpotifyHelper;
 use App\Models\SpotifyDashboard;
 use Exception;
@@ -77,12 +78,15 @@ class SpotifyFetchCurrent extends Command
                 $dashboard->play_status = PlayStatus::NOT_PLAYING;
                 $dashboard->current_track = null;
                 $dashboard->save();
+
+                SpotifyDashboardCurrentPlayingUpdated::dispatch($dashboard);
             }
 
             // Update Notion if it hasn't already been.
             if ($dashboard->spotify_track_id_in_notion) {
                 $this->updateNotionToNotPlaying($dashboard);
             }
+
 
             return;
         }
@@ -150,6 +154,8 @@ class SpotifyFetchCurrent extends Command
 
             return $dashboard;
         });
+
+        SpotifyDashboardCurrentPlayingUpdated::dispatch($dashboard);
 
         $this->updateNotionToPlaying($dashboard);
     }

@@ -12,7 +12,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class SpotifyDashboardCurrentPlayingEvent implements ShouldBroadcast
+class SpotifyDashboardCurrentPlayingUpdated implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -25,21 +25,20 @@ class SpotifyDashboardCurrentPlayingEvent implements ShouldBroadcast
     {
         $this->spotifyDashboard = $spotifyDashboard;
 
-        Log::debug('SpotifyDashboardCurrentPlayingEvent::__construct');
+        Log::debug('SpotifyDashboardCurrentPlayingUpdated::__construct');
     }
 
     public function broadcastWith()
     {
         // This must always be an array. Since it will be parsed with json_encode()
         return [
-            'message' => 'This is a test message',
-            'timestamp' => now()->toDateTimeString()
+            'current_track' => $this->spotifyDashboard->current_track,
         ];
     }
 
     public function broadcastAs()
     {
-        return 'CurrentPlaying';
+        return 'CurrentPlayingUpdated';
     }
 
     /**
