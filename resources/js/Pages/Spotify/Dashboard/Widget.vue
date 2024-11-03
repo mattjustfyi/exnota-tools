@@ -1,6 +1,6 @@
 <script setup>
 import { Head } from "@inertiajs/vue3";
-import { computed, ref, onMounted } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
 
 const props = defineProps({
     spotifyDashboard: {
@@ -56,6 +56,19 @@ const toggleTheme = () => {
 
 onMounted(() => {
     document.body.className = theme.value; // Apply the theme class to the body on mount
+});
+
+onMounted(() => {
+    const channel = window.Echo.channel('spotify.dashboard.3')
+    const listener = channel.listen('.CurrentPlaying', (event) => {
+        console.log('CurrentPlaying event received:', event);
+        // Handle the event data here
+    });
+    console.log('Listening for CurrentPlaying events');
+});
+
+onUnmounted(() => {
+    window.Echo.leave('spotify.dashboard.3');
 });
 
 </script>

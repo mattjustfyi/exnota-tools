@@ -32,7 +32,9 @@ Route::get('/api/notion/auth/redirect', function () {
 
 // TODO: Remove after testing
 Route::post('/spotify/test-event', function () {
-    SpotifyDashboardCurrentPlayingEvent::dispatch();
+    $spotifyDashboard = SpotifyDashboard::where('active', true)->first();
+
+    SpotifyDashboardCurrentPlayingEvent::dispatch($spotifyDashboard);
     // event(new \App\Events\SpotifyDashboardCurrentPlayingEvent());
 
     return response()->json(['success' => true]);
