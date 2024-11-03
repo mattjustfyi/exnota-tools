@@ -62,7 +62,7 @@ onMounted(() => {
     const channel = window.Echo.channel('spotify.dashboard.' + props.spotifyDashboard.id)
     const listener = channel.listen('.CurrentPlayingUpdated', (event) => {
         console.log('CurrentPlayingUpdated event received:', event);
-        // Handle the event data here
+        currentTrack.value = event.current_track;
     });
     console.log('Listening for CurrentPlayingUpdated events');
 });
