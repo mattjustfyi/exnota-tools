@@ -195,6 +195,7 @@ More
 
 - Scheduler: `./sail.sh debug schedule:work -vvv`
   - After cancelling, run `./sail.sh debug schedule:clear-cache` before starting again.
+- Broadcaster: `./sail.sh debug reverb:start --debug`
 
 #### Commands
 

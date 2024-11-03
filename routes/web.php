@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\SpotifyDashboardCurrentPlayingEvent;
 use App\Http\Controllers\DuplicatesController;
 use App\Http\Controllers\DuplicatesConnectController;
 use App\Http\Controllers\DuplicateCreateController;
@@ -27,6 +28,14 @@ Route::get('/duplicates', [DuplicatesController::class, 'show'])->name('duplicat
 Route::get('/duplicates/connect', [DuplicatesConnectController::class, 'show'])->name('duplicates.connect');
 Route::get('/api/notion/auth/redirect', function () {
     return Inertia::render('API/Notion/Auth/Redirect');
+});
+
+// TODO: Remove after testing
+Route::post('/spotify/test-event', function () {
+    SpotifyDashboardCurrentPlayingEvent::dispatch();
+    // event(new \App\Events\SpotifyDashboardCurrentPlayingEvent());
+
+    return response()->json(['success' => true]);
 });
 
 // TODO: This probably shouldn't be "api"
