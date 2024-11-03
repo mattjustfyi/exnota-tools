@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Models\SpotifyDashboard;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -9,17 +10,22 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class SpotifyDashboardCurrentPlayingEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public SpotifyDashboard $spotifyDashboard;
+
     /**
      * Create a new event instance.
      */
-    public function __construct()
+    public function __construct(SpotifyDashboard $spotifyDashboard)
     {
-        //
+        $this->spotifyDashboard = $spotifyDashboard;
+
+        Log::debug('SpotifyDashboardCurrentPlayingEvent::__construct');
     }
 
     public function broadcastWith()
@@ -44,7 +50,7 @@ class SpotifyDashboardCurrentPlayingEvent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('spotify-dashboard-current-playing'),
+            new Channel('spotify.dashboard.' . $this->spotifyDashboard->id),
         ];
     }
 }
