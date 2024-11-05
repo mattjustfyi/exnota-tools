@@ -11,8 +11,10 @@
         "laravel/framework": "^11.9",
         "laravel/jetstream": "^5.2",
         "laravel/pail": "^1.1",
+        "laravel/reverb": "^1.4",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
+        "league/color-extractor": "^0.4.0",
         "mariosimao/notion-sdk-php": "^1.14",
         "tightenco/ziggy": "^2.0"
     },
