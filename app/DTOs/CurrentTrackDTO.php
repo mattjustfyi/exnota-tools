@@ -17,6 +17,7 @@ class CurrentTrackDTO
         public string $album_image_url,
         /** @var string[] */
         public array $album_colors,
+        public bool $is_playing = false,
     ) {}
 
     public static function fromArray(array $data): self
@@ -38,6 +39,7 @@ class CurrentTrackDTO
             album_image_url: $data['album_image_url'],
             // Added 2024-10-05
             album_colors: $data['album_colors'] ?? [],
+            is_playing: $data['is_playing'] ?? true,
         );
     }
 
@@ -57,6 +59,7 @@ class CurrentTrackDTO
             'album_url' => $this->album_url,
             'album_image_url' => $this->album_image_url,
             'album_colors' => $this->album_colors,
+            'is_playing' => $this->is_playing,
         ];
     }
 }
