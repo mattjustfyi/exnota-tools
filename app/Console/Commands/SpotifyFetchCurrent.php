@@ -65,20 +65,6 @@ class SpotifyFetchCurrent extends Command
             // SDK doesn't seem to.
             $playbackInfo = $api->getMyCurrentPlaybackInfo();
 
-            if ($playbackInfo?->item?->album?->images) {
-                $albumImageUrl = $this->getLargestImage($playbackInfo->item->album->images);
-
-                $palette = Palette::fromUrl($albumImageUrl);
-
-                // it offers some helpers too
-                $topColorsInt = $palette->getMostUsedColors(1000);
-
-
-                // TODO: Get top 100, go through until one matches bright ness threshold
-                $topColorsHex = $this->getValidBrightnessColors($topColorsInt);
-            }
-
-
             // Calling this results in a 403 with my free test account but not
             // with my personal paid account. A thread on the Spotify forums
             // suggest that you can't use this with users on free accounts.
@@ -132,6 +118,23 @@ class SpotifyFetchCurrent extends Command
             }
 
             return;
+        }
+
+        // Get album colors
+        try {
+            if ($playbackInfo?->item?->album?->images) {
+                $albumImageUrl = $this->getLargestImage($playbackInfo->item->album->images);
+
+                $palette = Palette::fromUrl($albumImageUrl);
+
+                // Fetch many colors because sometimes almost all of them are
+                // too bright or dark.
+                $topColorsInt = $palette->getMostUsedColors(1000);
+                $topColorsHex = $this->getValidBrightnessColors($topColorsInt);
+            }
+        } catch (Exception $e) {
+            Log::error('Error fetching palette from URL: ' . $e->getMessage());
+            throw $e;
         }
 
         // Get artist images
