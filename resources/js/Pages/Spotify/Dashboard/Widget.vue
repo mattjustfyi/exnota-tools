@@ -104,20 +104,16 @@ const widgetBackground = computed(() => {
 </script>
 
 <template>
-    <div :class="theme" :style="{ background: widgetBackground }">
+    <div :class="theme">
 
         <Head title="Melodash" />
-        <div class="spotify-widget">
+        <div class="spotify-widget" :style="{ background: widgetBackground }">
             <div v-if="currentTrack" class="widget-content">
                 <div class="track-details">
                     <img class="album-art" :src="currentTrack.album_image_url" :alt="albumName">
                     <div class="track-info">
                         <h2 class="track-title">{{ currentTrack.name }}</h2>
                         <p class="artist-name">{{ artistNames }}</p>
-                        <div class="album-colors" v-if="albumColors.length">
-                            <span v-for="color in albumColors" :key="color" :style="{ backgroundColor: color }"
-                                class="color-square"></span>
-                        </div>
                     </div>
                 </div>
                 <div class="controls">
@@ -191,7 +187,7 @@ const widgetBackground = computed(() => {
 
 .artist-name {
     font-size: 14px;
-    color: #a0a0a0;
+    color: rgba(255, 255, 255, 0.7);
     margin: 4px 0 0 0;
 }
 
@@ -215,13 +211,13 @@ const widgetBackground = computed(() => {
 
 .track-duration {
     font-size: 14px;
-    color: #a0a0a0;
+    color: rgba(255, 255, 255, 0.7);
 }
 
 .theme-toggle {
     background: none;
     border: none;
-    color: #a0a0a0;
+    color: rgba(255, 255, 255, 0.7);
     font-size: 16px;
     cursor: pointer;
     padding: 8px;
@@ -236,7 +232,7 @@ const widgetBackground = computed(() => {
 .more-options {
     background: none;
     border: none;
-    color: #a0a0a0;
+    color: rgba(255, 255, 255, 0.7);
     font-size: 16px;
     cursor: pointer;
     padding: 8px;
