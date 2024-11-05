@@ -87,7 +87,6 @@ const widgetBackground = computed(() => {
     }
     return 'linear-gradient(to bottom, #2c3e50, #1a252f)';
 });
-
 </script>
 
 <template>
@@ -104,19 +103,47 @@ const widgetBackground = computed(() => {
                     </div>
                 </div>
                 <div class="controls">
-                    <!-- <button class="theme-toggle" @click="toggleTheme">
-                        <svg v-if="theme === 'dark'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                            stroke-width="1.5" stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
-                        </svg>
-                        <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                            stroke-width="1.5" stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
-                        </svg>
-                    </button> -->
                     <span class="track-duration">{{ trackDuration }}</span>
+                    <!-- SVG Animation -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+                        <style>
+                            .wave {
+                                animation: wave 1s ease-in-out infinite alternate;
+                                transform-origin: center;
+                            }
+
+                            @keyframes wave {
+                                0% {
+                                    transform: scaleY(0.8);
+                                }
+
+                                100% {
+                                    transform: scaleY(1);
+                                }
+                            }
+                        </style>
+
+                        <rect class="wave" x="7.5" y="25" width="5" height="14" fill="rgba(255, 255, 255, 0.7)">
+                            <animate attributeName="height" values="14;20;14" dur="0.8s" repeatCount="indefinite" />
+                            <animate attributeName="y" values="18;15;18" dur="0.8s" repeatCount="indefinite" />
+                        </rect>
+
+                        <rect class="wave" x="17.5" y="25" width="5" height="20" fill="rgba(255, 255, 255, 0.7)">
+                            <animate attributeName="height" values="20;26;20" dur="1s" repeatCount="indefinite" />
+                            <animate attributeName="y" values="15;12;15" dur="1s" repeatCount="indefinite" />
+                        </rect>
+
+                        <rect class="wave" x="27.5" y="25" width="5" height="8" fill="rgba(255, 255, 255, 0.7)">
+                            <animate attributeName="height" values="8;16;8" dur="1.2s" repeatCount="indefinite" />
+                            <animate attributeName="y" values="21;17;21" dur="1.2s" repeatCount="indefinite" />
+                        </rect>
+
+                        <rect class="wave" x="37.5" y="25" width="5" height="16" fill="rgba(255, 255, 255, 0.7)">
+                            <animate attributeName="height" values="16;22;16" dur="0.9s" repeatCount="indefinite" />
+                            <animate attributeName="y" values="17;14;17" dur="0.9s" repeatCount="indefinite" />
+                        </rect>
+                    </svg>
+
                 </div>
             </div>
             <div v-else class="widget-content">

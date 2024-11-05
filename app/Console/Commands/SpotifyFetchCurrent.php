@@ -335,6 +335,7 @@ class SpotifyFetchCurrent extends Command
             // - First attempt was very bright green: https://open.spotify.com/track/1BAtAtx0VgWgAMROWK9WYf?si=360e53d1382a4fb6
             // - First attempt was very light gray: https://open.spotify.com/track/6pqyZNnLKyJKtrlf42FQoq?si=99c5e3bcc80647ed
             // - Bright purple: https://open.spotify.com/track/2pn8dNVSpYnAtlKFC8Q0DJ?si=1ff617b8e0d04634
+            // - Bright green: https://open.spotify.com/track/1rp986nzkyAX1wFpxzbwlC?si=e3046a8535c948b3
             $brightness = 0.299 * $r + 0.587 * $g + 0.114 * $b;
             if ($brightness > 80 && $brightness < 130) {
                 $colorsHex[] = "#" . $colorHex;
