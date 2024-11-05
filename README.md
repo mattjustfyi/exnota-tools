@@ -3,6 +3,7 @@
 - [Exnota Tools](#exnota-tools)
   - [Cheatsheet](#cheatsheet)
   - [Deploy to prod](#deploy-to-prod)
+    - [Updating environment variables (.env)](#updating-environment-variables-env)
     - [Steps](#steps)
   - [Local development](#local-development)
     - [Running](#running)
@@ -27,6 +28,8 @@
       - [Error: `SQLSTATE[08006] [7] could not translate host name "pgsql" to address: nodename nor servname provided`](#error-sqlstate08006-7-could-not-translate-host-name-pgsql-to-address-nodename-nor-servname-provided)
       - [Error: `Page Expired` on public URL](#error-page-expired-on-public-url)
     - [Testing prod build locally](#testing-prod-build-locally)
+      - [Broadcasting to public URL](#broadcasting-to-public-url)
+      - [Other](#other)
   - [Initial prod setup](#initial-prod-setup)
     - [SSH](#ssh)
     - [Dokku](#dokku)
@@ -76,6 +79,10 @@
     ```
 
 ## Deploy to prod
+
+### Updating environment variables (.env)
+
+Follow steps in BitWarden item `Exnota Tools Production .env`
 
 ### Steps
 
@@ -399,7 +406,69 @@ Reference: <https://laravel.com/docs/11.x/csrf#csrf-excluding-uris>
 
 6. Access via <http://localhost:8000/duplicates>
 
-Other
+#### Broadcasting to public URL
+
+This is how I got broadcasting working inside a Notion embed.
+
+1. Start ngrok forwarding to both ports 80 and 8080
+
+    ```bash
+    # ngrok auth token can be found via `ngrok config check` and opening the
+    # yml file.
+    ngrok start --config ~/code/exnota-tools/ngrok.yml --all --authtoken="AUTH_TOKEN_HERE"
+    ```
+
+    This will provide two URLs. The one that routes outside traffic to your
+    local port 80 is for the widget itself. And one that routes traffic to your
+    port 8080, which is for the websocket connection inside the widget.
+
+2. Laravel/web config:
+
+    ```env
+    # If you don't want to see the debug UI in the widget.
+    APP_DEBUG=false
+
+    # To ensure Laravel will allow connections via the ngrok URL.
+    APP_URL=https://c3e5-159-197-196-172.ngrok-free.app
+    ASSET_URL=https://c3e5-159-197-196-172.ngrok-free.app
+    ```
+
+3. Vite config:
+
+    ```env
+    VITE_REVERB_APP_KEY="${REVERB_APP_KEY}"
+    # Exclude scheme for host! I.e. no "https"
+    VITE_REVERB_HOST=fc85-159-197-196-172.ngrok-free.app
+    # No VITE_REVERB_PORT set
+    # No VITE_REVERB_SCHEME set
+    ```
+
+    So I think the VITE_\* config is how the frontend should connect to the
+    broadcast service. Whereas REVERB_* is probably: a) How the Reverb service
+    itself is configured, and b) How other Laravel services should connect to
+    the Reverb service.
+
+    According to `echo.js`, the port should default to `443` (which is
+    apparently) the default for `wss` (which is the `https` equivalent) and
+    scheme default to `https`.
+
+4. Rebuild frontend via Vite: `npm run build`
+
+    I don't think dev mode (`npm run dev`) will work over ngrok as Vite runs
+    over port `5173` in that case.
+
+5. Start Reverb service with ngrok port 8080 URL, e.g.
+
+    ```bash
+    ./sail.sh debug reverb:start --debug -vvv --hostname=https://9d95-159-197-196-172.ngrok-free.app
+    ```
+
+6. Embed the widget using the ngrok URL forwarding to your port 80
+    Or replace existing widgets if the ngrok URL changed.
+
+7. Open console and check websockets is working.
+
+#### Other
 
 - Debugging and live updates: I think this worked when the volume `.:/var/www/html` was configured in docker-compose.yml. Now it's disabled so I don't think it will.
 
@@ -534,11 +603,11 @@ Other
 
 7. Setup environment variables from .env
 
-   - Get `DB_HOST` from `dokku postgres:info exnota-tools-db` under `Dsn` between `@` and `:`
-   - Get `APP_KEY` by:
-     - Creating a dummy `.env` file.
-     - Running `php artisan key:generate`.
-   - For the remaining, adapt from local `.env`.
+- Get `DB_HOST` from `dokku postgres:info exnota-tools-db` under `Dsn` between `@` and `:`
+- Get `APP_KEY` by:
+  - Creating a dummy `.env` file.
+  - Running `php artisan key:generate`.
+- For the remaining, adapt from local `.env`.
 
    ```bash
    ssh -t dokku@195.201.33.178 config:set exnota-tools --no-restart VAR_1=VALUE VAR_2="VALUE WITH SPACE"
