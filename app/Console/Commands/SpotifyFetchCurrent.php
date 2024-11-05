@@ -75,7 +75,7 @@ class SpotifyFetchCurrent extends Command
         }
 
         // Not playing
-        if (!$playbackInfo || !$playbackInfo->is_playing) {
+        if (!$playbackInfo) {
             // Update DB if it hasn't already been.
             if ($dashboard->current_track) {
                 Log::debug('No playback is happening, clearing current track data.');
@@ -107,7 +107,8 @@ class SpotifyFetchCurrent extends Command
         // If DB has same track, no need to update
         if (
             $dashboard->current_track &&
-            $dashboard->current_track->spotify_id === $playbackInfo->item->id
+            $dashboard->current_track->spotify_id === $playbackInfo->item->id &&
+            $dashboard->play_status === ($playbackInfo->is_playing ? PlayStatus::PLAYING : PlayStatus::NOT_PLAYING)
         ) {
             Log::debug('Current track has not changed, skipping updates.');
 
@@ -168,6 +169,7 @@ class SpotifyFetchCurrent extends Command
                 $playbackInfo->item->album->external_urls->spotify,
                 $this->getLargestImage($playbackInfo->item->album->images),
                 $topColorsHex ?? [],
+                $playbackInfo->is_playing,
             );
 
             $dashboard->play_status = $playbackInfo->is_playing ? PlayStatus::PLAYING : PlayStatus::NOT_PLAYING;
@@ -268,6 +270,7 @@ class SpotifyFetchCurrent extends Command
             $artistName = substr($artistName, 0, 12) . '...';
         }
         $title = $artistName . ' • ' . $dashboard->current_track->name . ' (Music)';
+        $isPlaying = $dashboard->current_track->is_playing;
 
         // TODO: Add credit perhaps like this: https://opensource.stackexchange.com/questions/11864/using-icons-with-mit-licensing-on-the-website
         //
@@ -301,7 +304,7 @@ class SpotifyFetchCurrent extends Command
                 'external' => [
                     // Using standard icons means Notion applies light/dark mode
                     // themes automatically.
-                    'url' => 'https://www.notion.so/icons/volume-high_gray.svg'
+                    'url' => $isPlaying ? 'https://www.notion.so/icons/volume-high_gray.svg' : 'https://www.notion.so/icons/playback-pause_gray.svg'
                 ]
             ]
         ]);

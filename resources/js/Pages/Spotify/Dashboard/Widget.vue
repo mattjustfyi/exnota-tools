@@ -28,6 +28,11 @@ const props = defineProps({
                 type: Array,
                 required: false,
                 default: () => []
+            },
+            is_playing: {
+                type: Boolean,
+                required: false,
+                default: true
             }
         },
     },
@@ -103,9 +108,12 @@ const widgetBackground = computed(() => {
                     </div>
                 </div>
                 <div class="controls">
-                    <span class="track-duration">{{ trackDuration }}</span>
+                    <span class="track-duration">
+                        {{ currentTrack.is_playing ? trackDuration : 'PAUSED' }}
+                    </span>
                     <!-- SVG Animation -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+                    <svg v-if="currentTrack.is_playing" xmlns="http://www.w3.org/2000/svg" width="50" height="50"
+                        viewBox="0 0 50 50">
                         <style>
                             .wave {
                                 animation: wave 1s ease-in-out infinite alternate;
@@ -143,7 +151,6 @@ const widgetBackground = computed(() => {
                             <animate attributeName="y" values="17;14;17" dur="0.9s" repeatCount="indefinite" />
                         </rect>
                     </svg>
-
                 </div>
             </div>
             <div v-else class="widget-content">
