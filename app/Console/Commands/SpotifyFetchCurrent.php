@@ -321,6 +321,8 @@ class SpotifyFetchCurrent extends Command
     {
 
         $colorsHex = [];
+        // Go in reverse because if we use the most prominent colors, it may
+        // clash with the background.
         foreach (array_reverse($colorsInt, true) as $colorInt => $count) {
             $colorHex = Color::fromIntToHex($colorInt, false);
 
@@ -329,13 +331,11 @@ class SpotifyFetchCurrent extends Command
             $g = hexdec(substr($colorHex, 2, 2));
             $b = hexdec(substr($colorHex, 4, 2));
 
-            //do simple weighted avarage
-            //
-            //(This might be overly simplistic as different colors are perceived
-            // differently. That is a green of 128 might be brighter than a red of 128.
-            // But as long as it's just about picking a white or black text color...)
-            $total = $r + $g + $b;
-            if ($total > 200 && $total < 400) {
+            // Albums to test brightness on:
+            // - First attempt was very bright green: https://open.spotify.com/track/1BAtAtx0VgWgAMROWK9WYf?si=360e53d1382a4fb6
+            // - First attempt was very light gray: https://open.spotify.com/track/6pqyZNnLKyJKtrlf42FQoq?si=99c5e3bcc80647ed
+            $brightness = 0.299 * $r + 0.587 * $g + 0.114 * $b;
+            if ($brightness > 100 && $brightness < 150) {
                 $colorsHex[] = "#" . $colorHex;
             }
 
