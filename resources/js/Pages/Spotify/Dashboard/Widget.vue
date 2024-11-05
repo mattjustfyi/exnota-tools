@@ -77,10 +77,34 @@ onUnmounted(() => {
     window.Echo.leave('spotify.dashboard.3');
 });
 
+const widgetBackground = computed(() => {
+    if (albumColors.value.length > 0) {
+        const firstColor = albumColors.value[0];
+        const darkenColor = (color, amount) => {
+            let usePound = false;
+            if (color[0] === "#") {
+                color = color.slice(1);
+                usePound = true;
+            }
+            const num = parseInt(color, 16);
+            let r = (num >> 16) + amount;
+            let g = ((num >> 8) & 0x00FF) + amount;
+            let b = (num & 0x0000FF) + amount;
+            r = r > 255 ? 255 : r < 0 ? 0 : r;
+            g = g > 255 ? 255 : g < 0 ? 0 : g;
+            b = b > 255 ? 255 : b < 0 ? 0 : b;
+            return (usePound ? "#" : "") + (r << 16 | g << 8 | b).toString(16).padStart(6, '0');
+        };
+        const secondColor = darkenColor(firstColor, -30);
+        return `linear-gradient(to bottom, ${firstColor}, ${secondColor})`;
+    }
+    return 'linear-gradient(to bottom, #2c3e50, #1a252f)';
+});
+
 </script>
 
 <template>
-    <div :class="theme">
+    <div :class="theme" :style="{ background: widgetBackground }">
 
         <Head title="Melodash" />
         <div class="spotify-widget">
@@ -121,7 +145,6 @@ onUnmounted(() => {
 
 <style scoped>
 .spotify-widget {
-    background: linear-gradient(to bottom, #2c3e50, #1a252f);
     border-radius: 8px;
     color: white;
     width: 100vw;
