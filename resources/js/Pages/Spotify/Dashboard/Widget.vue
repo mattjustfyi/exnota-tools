@@ -58,7 +58,7 @@ const albumColors = computed(() => {
 
 onMounted(() => {
     const channel = window.Echo.channel('spotify.dashboard.' + props.spotifyDashboard.id)
-    const listener = channel.listen('.CurrentPlayingUpdated', (event) => {
+    channel.listen('.CurrentPlayingUpdated', (event) => {
         console.log('CurrentPlayingUpdated event received:', event);
         currentTrack.value = event.current_track;
     });
@@ -195,15 +195,13 @@ const widgetBackground = computed(() => {
 
 .track-info {
     flex-grow: 1;
+    margin-right: 16px;
 }
 
 .track-title {
     font-size: 16px;
     font-weight: bold;
     margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .artist-name {
