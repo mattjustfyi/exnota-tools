@@ -202,7 +202,7 @@ More
 
 - Scheduler: `./sail.sh debug schedule:work -vvv`
   - After cancelling, run `./sail.sh debug schedule:clear-cache` before starting again.
-- Broadcaster: `./sail.sh debug reverb:start --debug`
+- Broadcaster: `./sail.sh debug reverb:start --debug` (also requires `default` job queue)
 
 #### Commands
 
@@ -410,7 +410,20 @@ Reference: <https://laravel.com/docs/11.x/csrf#csrf-excluding-uris>
 
 This is how I got broadcasting working inside a Notion embed.
 
-1. Start ngrok forwarding to both ports 80 and 8080
+1. Start the supporting Laravel services:
+   1. `default` job queue worker for handling broadcast events:
+
+        ```bash
+        ./vendor/bin/sail debug queue:listen -vvv --queue=default --timeout=180
+        ```
+
+   2. Scheduler for pinging Spotify:
+
+        ```bash
+        ./sail.sh debug schedule:work -vvv
+        ```
+
+2. Start ngrok forwarding to both ports 80 and 8080
 
     ```bash
     # ngrok auth token can be found via `ngrok config check` and opening the
@@ -422,23 +435,25 @@ This is how I got broadcasting working inside a Notion embed.
     local port 80 is for the widget itself. And one that routes traffic to your
     port 8080, which is for the websocket connection inside the widget.
 
-2. Laravel/web config:
+3. Laravel/web config:
 
     ```env
     # If you don't want to see the debug UI in the widget.
     APP_DEBUG=false
 
-    # To ensure Laravel will allow connections via the ngrok URL.
-    APP_URL=https://c3e5-159-197-196-172.ngrok-free.app
-    ASSET_URL=https://c3e5-159-197-196-172.ngrok-free.app
+    # Set the ngrok URL that points to **port 80**
+    APP_URL=<ngrok port 80 url>
+    ASSET_URL=<ngrok port 80 url>
     ```
 
-3. Vite config:
+4. Vite config:
 
     ```env
     VITE_REVERB_APP_KEY="${REVERB_APP_KEY}"
-    # Exclude scheme for host! I.e. no "https"
-    VITE_REVERB_HOST=fc85-159-197-196-172.ngrok-free.app
+
+    # Set the ngrok URL that points to **port 8080** (exclude 'https://')
+    VITE_REVERB_HOST=<ngrok port 8080 url>
+
     # No VITE_REVERB_PORT set
     # No VITE_REVERB_SCHEME set
     ```
@@ -452,21 +467,32 @@ This is how I got broadcasting working inside a Notion embed.
     apparently) the default for `wss` (which is the `https` equivalent) and
     scheme default to `https`.
 
-4. Rebuild frontend via Vite: `npm run build`
+5. Rebuild frontend via Vite: `npm run build`
+
+    This will pull in the latest .env changes. Also required for APP/ASSET_URL
+    changes.
 
     I don't think dev mode (`npm run dev`) will work over ngrok as Vite runs
     over port `5173` in that case.
 
-5. Start Reverb service with ngrok port 8080 URL, e.g.
+6. Start Reverb service:
 
     ```bash
-    ./sail.sh debug reverb:start --debug -vvv --hostname=https://9d95-159-197-196-172.ngrok-free.app
+    ./sail.sh debug reverb:start --debug -vvv
     ```
 
-6. Embed the widget using the ngrok URL forwarding to your port 80
+    With ngrok passing the hostname isn't necessary, probably because ngrok
+    itself forwards traffic to localhost:8080. This is probably also the case
+    when using nginx.
+
+    Some environments may require the hostname/host/port to be set. See: <https://laravel.com/docs/11.x/reverb#ssl>
+
+7. Embed the widget using the ngrok URL forwarding to your port 80
     Or replace existing widgets if the ngrok URL changed.
 
-7. Open console and check websockets is working.
+    E.g. <ngrok port 80 url>/spotify/dashboard/3/widget
+
+8. Open console and check websockets is working.
 
 #### Other
 
