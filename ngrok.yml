@@ -1,0 +1,13 @@
+# Using this config file is a way to do multiple forwards with the free version
+# of ngrok.
+version: 2
+# Enter authtoken via command line. You can find auth token via `ngrok config
+# check` and opening the yml file.
+# authtoken:
+tunnels:
+  web:
+    addr: 80
+    proto: http
+  broadcast:
+    addr: 8080
+    proto: http
