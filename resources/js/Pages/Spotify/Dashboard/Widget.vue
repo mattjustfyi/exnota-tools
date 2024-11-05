@@ -23,10 +23,15 @@ const props = defineProps({
             album_name: String,
             album_spotify_id: String,
             album_url: String,
-            album_image_url: String
+            album_image_url: String,
+            album_colors: {
+                type: Array,
+                required: false,
+                default: () => []
+            }
         },
-        spotify_track_id_in_notion: String
-    }
+    },
+    spotify_track_id_in_notion: String
 });
 
 const currentTrack = ref(props.spotifyDashboard.current_track);
@@ -42,10 +47,11 @@ const trackDuration = computed(() => {
     return `${minutes}:${seconds}`;
 });
 
+const albumColors = computed(() => {
+    return currentTrack.value?.album_colors || [];
+});
+
 // Theme management
-// Save to local storage instead of cookies as they are considered third-party
-// and will likely be blocked by browsers. Another option may be to save this
-// server-side, though that would prohibit different theme mode per device.
 const theme = ref(localStorage.getItem('theme') || 'light');
 
 const toggleTheme = () => {
@@ -84,6 +90,10 @@ onUnmounted(() => {
                     <div class="track-info">
                         <h2 class="track-title">{{ currentTrack.name }}</h2>
                         <p class="artist-name">{{ artistNames }}</p>
+                        <div class="album-colors" v-if="albumColors.length">
+                            <span v-for="color in albumColors" :key="color" :style="{ backgroundColor: color }"
+                                class="color-square"></span>
+                        </div>
                     </div>
                 </div>
                 <div class="controls">
@@ -160,6 +170,18 @@ onUnmounted(() => {
     font-size: 14px;
     color: #a0a0a0;
     margin: 4px 0 0 0;
+}
+
+.album-colors {
+    display: flex;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.color-square {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
 }
 
 .controls {

@@ -15,6 +15,10 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Notion\Notion;
 
+use League\ColorExtractor\Color;
+use League\ColorExtractor\ColorExtractor;
+use League\ColorExtractor\Palette;
+
 class SpotifyFetchCurrent extends Command
 {
     /**
@@ -60,6 +64,20 @@ class SpotifyFetchCurrent extends Command
             // happening. The actual endpoint still returns data, however the
             // SDK doesn't seem to.
             $playbackInfo = $api->getMyCurrentPlaybackInfo();
+
+            if ($playbackInfo?->item?->album?->images) {
+                $albumImageUrl = $this->getLargestImage($playbackInfo->item->album->images);
+
+                $palette = Palette::fromUrl($albumImageUrl);
+
+                // it offers some helpers too
+                $topColorsInt = $palette->getMostUsedColors(1000);
+
+
+                // TODO: Get top 100, go through until one matches bright ness threshold
+                $topColorsHex = $this->getValidBrightnessColors($topColorsInt);
+            }
+
 
             // Calling this results in a 403 with my free test account but not
             // with my personal paid account. A thread on the Spotify forums
@@ -135,7 +153,7 @@ class SpotifyFetchCurrent extends Command
         }
 
         // Persist dashboard updates
-        $dashboard = DB::transaction(function () use ($playbackInfo, $artistDTOs, $dashboard) {
+        $dashboard = DB::transaction(function () use ($playbackInfo, $artistDTOs, $dashboard, $topColorsHex) {
             $dto = new CurrentTrackDTO(
                 $playbackInfo->item->name,
                 $playbackInfo->item->id,
@@ -145,7 +163,8 @@ class SpotifyFetchCurrent extends Command
                 $playbackInfo->item->album->name,
                 $playbackInfo->item->album->id,
                 $playbackInfo->item->album->external_urls->spotify,
-                $this->getLargestImage($playbackInfo->item->album->images)
+                $this->getLargestImage($playbackInfo->item->album->images),
+                $topColorsHex ?? [],
             );
 
             $dashboard->play_status = $playbackInfo->is_playing ? PlayStatus::PLAYING : PlayStatus::NOT_PLAYING;
@@ -296,5 +315,35 @@ class SpotifyFetchCurrent extends Command
         // Flag as successful in DB
         $dashboard->spotify_track_id_in_notion = $dashboard->current_track->spotify_id;
         $dashboard->save();
+    }
+
+    private function getValidBrightnessColors($colorsInt): array
+    {
+
+        $colorsHex = [];
+        foreach (array_reverse($colorsInt, true) as $colorInt => $count) {
+            $colorHex = Color::fromIntToHex($colorInt, false);
+
+            //break up the color in its RGB components
+            $r = hexdec(substr($colorHex, 0, 2));
+            $g = hexdec(substr($colorHex, 2, 2));
+            $b = hexdec(substr($colorHex, 4, 2));
+
+            //do simple weighted avarage
+            //
+            //(This might be overly simplistic as different colors are perceived
+            // differently. That is a green of 128 might be brighter than a red of 128.
+            // But as long as it's just about picking a white or black text color...)
+            $total = $r + $g + $b;
+            if ($total > 200 && $total < 400) {
+                $colorsHex[] = "#" . $colorHex;
+            }
+
+            if (count($colorsHex) >= 5) {
+                break;
+            }
+        }
+
+        return $colorsHex;
     }
 }

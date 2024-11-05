@@ -15,6 +15,8 @@ class CurrentTrackDTO
         public string $album_spotify_id,
         public string $album_url,
         public string $album_image_url,
+        /** @var string[] */
+        public array $album_colors,
     ) {}
 
     public static function fromArray(array $data): self
@@ -34,6 +36,8 @@ class CurrentTrackDTO
             album_spotify_id: $data['album_spotify_id'],
             album_url: $data['album_url'],
             album_image_url: $data['album_image_url'],
+            // Added 2024-10-05
+            album_colors: $data['album_colors'] ?? [],
         );
     }
 
@@ -52,6 +56,7 @@ class CurrentTrackDTO
             'album_spotify_id' => $this->album_spotify_id,
             'album_url' => $this->album_url,
             'album_image_url' => $this->album_image_url,
+            'album_colors' => $this->album_colors,
         ];
     }
 }
