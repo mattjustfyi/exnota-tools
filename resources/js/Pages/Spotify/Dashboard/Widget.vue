@@ -51,19 +51,6 @@ const albumColors = computed(() => {
     return currentTrack.value?.album_colors || [];
 });
 
-// Theme management
-const theme = ref(localStorage.getItem('theme') || 'light');
-
-const toggleTheme = () => {
-    theme.value = theme.value === 'light' ? 'dark' : 'light';
-    localStorage.setItem('theme', theme.value);
-    document.body.className = theme.value; // Apply the theme class to the body
-};
-
-onMounted(() => {
-    document.body.className = theme.value; // Apply the theme class to the body on mount
-});
-
 onMounted(() => {
     const channel = window.Echo.channel('spotify.dashboard.' + props.spotifyDashboard.id)
     const listener = channel.listen('.CurrentPlayingUpdated', (event) => {
@@ -104,7 +91,7 @@ const widgetBackground = computed(() => {
 </script>
 
 <template>
-    <div :class="theme">
+    <div>
 
         <Head title="Melodash" />
         <div class="spotify-widget" :style="{ background: widgetBackground }">
@@ -117,7 +104,7 @@ const widgetBackground = computed(() => {
                     </div>
                 </div>
                 <div class="controls">
-                    <button class="theme-toggle" @click="toggleTheme">
+                    <!-- <button class="theme-toggle" @click="toggleTheme">
                         <svg v-if="theme === 'dark'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                             stroke-width="1.5" stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -128,7 +115,7 @@ const widgetBackground = computed(() => {
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
                         </svg>
-                    </button>
+                    </button> -->
                     <span class="track-duration">{{ trackDuration }}</span>
                 </div>
             </div>
@@ -214,7 +201,7 @@ const widgetBackground = computed(() => {
     color: rgba(255, 255, 255, 0.7);
 }
 
-.theme-toggle {
+/* .theme-toggle {
     background: none;
     border: none;
     color: rgba(255, 255, 255, 0.7);
@@ -223,11 +210,11 @@ const widgetBackground = computed(() => {
     padding: 8px;
     opacity: 0;
     transition: opacity 0.3s;
-}
+} */
 
-.spotify-widget:hover .theme-toggle {
+/* .spotify-widget:hover .theme-toggle {
     opacity: 1;
-}
+} */
 
 .more-options {
     background: none;
@@ -271,15 +258,7 @@ const widgetBackground = computed(() => {
 </style>
 
 <style>
-body.dark {
-    background-color: #191919;
+html {
+    background: transparent !important;
 }
-
-body.light {
-    background-color: #ffffff;
-}
-
-/* body {
-    background-color: #191919;
-} */
 </style>
