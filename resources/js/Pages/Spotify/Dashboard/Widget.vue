@@ -90,7 +90,7 @@ const widgetBackground = computed(() => {
         const secondColor = darkenColor(firstColor, -30);
         return `linear-gradient(to bottom, ${firstColor}, ${secondColor})`;
     }
-    return 'linear-gradient(to bottom, #2c3e50, #1a252f)';
+    return 'linear-gradient(to bottom, #b8b8b8, #999999)';
 });
 </script>
 
@@ -154,7 +154,7 @@ const widgetBackground = computed(() => {
                 </div>
             </div>
             <div v-else class="widget-content">
-                <p class="not-playing">Not Playing</p>
+                <p class="not-playing">NOT PLAYING</p>
             </div>
         </div>
     </div>
@@ -282,8 +282,8 @@ const widgetBackground = computed(() => {
 }
 
 .not-playing {
-    font-size: 16px;
-    color: #a0a0a0;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
     text-align: center;
     width: 100%;
 }
