@@ -17,11 +17,30 @@ SELECT id, created_at, updated_at, notion_object_id,
 FROM public.tool_duplicate_requests
 order by created_at asc;
 
+select * from notion_objects where id in (select notion_object_id from tool_duplicate_requests)
+	join workspaces on workspace_id;
+
+SELECT 
+    no.name AS notion_object_name,
+    ws.workspace_name AS workspace_name,
+    tdr.id, tdr.created_at, tdr.updated_at, tdr.notion_object_id,
+    tdr.search_started_at, tdr.search_ended_at, tdr.delete_started_at, tdr.delete_ended_at,
+    tdr.delete_batch_id,
+    tdr.search_batch_id,
+    tdr.search_failed, tdr.delete_cancelled
+FROM 
+    tool_duplicate_requests tdr
+JOIN 
+    notion_objects no ON tdr.notion_object_id = no.id
+JOIN 
+    workspaces ws ON no.workspace_id = ws.id;
+
 -- ----------
 -- Durations and counts of duplicate search/delete requests
 -- ----------
 SELECT 
-    id, created_at,
+    tdr.id, tdr.created_at,
+    ws.workspace_name, no.name AS notion_object_name,
     COALESCE(jsonb_array_length(search_results), 0) AS search_count,
     CASE 
         WHEN search_started_at IS NOT NULL AND search_ended_at IS NOT NULL THEN
@@ -43,7 +62,11 @@ SELECT
         ELSE NULL
     END AS delete_duration
 FROM 
-    tool_duplicate_requests
+    tool_duplicate_requests tdr
+JOIN 
+    notion_objects no ON tdr.notion_object_id = no.id
+JOIN 
+    workspaces ws ON no.workspace_id = ws.id
 WHERE 
     search_started_at IS NOT NULL
 ORDER BY 
