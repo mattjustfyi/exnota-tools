@@ -8,7 +8,7 @@ readonly class ArtistDTO
         public string $name,
         public string $spotify_id,
         public string $url,
-        public string $image_url,
+        public ?string $image_url,
     ) {}
 
     public static function fromArray(array $data): self
