@@ -90,7 +90,7 @@ const widgetBackground = computed(() => {
         const secondColor = darkenColor(firstColor, -30);
         return `linear-gradient(to bottom, ${firstColor}, ${secondColor})`;
     }
-    return 'linear-gradient(to bottom, #b8b8b8, #999999)';
+    return 'linear-gradient(to bottom, #aaa, #666)';
 });
 </script>
 
