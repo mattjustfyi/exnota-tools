@@ -229,7 +229,10 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <AppLayout>
+    <AppLayout :feature="{
+        title: 'Delete Duplicates',
+        href: route('duplicates'),
+    }">
 
         <Head title="Delete duplicates in Notion databases - Exnota Tools" />
 
