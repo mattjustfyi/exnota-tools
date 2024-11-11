@@ -59,6 +59,36 @@ const copyToClipboard = () => {
 
         <Head title="Generate Notion API requests - Exnota Tools" />
 
+        <div class="hero bg-base-200">
+            <div class="hero-content flex-col lg:flex-row-reverse">
+                <iframe src="https://www.youtube-nocookie.com/embed/RFF28KVLz7Q?si=pi5G6nh6gLYaYHv7"
+                    class="aspect-video w-full" title="YouTube video player" frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <!-- <img src="https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp"
+                    class="max-w-sm rounded-lg shadow-2xl" /> -->
+                <div>
+                    <h1 class="text-5xl font-bold">Sync Spotify to Notion</h1>
+                    <div class="prose mr-16">
+                        <ul class="py-6">
+                            <li>No sync limits</li>
+                            <li>Currently Playing widget</li>
+                            <li>Live updating page title and icon</li>
+                            <li>Full databases with relations for Songs, Artists, Albums, and Play History.</li>
+                            <li>Images and links for all artists.</li>
+                        </ul>
+                    </div>
+                    <a href="https://mattjustfyi.gumroad.com/l/kleqhd" class="btn btn-primary" target="_blank">Buy
+                        the Premium Music Dashboard</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="divider my-16"></div>
+
+        <h2 class="text-3xl font-bold">Music Dashboard Lite</h2>
+        <p class="prose">Create your own Spotify to Notion sync with a free Make account and some setup.</p>
+        <h3 class="text-2xl font-bold">Notion API Helper</h3>
         <label class="form-control w-full max-w-xs">
             <div class="label">
                 <span class="label-text">Icon</span>
