@@ -30,6 +30,10 @@ Route::get('/api/notion/auth/redirect', function () {
     return Inertia::render('API/Notion/Auth/Redirect');
 });
 
+Route::get('/music-dashboard', function () {
+    return Inertia::render('MusicDashboard');
+})->name('music-dashboard');
+
 // TODO: Remove after testing
 Route::post('/spotify/test-event', function () {
     $spotifyDashboard = SpotifyDashboard::where('active', true)->first();
