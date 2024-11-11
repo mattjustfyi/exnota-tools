@@ -57,6 +57,7 @@ const albumColors = computed(() => {
 });
 
 onMounted(() => {
+    window.initEcho();
     const channel = window.Echo.channel('spotify.dashboard.' + props.spotifyDashboard.id)
     channel.listen('.CurrentPlayingUpdated', (event) => {
         console.log('CurrentPlayingUpdated event received:', event);
@@ -97,7 +98,7 @@ const widgetBackground = computed(() => {
 <template>
     <div>
 
-        <Head title="Melodash" />
+        <Head title="Exnota Music Dashboard" />
         <div class="spotify-widget" :style="{ background: widgetBackground }">
             <div v-if="currentTrack" class="widget-content">
                 <div class="track-details">
