@@ -7,6 +7,10 @@ import HelpMessage from '@/Components/HelpMessage.vue';
 
 const props = defineProps({
     title: String,
+    feature: {
+        title: String,
+        href: String,
+    } | undefined,
 });
 
 const page = usePage();
@@ -43,12 +47,17 @@ const logout = () => {
                         <div class="flex justify-between h-12">
                             <div class="flex items-center">
                                 <!-- Logo -->
-                                <div class="shrink-0 flex flex-col items-start">
+                                <div v-if="props.feature" class="shrink-0 flex flex-col items-start">
                                     <Link href="/" class="text-sm font-medium text-gray-600">
                                     Exnota Tools
                                     </Link>
-                                    <Link :href="route('duplicates')" class="text-xl font-bold text-primary mt-1">
-                                    Delete Duplicates
+                                    <Link :href="props.feature.href" class="text-xl font-bold text-primary mt-1">
+                                    {{ props.feature.title }}
+                                    </Link>
+                                </div>
+                                <div v-else class="shrink-0 flex flex-col items-start">
+                                    <Link href="/" class="text-xl font-bold text-primary mt-1">
+                                    Exnota Tools
                                     </Link>
                                 </div>
                             </div>

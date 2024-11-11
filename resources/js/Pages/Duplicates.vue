@@ -1,6 +1,6 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { Head, Link } from "@inertiajs/vue3";
+import { Head, Link, router } from "@inertiajs/vue3";
 
 defineProps({
     user: {
@@ -27,7 +27,10 @@ const fetchUserData = () => {
 </script>
 
 <template>
-    <AppLayout>
+    <AppLayout :feature="{
+        title: 'Delete Duplicates',
+        href: route('duplicates'),
+    }">
 
         <Head title="Delete duplicates in Notion databases - Exnota Tools" />
         <div class="hero">
