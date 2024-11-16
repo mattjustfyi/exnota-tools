@@ -9,17 +9,26 @@ export default defineComponent({
     },
     async run({ steps, $ }) {
         // TODO:
-        // - Use unix time instead for accuracy
-        // - Re-add 'after' to previous step
-        // - Test speed of sequential requests to Notion. Possibly do 3 or so in parallel?
-        //   - Doing 25 took 15842ms total with the for loop taking 15498ms
+        // - Verify the skip played at logic works. Lots of conditional branches to be thorough. Scenarios:
+        //   - itemOne fails, itemTwo succeeds. Hardcode the failure in by played_at value in the bottom function
+        //     - what should happen: it aborts, skip_played_at in data store has the OTHER value as 'skip_played_at'
+        //     - next run, remove the hardcoded failure, it should succeed, and the skip_played_at
+        //       is CLEARED from data store AND duplicate not created
+        //   - itemTwo fails, itemOne succeeds. As above but reversed.
+        //   - itemOne and itemTwo fail. As above but with both.
+        //   - itemOne fails when there is no itemTwo
+        // - Save unix time to Notion instead for accuracy
         // - Verify that the before/after fetch logic works and no songs missed
         //   - CURRENTLY USING 'before' BELOW. FIX.
         // - Set crons
         // - Test and document steps when doing from scratch
 
+        const initialFetchAfter = await this.data.get("spotify_fetch_after");
+        console.log("initial spotify_fetch_after", initialFetchAfter);
+
         // If no items, skip
         if (steps.recently_played.$return_value.items.length === 0) {
+            console.log("No items. Skipping.");
             return steps.trigger.event;
         }
 
@@ -29,8 +38,12 @@ export default defineComponent({
                 " play histories"
         );
 
-        const fetchAfter = await this.data.get("fetch_after");
-        console.log("fetch_after = " + fetchAfter);
+        // const fetchAfter = await this.data.get("spotify_fetch_after");
+        // console.log('spotify_fetch_after = ' + fetchAfter);
+
+        let skipPlayedAts =
+            (await this.data.get("spotify_skip_played_ats")) ?? [];
+        console.log("Found skipPlayedAts", skipPlayedAts);
 
         // TODO: Your internal integration needs to have access (not Pipedream!)
         const notion = new Client({
@@ -41,85 +54,131 @@ export default defineComponent({
         // because Spotify currently doesn't provide podcast play history.
         const startBatch = new Date();
 
-        // TODO: Ensure going from oldest to newest
-        const items = steps.recently_played.$return_value.items;
+        // Loop through oldest to newest
+        const items = steps.recently_played.$return_value.items.reverse();
         for (let i = 0; i < items.length; i += 2) {
-            const startPair = new Date();
             console.log(`Starting pair ${i} and ${i + 1}`);
+            const startPair = new Date();
 
-            const itemOne = items[i];
-            const itemTwo = items[i + 1]; // Might be undefined if an odd number of items
+            // Process two at a time to keep under 30 seconds
+            let itemOne = items[i];
+            let itemTwo = items[i + 1]; // Might be undefined if an odd number of items
 
-            // Save current song in loop to Notion
-            const result = await Promise.allSettled([
-                createNotionPage(notion, itemOne),
-                itemTwo ? createNotionPage(notion, itemTwo) : null,
+            // Remove any skipPlayedAts values that were already successfully skipped
+            const updatedSkipPlayedAts = skipPlayedAts.filter(
+                (skipPlayedAt) => {
+                    // Keep skipPlayedAt if it's newer or equal to at least one item
+                    const keepSkipPlayedAt = [itemOne, itemTwo].some(
+                        (i) => skipPlayedAt >= i.played_at
+                    );
+                    console.log("keepSkipPlayedAt", keepSkipPlayedAt);
+                    return keepSkipPlayedAt;
+                }
+            );
+            console.log("updatedSkipPlayedAts", updatedSkipPlayedAts);
+            if (updatedSkipPlayedAts.length !== skipPlayedAts.length) {
+                console.log("updating skipPlayedAts", updatedSkipPlayedAts);
+                await this.data.set(
+                    "spotify_skip_played_ats",
+                    updatedSkipPlayedAts
+                );
+                skipPlayedAts = updatedSkipPlayedAts;
+            }
+
+            // Skip items if they were part of a pair where the other failed
+            console.log("checking if we should skip itemOne");
+            console.log("skipPlayedAts", skipPlayedAts);
+            console.log("itemOne.played_at", itemOne.played_at);
+            let skipItemOne = false;
+            if (
+                skipPlayedAts.some(
+                    (skipPlayedAt) =>
+                        new Date(skipPlayedAt).getTime() ===
+                        new Date(itemOne.played_at).getTime()
+                )
+            ) {
+                console.log("Skipping itemOne");
+                skipItemOne = true;
+            }
+            console.log("checking if we should skip itemTwo");
+            console.log("itemTwo.played_at", itemTwo?.played_at, itemTwo);
+            let skipItemTwo = false;
+            if (
+                !!itemTwo &&
+                skipPlayedAts.some(
+                    (skipPlayedAt) =>
+                        new Date(skipPlayedAt).getTime() ===
+                        new Date(itemTwo.played_at).getTime()
+                )
+            ) {
+                console.log("Skipping itemTwo");
+                skipItemTwo = true;
+            }
+
+            // Save both items to Notion. Use `allSettled` instead of `all` to wait for
+            // all promises before continuing. This allows us to avoid creating duplicates
+            // if one failed but the other succeeded.
+            console.log("Starting request pair");
+            const results = await Promise.allSettled([
+                skipItemOne ? null : createNotionPage(notion, itemOne),
+                skipItemTwo ? null : createNotionPage(notion, itemTwo),
             ]);
+            console.log("results", results);
 
-            const failed = result
-                .filter((r) => r.status === "rejected")
-                .map((r) => r.reason.played_at);
-            console.log("failed:", failed);
+            // Save if one, or both, failed
+            const atLeastOneRejected = results.some(
+                (r) => r.status === "rejected"
+            );
+            let moreSkipPlayedAts = [];
+            if (atLeastOneRejected) {
+                console.log("some results have rejected status");
 
-            // const result =  await Promise.allSettled([
-            //   new Promise(async (resolve, reject) => {
-            //     try {
-            //       await createNotionPage(notion, item);
-            //       resolve();
-            //     } catch (e) {
-            //       console.error(e);
-            //       reject({played_at: item.played_at})
-            //       return;
-            //     }
-            //   })
-            // ]);
+                moreSkipPlayedAts = results
+                    // Exclude rejected and 'null' promises, which are fulfilled but have no value
+                    .filter((r) => r.status === "fulfilled" && !!r.value)
+                    .map((r) => r.value.played_at);
+                console.log("moreSkipPlayedAts:", moreSkipPlayedAts);
 
-            // TODO:
-            // Possibilities
-            // - both succeed --> set fetch_after to oldest 'after', continue in loop
-            // - both fail --> abort and don't update fetch_after
-            // - oldest succeeds, newest fails: --> abort and set fetch_after to oldest 'after'
-            // - oldest fails, newest succeeds: --> abort, don't update fetch_after, set 'skip_played_at = [...]'
-
-            // on next run
-            // - at start, fetch skip_played_at array
-            // - at start of each pair, if array not empty... check if current pair are BOTH after any entries
-            // - if yes -> clear those entries
-            // - if no, do nothing
-            // - for each INDIVIDUAL call, don't send the call if played_at matches one of skip_played_at
+                // This can be empty if itemOne failed and there was no itemTwo due to
+                // fetching an odd number of tracks.
+                skipPlayedAts = [...skipPlayedAts, ...moreSkipPlayedAts];
+                await this.data.set("spotify_skip_played_ats", skipPlayedAts);
+                console.log(
+                    "spotify_skip_played_ats updated to",
+                    skipPlayedAts
+                );
+            }
 
             const endPair = new Date();
             console.log("Pair duration: " + (endPair - startPair));
 
-            if (failed.length > 0) {
+            // TODO: This should instead break if any have been REJECTED, not if any were successful while others were rejected
+            // because the same one might fail again
+            if (atLeastOneRejected) {
                 console.error("Pair failed");
                 break;
             }
 
-            // TODO: Handle error case (it just breaks above)
+            const newFetchAfter = new Date(
+                itemTwo?.played_at ?? itemOne.played_at
+            ).getTime();
+            await this.data.set("spotify_fetch_after", newFetchAfter);
+            console.log("set spotify_fetch_after", newFetchAfter);
+
+            // Pause to avoid conflict_error. Even with this pause, there's still a speed advantage
+            // to processing two at a time.
             console.log("Pair succeeded. Pausing briefly.");
             await new Promise((r) => setTimeout(r, 200));
-
-            // TODO: update logic
-            // const fetchAfter = Date.parse(item.played_at)
-            // await this.data.set("fetch_after",  fetchAfter);
-            // console.log('Set fetch_after to ' + fetchAfter);
-
-            // const endItem = new Date();
-            // console.log('Single request duration: ' + (endItem - startItem))
         }
         const endBatch = new Date();
         console.log("Batch duration: " + (endBatch - startBatch));
-
-        // const listUsersResponse = await notion.users.list({})
-        // console.log(listUsersResponse);
 
         const beforeStr = steps.recently_played.$return_value.cursors.before;
         const before = parseInt(beforeStr);
 
         // TODO: Remove this when stopped testing. It's just to prevent running out of items to parse.
-        await this.data.set("fetch_after", before - 10000 + "");
-        console.log("Set fetch_after");
+        // await this.data.set("spotify_fetch_after", (before - 10000) + '');
+        // console.log('Set spotify_fetch_after');
 
         // Reference previous step data using the steps object and return data to use it in future steps
         return steps.trigger.event;
@@ -127,8 +186,15 @@ export default defineComponent({
 });
 
 async function createNotionPage(notion, item) {
+    if (!item) {
+        return null;
+    }
     return new Promise(async (resolve, reject) => {
         try {
+            // TODO: Remove
+            // if (item.played_at === '2024-11-13T09:35:08.148Z') {
+            //   throw new Error('test throw');
+            // }
             const response = await notion.pages.create({
                 cover: {
                     external: {
@@ -232,10 +298,10 @@ async function createNotionPage(notion, item) {
                     },
                 },
             });
-            resolve();
+            resolve({ played_at: item.played_at });
         } catch (e) {
             console.error(e);
-            reject({ played_at: item.played_at });
+            reject();
             return;
         }
     });
