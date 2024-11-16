@@ -9,10 +9,18 @@ export default defineComponent({
     },
     async run({ steps, $ }) {
         // TODO:
-        // - Save unix time to Notion instead for accuracy
-        // - Can automations create separate album/artist/song DBs?
-        // - Verify that the before/after fetch logic works and no songs missed
-        //   - CURRENTLY USING 'before' BELOW. FIX.
+        // - fix performance
+        //   - it should support 10,000 entries :`)
+        //   - ideas
+        //     - start showing props on Play History Lite View until it gets slow, to determine which props affect the most
+        //     - do same on last backup dashboard to see if it has the same effect
+        //     - google notion database performance tips OR optimizations
+        //     - try deleting stats
+        //     - try adding 1000s to a simple Play History database with no formulas and minimal data
+        //     - delete now unnecessary props in the stats DB (think a few of them are)
+        //     - try deleting all 'top' formulas in the stats DB
+        //     - try (temporarily?) removing the stats DB
+        // - note this all needs to work with premium version too
         // - Set crons
         // - Test and document steps when doing from scratch
 
@@ -157,6 +165,17 @@ export default defineComponent({
             ).getTime();
             await this.data.set("spotify_fetch_after", newFetchAfter);
             console.log("set spotify_fetch_after", newFetchAfter);
+
+            // Abort if about to exceed 30 seconds
+            const now = new Date();
+            const started = new Date($.context.ts);
+            console.log("now and started", now, started);
+            if (now.getTime() - started.getTime() > 28000) {
+                console.log(
+                    "Pair succeeded but 30 seconds nearly reached, so skipping remainder."
+                );
+                break;
+            }
 
             // Pause to avoid conflict_error. Even with this pause, there's still a speed advantage
             // to processing two at a time.
