@@ -9,15 +9,8 @@ export default defineComponent({
     },
     async run({ steps, $ }) {
         // TODO:
-        // - Verify the skip played at logic works. Lots of conditional branches to be thorough. Scenarios:
-        //   - itemOne fails, itemTwo succeeds. Hardcode the failure in by played_at value in the bottom function
-        //     - what should happen: it aborts, skip_played_at in data store has the OTHER value as 'skip_played_at'
-        //     - next run, remove the hardcoded failure, it should succeed, and the skip_played_at
-        //       is CLEARED from data store AND duplicate not created
-        //   - itemTwo fails, itemOne succeeds. As above but reversed.
-        //   - itemOne and itemTwo fail. As above but with both.
-        //   - itemOne fails when there is no itemTwo
         // - Save unix time to Notion instead for accuracy
+        // - Can automations create separate album/artist/song DBs?
         // - Verify that the before/after fetch logic works and no songs missed
         //   - CURRENTLY USING 'before' BELOW. FIX.
         // - Set crons
@@ -226,10 +219,13 @@ async function createNotionPage(notion, item) {
                             name: a.name.replaceAll(",", "-"),
                         })),
                     },
-                    "Played At Timestamp": {
+                    "Played At Date": {
                         date: {
                             start: item.played_at,
                         },
+                    },
+                    "Played At Timestamp": {
+                        number: new Date(item.played_at).getTime(),
                     },
                     "Length (milliseconds)": {
                         number: item.track.duration_ms,
