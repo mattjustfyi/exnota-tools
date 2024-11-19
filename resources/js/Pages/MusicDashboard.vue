@@ -75,7 +75,8 @@ const copyToClipboard = () => {
                             <li>Currently Playing widget</li>
                             <li>Live updating page title and icon</li>
                             <li>Full databases with relations for Songs, Artists, Albums, and Play History.</li>
-                            <li>Images and links for all artists.</li>
+                            <li>Better data: Images and links for all artists, no clashing album titles, more accurate
+                                play order</li>
                         </ul>
                     </div>
                     <a href="https://mattjustfyi.gumroad.com/l/kleqhd" class="btn btn-primary" target="_blank">Buy

@@ -16,5 +16,5 @@ Artisan::command('inspire', function () {
 //   minute. So working with this may have delays until the next minute.
 //
 // - runInBackground ensures fetch-history doesn't block fetch-current
-Schedule::command('spotify:fetch-current')->runInBackground()->withoutOverlapping()->everyFiveSeconds();
-Schedule::command('spotify:fetch-history')->runInBackground()->withoutOverlapping()->everyThirtySeconds();
+// Schedule::command('spotify:fetch-current')->runInBackground()->withoutOverlapping()->everyFifteenSeconds();
+// Schedule::command('spotify:fetch-history')->runInBackground()->withoutOverlapping()->everyMinute();
