@@ -34,15 +34,6 @@ Route::get('/music-dashboard', function () {
     return Inertia::render('MusicDashboard');
 })->name('music-dashboard');
 
-// TODO: Remove after testing
-Route::post('/spotify/test-event', function () {
-    $spotifyDashboard = SpotifyDashboard::where('active', true)->first();
-
-    SpotifyDashboardCurrentPlayingUpdated::dispatch($spotifyDashboard);
-
-    return response()->json(['success' => true]);
-});
-
 // TODO: This probably shouldn't be "api"
 Route::post('/api/notion/auth/save', NotionAuthSaveController::class)->middleware('api');
 
