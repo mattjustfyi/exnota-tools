@@ -26,11 +26,14 @@ RUN apt-get -y install --fix-missing \
     libmcrypt-dev \
     libicu-dev \
     libonig-dev \
-    libxml2-dev 
+    libxml2-dev \
+    # Required for gd 
+    libpng-dev 
 
 RUN apt-get install -y libpq-dev \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
-    && docker-php-ext-install pdo pdo_pgsql pgsql pcntl
+    # gd needed for thephpleague/color-extractor
+    && docker-php-ext-install pdo pdo_pgsql pgsql pcntl gd
 
 # Scheduler
 RUN apt-get -y install cron vim
