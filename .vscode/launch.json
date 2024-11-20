@@ -16,17 +16,17 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "CSV Duplicate",
+            "name": "CSV Fix",
             "skipFiles": ["<node_internals>/**"],
-            "program": "${workspaceFolder}/tools/csv-duplicate/index.js",
+            "program": "${workspaceFolder}/tools/csv-fix/index.js",
             "args": [
-                "${workspaceFolder}/tools/csv-duplicate/data/${input:csvDuplicateCSV}"
+                "${workspaceFolder}/tools/csv-fix/data/${input:csvFixFile}"
             ]
         }
     ],
     "inputs": [
         {
-            "id": "csvDuplicateCSV",
+            "id": "csvFixFile",
             "type": "promptString",
             "description": ""
         }
