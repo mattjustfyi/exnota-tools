@@ -12,6 +12,23 @@
             "pathMappings": {
                 "/var/www/html": "${workspaceFolder}"
             }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "CSV Duplicate",
+            "skipFiles": ["<node_internals>/**"],
+            "program": "${workspaceFolder}/tools/csv-duplicate/index.js",
+            "args": [
+                "${workspaceFolder}/tools/csv-duplicate/data/${input:csvDuplicateCSV}"
+            ]
+        }
+    ],
+    "inputs": [
+        {
+            "id": "csvDuplicateCSV",
+            "type": "promptString",
+            "description": ""
         }
     ]
 }
