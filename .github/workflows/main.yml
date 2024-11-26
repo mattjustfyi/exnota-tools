@@ -3,24 +3,24 @@ name: Python Hello World
 on:
   push:
     branches:
-      - main
+      - test-git-notion
 
 jobs:
   hello-world:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-    
-    - name: Set up Python
-      uses: actions/setup-python@v3
-      with:
-        python-version: '3.9'
-    
-    - name: Create hello world script
-      run: |
-        echo 'print("Hello, World!!xyz")' > hello_world.py
-    
-    - name: Run hello world script
-      run: python hello_world.py
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.9"
+
+      - name: Create hello world script
+        run: |
+          echo 'print("Hello, World!!xyz")' > hello_world.py
+
+      - name: Run hello world script
+        run: python hello_world.py
