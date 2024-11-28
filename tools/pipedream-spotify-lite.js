@@ -1,31 +1,16 @@
 import { Client } from "@notionhq/client";
 
-// TODO: Add TRY_KEEPING_UNDER_30_SECONDS which, at the start of a loop, aborts
-// if 27sec (or so) has already expired
+const HELPER_RELATION_PAGE_ID = "144944fbb2bc81f5a0b9fffe9bf97910";
+const PLAY_HISTORY_DATABASE_ID = "144944fbb2bc81ce802dc4f6e25b8766";
+const KEEP_UNDER_30_SECONDS = true;
 
 export default defineComponent({
     props: {
         data: { type: "data_store" },
     },
     async run({ steps, $ }) {
-        // TODO:
-        // - fix performance
-        //   - it should support 10,000 entries :`)
-        //   - ideas
-        //     - start showing props on Play History Lite View until it gets slow, to determine which props affect the most
-        //     - do same on last backup dashboard to see if it has the same effect
-        //     - google notion database performance tips OR optimizations
-        //     - try deleting stats
-        //     - try adding 1000s to a simple Play History database with no formulas and minimal data
-        //     - delete now unnecessary props in the stats DB (think a few of them are)
-        //     - try deleting all 'top' formulas in the stats DB
-        //     - try (temporarily?) removing the stats DB
-        // - note this all needs to work with premium version too
-        // - Set crons
-        // - Test and document steps when doing from scratch
-
         const initialFetchAfter = await this.data.get("spotify_fetch_after");
-        console.log("initial spotify_fetch_after", initialFetchAfter);
+        console.log("Initial spotify_fetch_after", initialFetchAfter);
 
         // If no items, skip
         if (steps.recently_played.$return_value.items.length === 0) {
@@ -33,52 +18,47 @@ export default defineComponent({
             return steps.trigger.event;
         }
 
+        let skipPlayedAts =
+            (await this.data.get("spotify_skip_played_ats")) ?? [];
+        console.log("Found skipPlayedAts", skipPlayedAts);
+
+        // Make sure your internal integration has access (not Pipedream!)
+        const notion = new Client({
+            auth: process.env.NOTION_MAKIWORLD_SPOTIFY_SECRET,
+        });
+
+        const startBatch = new Date();
         console.log(
             "Creating " +
                 steps.recently_played.$return_value.items.length +
                 " play histories"
         );
 
-        // const fetchAfter = await this.data.get("spotify_fetch_after");
-        // console.log('spotify_fetch_after = ' + fetchAfter);
-
-        let skipPlayedAts =
-            (await this.data.get("spotify_skip_played_ats")) ?? [];
-        console.log("Found skipPlayedAts", skipPlayedAts);
-
-        // TODO: Your internal integration needs to have access (not Pipedream!)
-        const notion = new Client({
-            auth: process.env.NOTION_MAKIWORLD_SPOTIFY_SECRET,
-        });
-
-        // Loop through all items from Spotify. These should always be songs
-        // because Spotify currently doesn't provide podcast play history.
-        const startBatch = new Date();
-
-        // Loop through oldest to newest
+        // Loop through all items from Spotify. Oldest to newest.
+        //
+        // These should always be songs because Spotify currently doesn't provide
+        // podcast play history.
         const items = steps.recently_played.$return_value.items.reverse();
         for (let i = 0; i < items.length; i += 2) {
             console.log(`Starting pair ${i} and ${i + 1}`);
             const startPair = new Date();
 
-            // Process two at a time to keep under 30 seconds
+            // Process two at a time to keep total workflow under 30 seconds
             let itemOne = items[i];
             let itemTwo = items[i + 1]; // Might be undefined if an odd number of items
 
-            // Remove any skipPlayedAts values that were already successfully skipped
+            // Remove any items flagged for skipping if they were successfully skipped
             const updatedSkipPlayedAts = skipPlayedAts.filter(
                 (skipPlayedAt) => {
                     // Keep skipPlayedAt if it's newer or equal to at least one item
-                    const keepSkipPlayedAt = [itemOne, itemTwo].some(
+                    return [itemOne, itemTwo].some(
                         (i) => skipPlayedAt >= i.played_at
                     );
-                    console.log("keepSkipPlayedAt", keepSkipPlayedAt);
-                    return keepSkipPlayedAt;
                 }
             );
             console.log("updatedSkipPlayedAts", updatedSkipPlayedAts);
             if (updatedSkipPlayedAts.length !== skipPlayedAts.length) {
-                console.log("updating skipPlayedAts", updatedSkipPlayedAts);
+                console.log("Updating skipPlayedAts", updatedSkipPlayedAts);
                 await this.data.set(
                     "spotify_skip_played_ats",
                     updatedSkipPlayedAts
@@ -87,9 +67,6 @@ export default defineComponent({
             }
 
             // Skip items if they were part of a pair where the other failed
-            console.log("checking if we should skip itemOne");
-            console.log("skipPlayedAts", skipPlayedAts);
-            console.log("itemOne.played_at", itemOne.played_at);
             let skipItemOne = false;
             if (
                 skipPlayedAts.some(
@@ -101,8 +78,6 @@ export default defineComponent({
                 console.log("Skipping itemOne");
                 skipItemOne = true;
             }
-            console.log("checking if we should skip itemTwo");
-            console.log("itemTwo.played_at", itemTwo?.played_at, itemTwo);
             let skipItemTwo = false;
             if (
                 !!itemTwo &&
@@ -116,9 +91,10 @@ export default defineComponent({
                 skipItemTwo = true;
             }
 
-            // Save both items to Notion. Use `allSettled` instead of `all` to wait for
-            // all promises before continuing. This allows us to avoid creating duplicates
-            // if one failed but the other succeeded.
+            // Save both items to Notion.
+            //
+            // Use `allSettled` instead of `all` to wait for all promises before continuing.
+            // This allows us to avoid creating duplicates if one failed but the other succeeded.
             console.log("Starting request pair");
             const results = await Promise.allSettled([
                 skipItemOne ? null : createNotionPage(notion, itemOne),
@@ -126,13 +102,13 @@ export default defineComponent({
             ]);
             console.log("results", results);
 
-            // Save if one, or both, failed
+            // If one or more failed, flag the succsesful ones to be skipped next time
             const atLeastOneRejected = results.some(
                 (r) => r.status === "rejected"
             );
             let moreSkipPlayedAts = [];
             if (atLeastOneRejected) {
-                console.log("some results have rejected status");
+                console.log("Some results have rejected status");
 
                 moreSkipPlayedAts = results
                     // Exclude rejected and 'null' promises, which are fulfilled but have no value
@@ -153,13 +129,13 @@ export default defineComponent({
             const endPair = new Date();
             console.log("Pair duration: " + (endPair - startPair));
 
-            // TODO: This should instead break if any have been REJECTED, not if any were successful while others were rejected
-            // because the same one might fail again
+            // Abort workflow if one was rejected
             if (atLeastOneRejected) {
                 console.error("Pair failed");
                 break;
             }
 
+            // Save where we're up to
             const newFetchAfter = new Date(
                 itemTwo?.played_at ?? itemOne.played_at
             ).getTime();
@@ -170,7 +146,10 @@ export default defineComponent({
             const now = new Date();
             const started = new Date($.context.ts);
             console.log("now and started", now, started);
-            if (now.getTime() - started.getTime() > 28000) {
+            if (
+                KEEP_UNDER_30_SECONDS &&
+                now.getTime() - started.getTime() > 28000
+            ) {
                 console.log(
                     "Pair succeeded but 30 seconds nearly reached, so skipping remainder."
                 );
@@ -180,17 +159,11 @@ export default defineComponent({
             // Pause to avoid conflict_error. Even with this pause, there's still a speed advantage
             // to processing two at a time.
             console.log("Pair succeeded. Pausing briefly.");
-            await new Promise((r) => setTimeout(r, 200));
+            await new Promise((r) => setTimeout(r, 100));
         }
+
         const endBatch = new Date();
         console.log("Batch duration: " + (endBatch - startBatch));
-
-        const beforeStr = steps.recently_played.$return_value.cursors.before;
-        const before = parseInt(beforeStr);
-
-        // TODO: Remove this when stopped testing. It's just to prevent running out of items to parse.
-        // await this.data.set("spotify_fetch_after", (before - 10000) + '');
-        // console.log('Set spotify_fetch_after');
 
         // Reference previous step data using the steps object and return data to use it in future steps
         return steps.trigger.event;
@@ -203,14 +176,9 @@ async function createNotionPage(notion, item) {
     }
     return new Promise(async (resolve, reject) => {
         try {
-            // TODO: Remove
-            // if (item.played_at === '2024-11-13T09:35:08.148Z') {
-            //   throw new Error('test throw');
-            // }
             const response = await notion.pages.create({
                 cover: {
                     external: {
-                        // "url": 5
                         url: item.track.album.images[0].url,
                     },
                 },
@@ -221,7 +189,7 @@ async function createNotionPage(notion, item) {
                 },
                 parent: {
                     type: "database_id",
-                    database_id: "138944fbb2bc8097ae9ed95d173eaeea",
+                    database_id: PLAY_HISTORY_DATABASE_ID,
                 },
                 properties: {
                     Name: {
@@ -310,6 +278,14 @@ async function createNotionPage(notion, item) {
                     },
                     "Album URL": {
                         url: item.track.album.external_urls.spotify,
+                    },
+                    "Music Stats Helper": {
+                        relation: [
+                            {
+                                id: HELPER_RELATION_PAGE_ID,
+                                // name: "Play History Helper"
+                            },
+                        ],
                     },
                 },
             });
