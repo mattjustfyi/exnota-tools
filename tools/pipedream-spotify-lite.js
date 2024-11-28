@@ -1,7 +1,7 @@
 import { Client } from "@notionhq/client";
 
-const HELPER_RELATION_PAGE_ID = "144944fbb2bc81f5a0b9fffe9bf97910";
-const PLAY_HISTORY_DATABASE_ID = "144944fbb2bc81ce802dc4f6e25b8766";
+const PLAY_HISTORY_DATABASE_ID = "147944fbb2bc811e908fd19bf212e1d1";
+const HELPER_RELATION_PAGE_ID = "147944fbb2bc8167b42be42f74cb17fd"; // Page ID, not Database ID!
 const KEEP_UNDER_30_SECONDS = true;
 
 export default defineComponent({
@@ -9,6 +9,7 @@ export default defineComponent({
         data: { type: "data_store" },
     },
     async run({ steps, $ }) {
+        // Start fetching from after the last successful pair
         const initialFetchAfter = await this.data.get("spotify_fetch_after");
         console.log("Initial spotify_fetch_after", initialFetchAfter);
 
@@ -18,6 +19,7 @@ export default defineComponent({
             return steps.trigger.event;
         }
 
+        // Find any plays to skip
         let skipPlayedAts =
             (await this.data.get("spotify_skip_played_ats")) ?? [];
         console.log("Found skipPlayedAts", skipPlayedAts);
@@ -97,8 +99,8 @@ export default defineComponent({
             // This allows us to avoid creating duplicates if one failed but the other succeeded.
             console.log("Starting request pair");
             const results = await Promise.allSettled([
-                skipItemOne ? null : createNotionPage(notion, itemOne),
-                skipItemTwo ? null : createNotionPage(notion, itemTwo),
+                skipItemOne ? null : createNotionPage(notion, itemOne, false),
+                skipItemTwo ? null : createNotionPage(notion, itemTwo, true),
             ]);
             console.log("results", results);
 
@@ -170,11 +172,17 @@ export default defineComponent({
     },
 });
 
-async function createNotionPage(notion, item) {
+async function createNotionPage(notion, item, pause) {
     if (!item) {
         return null;
     }
     return new Promise(async (resolve, reject) => {
+        console.log("Creating Notion page for item " + item.track.id, item);
+        const start = new Date();
+        if (pause) {
+            console.log("Pausing briefly.");
+            await new Promise((r) => setTimeout(r, 200));
+        }
         try {
             const response = await notion.pages.create({
                 cover: {
@@ -283,12 +291,17 @@ async function createNotionPage(notion, item) {
                         relation: [
                             {
                                 id: HELPER_RELATION_PAGE_ID,
-                                // name: "Play History Helper"
                             },
                         ],
                     },
                 },
             });
+            console.log(
+                "Finished creating Notion page for item " +
+                    item.track.id +
+                    " in " +
+                    (new Date() - start)
+            );
             resolve({ played_at: item.played_at });
         } catch (e) {
             console.error(e);
