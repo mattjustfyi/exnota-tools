@@ -78,35 +78,6 @@ function fixProps(file) {
         //   an existing value. Workaround: Change column to type 'text' then
         //   back to multi-select. It can even be done after import.
         // - select columns: I assume the same applies.
-
-        //     const records2 = csv.parse(data2, parseOptions);
-        //
-        //     console.log(
-        //         `File 1 has ${records1.length} rows, File 2 has ${records2.length} rows`
-        //     );
-        //
-        //     console.log("Merging records");
-        //     const mergedRecords = records1.map((row, index) => {
-        //         const mergedRow = [...row, ...(records2[index] || [])];
-        //         console.log(`Merged row ${index + 1}: ${mergedRow.join(", ")}`);
-        //         return mergedRow;
-        //     });
-        //
-        //     console.log("Stringifying merged records");
-        //     const records2 = csv.parse(data2, parseOptions);
-        //
-        //     console.log(
-        //         `File 1 has ${records1.length} rows, File 2 has ${records2.length} rows`
-        //     );
-        //
-        //     console.log("Merging records");
-        //     const mergedRecords = records1.map((row, index) => {
-        //         const mergedRow = [...row, ...(records2[index] || [])];
-        //         console.log(`Merged row ${index + 1}: ${mergedRow.join(", ")}`);
-        //         return mergedRow;
-        //     });
-        //
-        //     console.log("Stringifying merged records");
         return stringify(records);
     } catch (error) {
         console.error("Error parsing CSV:", error.message);

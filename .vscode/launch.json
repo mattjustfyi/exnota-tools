@@ -22,11 +22,26 @@
             "args": [
                 "${workspaceFolder}/tools/csv-fix/data/${input:csvFixFile}"
             ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "CSV Extrapolate",
+            "skipFiles": ["<node_internals>/**"],
+            "program": "${workspaceFolder}/tools/csv-extrapolate/index.js",
+            "args": [
+                "${workspaceFolder}/tools/csv-extrapolate/data/${input:csvExtrapolateFile}"
+            ]
         }
     ],
     "inputs": [
         {
             "id": "csvFixFile",
+            "type": "promptString",
+            "description": ""
+        },
+        {
+            "id": "csvExtrapolateFile",
             "type": "promptString",
             "description": ""
         }
