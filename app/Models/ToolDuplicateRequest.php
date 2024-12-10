@@ -77,6 +77,9 @@ class ToolDuplicateRequest extends Model
         return $this->getDupeDTOAttribute('duplicates_sample');
     }
 
+    // A few old requests in prod have a different JSON structure, with 'keep'
+    // and 'delete' keys at the top level. This was changed before any users
+    // (other than myself) used the feature.
     private function getDupeDTOAttribute(string $attributeName)
     {
         return Attribute::make(

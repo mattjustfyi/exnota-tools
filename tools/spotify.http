@@ -1,5 +1,5 @@
 ### Get code (user - paste this in browser with correct Spotify account logged in)
-curl -X GET "https://accounts.spotify.com/authorize?response_type=code&client_id={{spotifyClientId}}&scope=user-read-private%20user-read-email%20user-read-playback-state%20user-modify-playback-state%20user-read-currently-playing%20user-read-playback-position%20user-read-recently-played&redirect_uri=https%3A%2F%2Fmelodash.matt.fyi%2Fspotify%2Fredirect"
+curl -X GET "https://accounts.spotify.com/authorize?response_type=code&client_id=e644d627f58d4864896a27ccddf9f00a&scope=user-read-private%20user-read-email%20user-read-playback-state%20user-modify-playback-state%20user-read-currently-playing%20user-read-playback-position%20user-read-recently-played%20user-library-read%20user-follow-read&redirect_uri=https%3A%2F%2Fmelodash.matt.fyi%2Fspotify%2Fredirect"
 
 
 ### Get access token (user)
@@ -15,7 +15,7 @@ curl -X POST "https://accounts.spotify.com/api/token" \
 -H "Content-Type: application/x-www-form-urlencoded" \
 -H "Authorization: Basic {{spotifyClientId}}:{{spotifyClientSecret}}" \
 -d "grant_type=refresh_token" \
--d "refresh_token={{spotifyClientLastRefreshToken}}"
+-d "refresh_token=AQCGsh-N_YQtdgdM9FfFa5M-HzId2Qgdc9_r_NnObV4MOjWOy8QRF2ErHycd7_iTKezUEwLZngT2gGT1fV9x9s7HCnYgxkRQentpjIOkh-djIT6lyQYArL3gRc418xUdzAw"
 
 
 ### Get artist
@@ -26,6 +26,22 @@ curl "https://api.spotify.com/v1/artists/76xrrejizyQpKukBIhnf3D" \
 ### Get player state
 curl --request GET \
   --url https://api.spotify.com/v1/me/player \
+  --header 'Authorization: Bearer {{spotifyClientLastAccessToken}}'
+
+### Get users's saved tracks
+curl --request GET \
+  --url https://api.spotify.com/v1/me/tracks?limit=50&offset=50 \
+  --header 'Authorization: Bearer {{spotifyClientLastAccessToken}}'
+
+### Get users's saved albums
+curl --request GET \
+  --url https://api.spotify.com/v1/me/albums?limit=50 \
+  --header 'Authorization: Bearer {{spotifyClientLastAccessToken}}'
+
+
+### Get users's followed artists
+curl --request GET \
+  --url https://api.spotify.com/v1/me/following?type=artist&limit=50&after=52xuvlUvnxqH0xzxGPKXSu \
   --header 'Authorization: Bearer {{spotifyClientLastAccessToken}}'
 
 ### Get current song
@@ -56,3 +72,39 @@ curl --request GET \
   --url https://api.spotify.com/v1/me \
   --header 'Authorization: Bearer {{spotifyClientLastAccessToken}}'
    
+
+
+### Play song
+curl --request PUT \
+  --url https://api.spotify.com/v1/me/player/pause?device_id=fcee90b9158544bc555f2f9885ae03f1e5aaddd6 \
+  --header 'Authorization: Bearer {{spotifyClientLastAccessToken}}'
+   
+### Play song
+curl --request PUT \
+  --url https://api.spotify.com/v1/me/player/play?device_id=e3537cb88086263279afee05bd9816771be32582 \
+  --header 'Authorization: Bearer {{spotifyClientLastAccessToken}}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "uris": ["spotify:track:0IGUXY4JbK18bu9oD4mPIm"],
+    "position_ms": 0
+}'
+
+#    "offset": {
+#        "position": 5
+#    },
+ ##   "context_uri": "spotify:album:5ht7ItJgpBH7W6vJ5BqpPr",
+
+###
+curl https://hooks.zapier.com/hooks/catch/438205/2sy4t36/
+
+###
+curl --request GET \
+  --url https://hooks.zapier.com/hooks/catch/438205/2sy4t36/
+
+###
+curl --request GET \
+  --url https://hooks.zapier.com/hooks/catch/438205/2sy6q08/
+
+###
+curl --request GET \
+  --url https://hook.eu1.make.com/xbp3ve5r6b4ynkte8erik2qg5qbzj0ym
