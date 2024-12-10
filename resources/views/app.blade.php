@@ -45,6 +45,9 @@
     <!-- Umami analytics -->
     <script defer src="https://cloud.umami.is/script.js" data-website-id="282625de-ac77-4419-966f-23b9e88fbf83"></script>
 
+    <!-- Fathom analytics -->
+    <script src="https://cdn.usefathom.com/script.js" data-spa="auto" data-site="BBIKAHLJ" defer></script>
+
     <!-- crisp.chat -->
     <script type="text/javascript">
         window.$crisp = [];
