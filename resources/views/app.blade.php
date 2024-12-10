@@ -42,6 +42,9 @@
     @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
     @inertiaHead
 
+    <!-- Umami analytics -->
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="282625de-ac77-4419-966f-23b9e88fbf83"></script>
+
     <!-- crisp.chat -->
     <script type="text/javascript">
         window.$crisp = [];
