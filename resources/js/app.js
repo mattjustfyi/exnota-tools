@@ -50,4 +50,11 @@ router.on("navigate", () => {
 posthog.init("phc_Hw7oDphoNG3KRT1M6KmlLAAfV9dQfSmJFcqFor3QFeE", {
     api_host: "https://eu.i.posthog.com",
     persistence: "memory",
+    loaded: function (ph) {
+        if (import.meta.env.MODE === "development") {
+            console.log("Opting out of Posthog event capture");
+            ph.opt_out_capturing(); // opts a user out of event capture
+            ph.set_config({ disable_session_recording: true });
+        }
+    },
 });
