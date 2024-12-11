@@ -13,7 +13,10 @@ class DuplicatesConnectController extends Controller
     {
         // Client pings periodically with status 'waiting'. Ignore those.
         if (!request()->has('status')) {
-            Log::channel('slack')->info('[User] Pressed connect.');
+            // This message will appear a second time after the user has
+            // connected their Notion account, because the client reloads the
+            // page.
+            Log::channel('slack')->info('[User] Pressed start.');
         }
 
         /** @var \App\Models\User $user */

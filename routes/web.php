@@ -16,6 +16,7 @@ use App\Http\Middleware\CreateDuplicateRequestPolicyMiddleware;
 use App\Models\SpotifyDashboard;
 use App\Models\ToolDuplicateRequest;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -27,6 +28,7 @@ Route::get('/', function () {
 Route::get('/duplicates', [DuplicatesController::class, 'show'])->name('duplicates');;
 Route::get('/duplicates/connect', [DuplicatesConnectController::class, 'show'])->name('duplicates.connect');
 Route::get('/api/notion/auth/redirect', function () {
+    Log::channel('slack')->info('[User] Redirected from Notion.');
     return Inertia::render('API/Notion/Auth/Redirect');
 });
 

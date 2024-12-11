@@ -5,6 +5,9 @@
   - [Deploy to prod](#deploy-to-prod)
     - [Updating environment variables (.env)](#updating-environment-variables-env)
     - [Steps](#steps)
+    - [Troubleshooting](#troubleshooting)
+      - [`error: remote unpack failed: unable to create temporary object directory`](#error-remote-unpack-failed-unable-to-create-temporary-object-directory)
+      - [Error: At least one invalid signature was encountered, or "no space left on device"](#error-at-least-one-invalid-signature-was-encountered-or-no-space-left-on-device)
   - [Local development](#local-development)
     - [Running](#running)
       - [Automatic](#automatic)
@@ -12,14 +15,14 @@
     - [Debug on mobile](#debug-on-mobile)
       - [Setup](#setup)
       - [Use](#use)
-      - [Troubleshooting](#troubleshooting)
+      - [Troubleshooting](#troubleshooting-1)
     - [Redis](#redis)
     - [Setup](#setup-1)
     - [Database UI](#database-ui)
       - [Local](#local)
       - [Prod](#prod)
     - [Testing](#testing)
-    - [Troubleshooting](#troubleshooting-1)
+    - [Troubleshooting](#troubleshooting-2)
       - [Pages/endpoints aren't working as expected (including using ngrok)](#pagesendpoints-arent-working-as-expected-including-using-ngrok)
       - [Web: After Notion connect, it redirects back to `/duplicates` instead of `/duplicates/create-account`](#web-after-notion-connect-it-redirects-back-to-duplicates-instead-of-duplicatescreate-account)
       - [Web: Inertia route opens in iframe](#web-inertia-route-opens-in-iframe)
@@ -36,7 +39,6 @@
     - [Troubleshooting initial setup](#troubleshooting-initial-setup)
   - [Old documentation copied from `exnota` repo](#old-documentation-copied-from-exnota-repo)
     - [Troubleshooting assorted old](#troubleshooting-assorted-old)
-      - [Error: At least one invalid signature was encountered, or "no space left on device"](#error-at-least-one-invalid-signature-was-encountered-or-no-space-left-on-device)
   - [Maintenance](#maintenance)
     - [Check PHP settings (incl. php.ini)](#check-php-settings-incl-phpini)
     - [Environment variables](#environment-variables)
@@ -184,6 +186,26 @@ Deploy improvement ideas:
   - Maybe skip deploy when pushing (not sure if possible): <https://dokku.com/docs/deployment/application-deployment/#skipping-deployment>
   - Or manually fetch changes from repo and build image: <https://dokku.com/docs/deployment/methods/git/>
 - Then, if successful, create and run a script that does all steps above.
+
+### Troubleshooting
+
+#### `error: remote unpack failed: unable to create temporary object directory`
+
+#### Error: At least one invalid signature was encountered, or "no space left on device"
+
+Former is apparently caused by insufficient space according to this [SO post](https://stackoverflow.com/questions/62473932/at-least-one-invalid-signature-was-encountered) (which has more options for freeing space in addition to below).
+
+Fix:
+
+1. SSH to Hetzner server.
+2. `df -h` to confirm `/dev/sda1` is full
+3. Run
+
+    ```bash
+    docker builder prune
+    ```
+
+4. Run `df -h` again to confirm space freed.
 
 ## Local development
 
@@ -675,21 +697,6 @@ This is how I got broadcasting working inside a Notion embed.
 ## Old documentation copied from `exnota` repo
 
 ### Troubleshooting assorted old
-
-#### Error: At least one invalid signature was encountered, or "no space left on device"
-
-Former is apparently caused by insufficient space according to this [SO post](https://stackoverflow.com/questions/62473932/at-least-one-invalid-signature-was-encountered) (which has more options for freeing space in addition to below).
-
-Fix:
-
-1. SSH to Hetzner server.
-2. Run
-
-    ```bash
-    docker builder prune
-    ```
-
-Use `df -h` before/after to check how much space this is freeing up.
 
 ## Maintenance
 
