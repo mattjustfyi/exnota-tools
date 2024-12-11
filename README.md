@@ -86,13 +86,19 @@ Follow steps in BitWarden item `Exnota Tools Production .env`
 
 ### Steps
 
-1. Run tests locally.
+1. Confirm on the correct branch locally (i.e. not a feature branch).
+
+    ```bash
+    git checkout main; git pull; 
+    ```
+
+2. Run tests locally.
 
     ```bash
     ./sail.sh debug test tests/Feature/AuthorizationTest.php
     ```
 
-2. (FIRST TIME ONLY) deploying from a specific device.
+3. (FIRST TIME ONLY) deploying from a specific device.
    - Don't run inside dev container!
    - Ensure you have configured [SSH](#ssh)
    - Add Dokku remote to git repo
@@ -102,13 +108,7 @@ Follow steps in BitWarden item `Exnota Tools Production .env`
         git remote add dokku dokku@<domain>:exnota-tools
         ```
 
-3. Check no-one's using the service: <https://app.crisp.chat/website/ce54fcea-7cfd-42ed-af5c-29d2512544d8/visitors/>
-
-4. Confirm on the correct branch locally (i.e. not a feature branch).
-
-    ```bash
-    git checkout main; git pull; 
-    ```
+4. Check no-one's using the service: <https://app.crisp.chat/website/ce54fcea-7cfd-42ed-af5c-29d2512544d8/visitors/>
 
 5. Deploy app
 
