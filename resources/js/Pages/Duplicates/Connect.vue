@@ -4,6 +4,7 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import AppLayoutNoUser from '@/Layouts/AppLayoutNoUser.vue';
 import { Head, Link, router } from "@inertiajs/vue3";
 import { computed, onBeforeMount, ref } from 'vue';
+import { event } from '@/Utils/analytics.js';
 
 const isWaiting = ref(window.location.search.includes('status=waiting'));
 const isError = ref(window.location.search.includes('status=error'));
@@ -24,6 +25,7 @@ const props = defineProps({
 });
 
 const hardReload = () => {
+    event('duplicates.connect.hardReload');
     // Remove 'waiting' request param
     const url = new URL(window.location);
     url.searchParams.delete('status');
@@ -51,6 +53,7 @@ const scheduleReload = () => {
 };
 
 const openNewWindow = () => {
+    event('duplicates.connect.goToNotion');
     authWindow.value = window.open(authUrl, '_blank');
     isWaiting.value = true;
 
@@ -68,6 +71,7 @@ onBeforeMount(() => {
     window.history.replaceState({}, document.title, url);
 
     window.notionAuthSuccess = () => {
+        event('duplicates.connect.notionAuthSuccess');
         clearTimeout(reloadTimeout);
 
         authWindow.value.close();
@@ -81,6 +85,7 @@ onBeforeMount(() => {
         router.reload();
     };
     window.notionAuthError = () => {
+        event('duplicates.connect.notionAuthError');
         clearTimeout(reloadTimeout);
 
         authWindow.value.close();

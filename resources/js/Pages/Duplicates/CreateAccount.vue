@@ -3,7 +3,7 @@ import Heading from '@/Components/Heading.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link, useForm, router } from "@inertiajs/vue3";
 import { ref } from 'vue';
-
+import { event } from '@/Utils/analytics.js';
 const props = defineProps({
     user: {
         type: Object,
@@ -21,14 +21,17 @@ const initialEmail = props.user.email;
 const tempEmail = ref();
 
 const submitForm = () => {
+    event('duplicates.createAccount.submitForm');
     router.post(route('duplicates.consent'), form)
 };
 
 const openModal = () => {
+    event('duplicates.createAccount.openModal');
     document.getElementById('modal-change-email').showModal();
 };
 
 const updateEmail = () => {
+    event('duplicates.createAccount.updateEmail');
     form.email = tempEmail.value;
     document.getElementById('modal-change-email').close();
 };

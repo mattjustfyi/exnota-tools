@@ -6,6 +6,7 @@ import ProgressBar from '@/Components/ProgressBar.vue';
 import SearchedAt from '@/Components/SearchedAt.vue';
 import NotionObjectTitle from '@/Components/NotionObjectTitle.vue';
 import Heading from '@/Components/Heading.vue';
+import { event } from '@/Utils/analytics.js';
 
 console.log('Component setup started');
 
@@ -26,6 +27,7 @@ watch(() => props.toolDuplicateRequest.delete_logic, (newValue) => {
 });
 
 const updateDeleteLogic = (value) => {
+    event('duplicates.confirm.updateDeleteLogic', { value });
     deleteLogic.value = value;
 
     // If this errors, it will show a standard Inertia error modal. Can't use
@@ -39,14 +41,17 @@ const updateDeleteLogic = (value) => {
         preserveState: true,
         preserveScroll: true,
         onStart: () => {
+            event('duplicates.confirm.updateDeleteLogic.start');
             console.log('Updating delete logic');
             deletedLogicUpdateStarted.value = true;
         },
         onSuccess: () => {
+            event('duplicates.confirm.updateDeleteLogic.success');
             console.log('Updated delete logic');
             deletedLogicUpdateStarted.value = false;
         },
         onFinish: () => {
+            event('duplicates.confirm.updateDeleteLogic.finish');
             console.log('Finished updating delete logic');
             // Revert state change if it failed
             if (deletedLogicUpdateStarted.value) {
@@ -62,6 +67,7 @@ const workspaceId = computed(() => {
 });
 
 const goToWorkspace = () => {
+    event('duplicates.confirm.goToWorkspace');
     if (workspaceId.value) {
         router.visit(`/duplicates/workspace/${workspaceId.value}`);
     }
@@ -133,6 +139,7 @@ const searchProgress = computed(() => {
 const isSearchButtonDisabled = ref(false);
 
 const searchAgain = () => {
+    event('duplicates.confirm.searchAgain');
     console.log('searchAgain called');
     isSearchButtonDisabled.value = true;
     router.post('/duplicates/request',
@@ -170,15 +177,18 @@ const deletionStatus = computed(() => {
 });
 
 const showDeleteConfirmModal = () => {
+    event('duplicates.confirm.showDeleteConfirmModal');
     document.getElementById('modal-delete-confirm').showModal();
 };
 
 const startDeletion = () => {
+    event('duplicates.confirm.startDeletion');
     document.getElementById('modal-delete-confirm').close();
     router.post(route('duplicates.delete-request', props.toolDuplicateRequest.id));
 };
 
 const cancelDeletion = () => {
+    event('duplicates.confirm.cancelDeletion');
     router.post(route('duplicates.cancel-request', props.toolDuplicateRequest.id), {}, {
         preserveState: true,
         preserveScroll: true,
@@ -190,6 +200,7 @@ const shouldRefresh = computed(() => {
 });
 
 const startPeriodicRefresh = () => {
+    event('duplicates.confirm.startPeriodicRefresh');
     console.log('Starting periodic refresh');
     refreshInterval.value = setInterval(() => {
         console.log('Reloading page');
@@ -198,6 +209,7 @@ const startPeriodicRefresh = () => {
 };
 
 const stopPeriodicRefresh = () => {
+    event('duplicates.confirm.stopPeriodicRefresh');
     console.log('Stopping periodic refresh');
     if (refreshInterval.value) {
         clearInterval(refreshInterval.value);
