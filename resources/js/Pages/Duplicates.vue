@@ -1,6 +1,7 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link, router } from "@inertiajs/vue3";
+import { event } from '@/Utils/analytics.js';
 
 defineProps({
     user: {

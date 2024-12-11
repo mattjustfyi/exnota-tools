@@ -5,18 +5,22 @@ import { ref, watch, onMounted, onUnmounted, computed } from 'vue';
 import NotionObjectTitle from '@/Components/NotionObjectTitle.vue';
 import Heading from '@/Components/Heading.vue';
 import HelpMessage from '@/Components/HelpMessage.vue';
+import { event } from '@/Utils/analytics.js';
 
 console.log('Script setup started');
 
 const openModal = () => {
+    event('duplicates.workspace.openModal');
     document.getElementById('modal-cant-find-it').showModal();
 };
 
 const closeModal = () => {
+    event('duplicates.workspace.closeModal');
     document.getElementById('modal-cant-find-it').close();
 };
 
 const refreshAndCloseModal = () => {
+    event('duplicates.workspace.refreshAndCloseModal');
     closeModal();
     fetchUserData();
 };
@@ -36,6 +40,7 @@ const refreshInterval = ref(null);
 const selectedDatabase = ref(null);
 
 const selectDatabase = (database) => {
+    event('duplicates.workspace.selectDatabase');
     console.log('selectDatabase called with:', database);
     selectedDatabase.value = database;
     console.log('Selected database:', database);
@@ -50,6 +55,7 @@ const callDuplicateCreateController = (notionObjectId) => {
 const isLoading = ref(false);
 
 const fetchUserData = () => {
+    event('duplicates.workspace.fetchUserData');
     console.log('fetchUserData called');
     isLoading.value = true;
     router.post(`/test/workspace/${props.workspace.id}/refresh`, {}, {
@@ -59,6 +65,7 @@ const fetchUserData = () => {
 };
 
 const startPeriodicRefresh = () => {
+    event('duplicates.workspace.startPeriodicRefresh');
     if (refreshInterval.value) {
         console.log('Periodic refresh already started. Returning.');
         return;
@@ -73,6 +80,7 @@ const startPeriodicRefresh = () => {
 };
 
 const stopPeriodicRefresh = () => {
+    event('duplicates.workspace.stopPeriodicRefresh');
     console.log('stopPeriodicRefresh called');
     isLoading.value = false;
     if (refreshInterval.value) {
