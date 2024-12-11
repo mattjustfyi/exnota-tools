@@ -49,5 +49,5 @@ router.on("navigate", () => {
 /* Posthog analytics */
 posthog.init("phc_Hw7oDphoNG3KRT1M6KmlLAAfV9dQfSmJFcqFor3QFeE", {
     api_host: "https://eu.i.posthog.com",
-    person_profiles: "identified_only", // or 'always' to create profiles for anonymous users as well
+    persistence: "memory",
 });
