@@ -191,8 +191,13 @@ const logout = () => {
 
                 <slot />
 
-                <div class="pt-12 pb-24">
+                <div class="pt-12">
                     <HelpMessage class="mt-6 text-xs" />
+                </div>
+                <div class="pt-12 pb-24">
+                    <a href="/terms-of-service" target="_blank" class="text-xs">Terms</a>
+                    |
+                    <a href="/privacy-policy" target="_blank" class="text-xs">Privacy</a>
                 </div>
             </main>
         </div>
