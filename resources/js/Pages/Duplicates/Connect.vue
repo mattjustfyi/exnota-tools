@@ -1,7 +1,6 @@
 <script setup>
 import Heading from '@/Components/Heading.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import AppLayoutNoUser from '@/Layouts/AppLayoutNoUser.vue';
 import { Head, Link, router } from "@inertiajs/vue3";
 import { computed, onBeforeMount, ref } from 'vue';
 import { event } from '@/Utils/analytics.js';
