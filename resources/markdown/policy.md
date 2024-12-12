@@ -1,6 +1,6 @@
 # Exnota Privacy Policy
 
-*Last Updated: 9 Oct, 2024 (Version 1)*
+*Last Updated: 12 Dec, 2024 (Version 2)*
 
 ## 1. Introduction
 
@@ -11,6 +11,14 @@ Welcome to Exnota. Your privacy is critically important to us. This Privacy Poli
 - **Hetzner (Hetzner Online GmbH)**: We use Hetzner for cloud computing services and securely storing user data, including personal information.
 
 - **Crisp**: We use Crisp to communicate with users.
+
+- We are currently trialing 3 privacy-focused analytics providers:
+
+  - **Fathom Analytics**: We use Fathom Analytics to understand how our users interact with our services. Fathom Analytics collects aggregated, anonymous data, ensuring your browsing privacy is respected.
+
+  - **Umami Software, Inc**: We use Umami to understand how our users interact with our services. Umami does not collect any personally identifiable information and anonymizes all data collected. Users cannot be identified and are never tracked across websites.
+
+  - **Posthog**: We use Posthog to understand how our users interact with our services. Posthog is configured to not save personally identifiable information nor use cookies.
 
 ## 3. Personal Information
 
