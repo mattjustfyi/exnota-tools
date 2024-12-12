@@ -1,7 +1,7 @@
 import "./bootstrap";
 import "../css/app.css";
 
-import { createApp, h } from "vue";
+import { createApp, h, nextTick } from "vue";
 import { createInertiaApp, router } from "@inertiajs/vue3";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { ZiggyVue } from "../../vendor/tightenco/ziggy";
@@ -39,7 +39,15 @@ window.addEventListener("popstate", () => {
     stale = true;
 });
 
-router.on("navigate", () => {
+router.on("navigate", (event) => {
+    // https://posthog.com/tutorials/single-page-app-pageviews
+    nextTick(() => {
+        console.log("posthog pageview", event.detail.page.url);
+        const path = window.location.origin + event.detail.page.url;
+        posthog.capture("$pageview", {
+            path: path,
+        });
+    });
     if (stale) {
         stale = false;
         router.reload();
@@ -50,6 +58,7 @@ router.on("navigate", () => {
 posthog.init("phc_Hw7oDphoNG3KRT1M6KmlLAAfV9dQfSmJFcqFor3QFeE", {
     api_host: "https://eu.i.posthog.com",
     persistence: "memory",
+    capture_pageview: false,
     loaded: function (ph) {
         if (import.meta.env.MODE === "development") {
             console.log("Opting out of Posthog event capture");

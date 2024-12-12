@@ -5,6 +5,7 @@ import AppLayoutNoUser from '@/Layouts/AppLayoutNoUser.vue';
 import { Head, Link, router } from "@inertiajs/vue3";
 import { computed, onBeforeMount, ref } from 'vue';
 import { event } from '@/Utils/analytics.js';
+import posthog from "posthog-js";
 
 const isWaiting = ref(window.location.search.includes('status=waiting'));
 const isError = ref(window.location.search.includes('status=error'));
@@ -54,6 +55,7 @@ const scheduleReload = () => {
 
 const openNewWindow = () => {
     event('duplicates.connect.goToNotion');
+
     authWindow.value = window.open(authUrl, '_blank');
     isWaiting.value = true;
 
