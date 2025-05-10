@@ -1,0 +1,15 @@
+diff --git a/src/Databases/Database.php b/src/Databases/Database.php
+index abc123..def456 100644
+--- a/src/Databases/Database.php
++++ b/src/Databases/Database.php
+@@ -59,10 +59,6 @@ class Database
+         public readonly string $url,
+         public readonly bool $isInline,
+     ) {
+-        if ($cover !== null && $cover->isInternal()) {
+-            throw DatabaseException::internalCover();
+-        }
+-
+         if (!$this->hasTitleProperty($properties)) {
+             throw DatabaseException::noTitleProperty();
+         }

@@ -215,10 +215,12 @@ Fix:
 
 1. Copy `iterm2-exnota-tools-local.py` to `/Users/matt/Library/Application Support/iTerm2/Scripts`
 2. Cmd > `Debug: Select and Start Debugging` > `Listen for Sail XDebug`
-3. Open new iTerm2 window
-4. ⌘ ⇧ O
-5. Select `iterm2-exnota-tools-local`
-6. Go to `http://localhost`
+3. Make sure Docker is running and Herd is **not** running.
+4. Start PHP debug listener if you want to avoid warnings about not being able to connect to debugger.
+5. Open new iTerm2 window
+6. ⌘ ⇧ O
+7. Select `iterm2-exnota-tools-local`
+8. Go to `http://localhost`
 
 More
 
@@ -379,7 +381,7 @@ Disconnect/reconnect ("Invalidate" may not work). DBeaver doesn't have updated D
 
 #### Error: `SQLSTATE[08006] [7] could not translate host name "pgsql" to address: nodename nor servname provided`
 
-When local, use `sail` to run migrations in the Docker container from the host (your machine).
+When local, use `sail` to run migrations, tinker, etc in the Docker container from the host (your machine).
 
 ```bash
 ./vendor/bin/sail artisan migrate

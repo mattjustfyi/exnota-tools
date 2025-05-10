@@ -2,10 +2,14 @@
     "name": "laravel/laravel",
     "type": "project",
     "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "keywords": [
+        "laravel",
+        "framework"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "cweagans/composer-patches": "^1.7",
         "inertiajs/inertia-laravel": "^1.0",
         "jwilsson/spotify-web-api-php": "^6.1",
         "laravel/framework": "^11.9",
@@ -59,6 +63,11 @@
     "extra": {
         "laravel": {
             "dont-discover": []
+        },
+        "patches": {
+            "mariosimao/notion-sdk-php": {
+                "Remove internal cover check": "patches/mariosimao/notion-sdk-php/remove-internal-cover.patch"
+            }
         }
     },
     "config": {
@@ -66,6 +75,7 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "allow-plugins": {
+            "cweagans/composer-patches": true,
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
         }
