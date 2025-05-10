@@ -72,10 +72,10 @@ COPY . /var/www/html
 # Set the working directory
 WORKDIR /var/www/html
 
-# Install Node.js and npm
+# Install Node.js and npm with specific versions
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
     apt-get install -y nodejs && \
-    npm install -g npm@latest
+    npm install -g npm@10.8.2
 
 # Verify Node.js and npm installation
 RUN node --version && npm --version
