@@ -14,6 +14,8 @@ Bulk delete duplicates entries in your Notion databases. Great for CSV imports.
 
 ### Spotify Sync
 
+Sync Spotify play status and history to Notion. A widget is used for play status and play history is saved to a collection of databases that you can use to find your top songs, artists, albums. 
+
 <img src="/docs/spotify-to-notion.gif" width="500">
 
 [Full walkthrough](https://youtu.be/ApY_hU4iqKE)
