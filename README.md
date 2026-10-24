@@ -4,7 +4,11 @@
 
 ### Delete Duplicates
 
+Bulk delete duplicates entries in your Notion databases. Great for CSV imports.
+
 <img src="/docs/delete-duplicates.gif" width="500" alt="Description">
+
+[Full walkthrough](https://youtu.be/utRpbNlllu4)
 
 ### Spotify Sync
 
