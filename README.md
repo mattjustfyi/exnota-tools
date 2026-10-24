@@ -1,5 +1,15 @@
 # Exnota Tools
 
+## Apps
+
+### Delete Duplicates
+
+![Delete Duplicates walkthrough](/docs/delete-duplicates.gif)
+
+### Spotify Sync
+
+## TOC
+
 - [Exnota Tools](#exnota-tools)
   - [Cheatsheet](#cheatsheet)
   - [Deploy to prod](#deploy-to-prod)
