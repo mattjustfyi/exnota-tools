@@ -4,7 +4,7 @@
 
 ### Delete Duplicates
 
-![Delete Duplicates walkthrough](/docs/delete-duplicates.gif)
+<img src="/docs/delete-duplicates.gif" width="500" alt="Description">
 
 ### Spotify Sync
 
