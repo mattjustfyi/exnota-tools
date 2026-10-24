@@ -1,16 +1,22 @@
 # Exnota Tools
 
+**Stack**: Laravel/PHP, PostgreSQL/Redis, Vue/Tailwind/Vite, Docker/VPS.
+
 ## Apps
 
 ### Delete Duplicates
 
 Bulk delete duplicates entries in your Notion databases. Great for CSV imports.
 
-<img src="/docs/delete-duplicates.gif" width="500" alt="Description">
+<img src="/docs/delete-duplicates.gif" width="500">
 
 [Full walkthrough](https://youtu.be/utRpbNlllu4)
 
 ### Spotify Sync
+
+<img src="/docs/spotify-to-notion.gif" width="500">
+
+[Full walkthrough](https://youtu.be/ApY_hU4iqKE)
 
 ## TOC
 
